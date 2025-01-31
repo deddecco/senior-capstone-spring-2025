@@ -1,0 +1,129 @@
+/* General Page Styling */
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    margin: 0;
+    padding: 0;
+    background: linear-gradient(to bottom, #c2e59c, #64b3f4);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+}
+
+/* Main Container */
+.container {
+    max-width: 650px;
+    width: 90%;
+    background: white;
+    padding: 25px;
+    border-radius: 12px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    text-align: center;
+    animation: fadeIn 0.8s ease-in-out;
+}
+
+/* Title */
+h1 {
+    font-size: 26px;
+    color: #2c3e50;
+    margin-bottom: 15px;
+    border-bottom: 2px solid #64b3f4;
+    display: inline-block;
+    padding-bottom: 5px;
+}
+
+/* Dropdown Styling */
+label {
+    font-weight: bold;
+    color: #34495e;
+    margin-right: 8px;
+}
+
+select {
+    padding: 8px;
+    font-size: 16px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+    background: white;
+    transition: all 0.3s ease;
+}
+
+select:hover {
+    background: #e3f2fd;
+    cursor: pointer;
+}
+
+/* Sighting List */
+.sighting-list {
+    margin-top: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+/* Individual Sighting Cards */
+.sighting-card {
+    padding: 15px;
+    border-radius: 8px;
+    background: #ffffff;
+    box-shadow: 2px 3px 8px rgba(0, 0, 0, 0.1);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+/* Card Hover Effects */
+.sighting-card:hover {
+    transform: scale(1.02);
+    box-shadow: 3px 5px 10px rgba(0, 0, 0, 0.2);
+}
+
+/* Sighting Card Content */
+.sighting-card strong {
+    display: block;
+    font-size: 18px;
+    color: #2c3e50;
+    margin-bottom: 4px;
+}
+
+.sighting-card small {
+    color: #7f8c8d;
+    font-size: 14px;
+}
+
+.sighting-card em {
+    display: block;
+    font-size: 15px;
+    color: #2980b9;
+    margin-top: 4px;
+}
+
+/* Wikipedia Link */
+.sighting-card a {
+    display: inline-block;
+    margin-top: 8px;
+    padding: 6px 10px;
+    font-size: 14px;
+    text-decoration: none;
+    color: white;
+    background-color: #0073e6;
+    border-radius: 5px;
+    transition: background 0.3s ease;
+}
+
+.sighting-card a:hover {
+    background-color: #005bb5;
+    text-decoration: none;
+}
+
+/* Fade-in Animation */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
