@@ -3,10 +3,10 @@ document.addEventListener("DOMContentLoaded", () => {
     const sortSelect = document.getElementById("sort");
 
     let guests = [
-        { name: "Alice", response: "Attending" },
-        { name: "Bob", response: "Not Attending" },
-        { name: "Charlie", response: "No Response" },
-        { name: "David", response: "Invited" }
+        {name: "Alice", response: "Attending"},
+        {name: "Bob", response: "Not Attending"},
+        {name: "Charlie", response: "No Response"},
+        {name: "David", response: "Invited"}
     ];
 
     const responseClasses = {

@@ -1,82 +1,143 @@
+:root {
+    --primary-color: #2c3e50;
+    --secondary-color: #34495e;
+    --background-color: #f0f2f5;
+    --card-background: #ffffff;
+    --shadow-color: rgba(0, 0, 0, 0.1);
+    --resume-color: #2196f3;
+    --interview-color: #ffc107;
+    --accepted-color: #4caf50;
+    --rejected-color: #f44336;
+    --transition-speed: 0.3s;
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
 body {
     font-family: 'Roboto', Arial, sans-serif;
-    margin: 0;
-    padding: 20px;
-    background-color: #f0f2f5;
-    color: #333;
+    background-color: var(--background-color);
+    color: var(--primary-color);
     line-height: 1.6;
+    padding: 20px;
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
 .container {
     max-width: 800px;
-    margin: 40px auto;
-    background: white;
-    padding: 30px;
+    width: 100%;
+    background: var(--card-background);
+    padding: 2rem;
     border-radius: 12px;
-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 10px 30px var(--shadow-color);
 }
 
 h1 {
     text-align: center;
-    color: #2c3e50;
-    margin-bottom: 30px;
-    font-size: 2.5em;
+    color: var(--primary-color);
+    margin-bottom: 2rem;
+    font-size: 2.5rem;
     font-weight: 700;
+    letter-spacing: 0.5px;
 }
 
 .job-list {
-    margin-top: 30px;
+    display: grid;
+    gap: 1rem;
 }
 
 .job-card {
-    padding: 20px;
+    padding: 1.5rem;
     border-radius: 8px;
-    margin-bottom: 15px;
-    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    box-shadow: 0 4px 6px var(--shadow-color);
+    transition: transform var(--transition-speed) ease, box-shadow var(--transition-speed) ease;
+    border-left: 5px solid transparent;
 }
 
 .job-card:hover {
     transform: translateY(-5px);
-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+    box-shadow: 0 8px 15px var(--shadow-color);
 }
 
 .resume-sent {
-    background-color: #e3f2fd;
-    border-left: 5px solid #2196f3;
+    background-color: rgba(33, 150, 243, 0.1);
+    border-left-color: var(--resume-color);
 }
 
 .interview-scheduled {
-    background-color: #fff9c4;
-    border-left: 5px solid #ffc107;
+    background-color: rgba(255, 193, 7, 0.1);
+    border-left-color: var(--interview-color);
 }
 
 .accepted-offer {
-    background-color: #e8f5e9;
-    border-left: 5px solid #4caf50;
+    background-color: rgba(76, 175, 80, 0.1);
+    border-left-color: var(--accepted-color);
 }
 
 .rejected {
-    background-color: #ffebee;
-    border-left: 5px solid #f44336;
+    background-color: rgba(244, 67, 54, 0.1);
+    border-left-color: var(--rejected-color);
 }
 
 .job-card h3 {
-    margin-top: 0;
-    color: #2c3e50;
+    margin-bottom: 0.5rem;
+    color: var(--primary-color);
+    font-size: 1.2rem;
 }
 
 .job-card p {
-    margin: 5px 0;
-    color: #34495e;
+    margin: 0.25rem 0;
+    color: var(--secondary-color);
+    font-size: 0.95rem;
+}
+
+.status-tag {
+    display: inline-block;
+    padding: 0.25rem 0.5rem;
+    border-radius: 4px;
+    font-size: 0.8rem;
+    font-weight: bold;
+    text-transform: uppercase;
+    margin-top: 0.5rem;
+}
+
+.resume-sent .status-tag {
+    background-color: var(--resume-color);
+    color: white;
+}
+
+.interview-scheduled .status-tag {
+    background-color: var(--interview-color);
+    color: var(--primary-color);
+}
+
+.accepted-offer .status-tag {
+    background-color: var(--accepted-color);
+    color: white;
+}
+
+.rejected .status-tag {
+    background-color: var(--rejected-color);
+    color: white;
 }
 
 @media (max-width: 600px) {
     .container {
-        padding: 20px;
+        padding: 1.5rem;
     }
 
     h1 {
-        font-size: 2em;
+        font-size: 2rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .job-card {
+        padding: 1rem;
     }
 }

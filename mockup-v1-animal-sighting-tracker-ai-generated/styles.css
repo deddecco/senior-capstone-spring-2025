@@ -1,129 +1,116 @@
-/* General Page Styling */
-body {
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+:root {
+    --primary-color: #0073e6;
+    --secondary-color: #64b3f4;
+    --background-start: #c2e59c;
+    --background-end: #64b3f4;
+    --text-color: #2c3e50;
+    --card-background: #ffffff;
+    --input-border: #ccc;
+    --shadow-color: rgba(0, 0, 0, 0.1);
+}
+
+* {
+    box-sizing: border-box;
     margin: 0;
     padding: 0;
-    background: linear-gradient(to bottom, #c2e59c, #64b3f4);
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: linear-gradient(135deg, var(--background-start), var(--background-end));
     display: flex;
     justify-content: center;
     align-items: center;
     min-height: 100vh;
+    color: var(--text-color);
+    line-height: 1.6;
 }
 
-/* Main Container */
 .container {
     max-width: 650px;
     width: 90%;
-    background: white;
-    padding: 25px;
+    background: var(--card-background);
+    padding: 2rem;
     border-radius: 12px;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-    text-align: center;
-    animation: fadeIn 0.8s ease-in-out;
+    box-shadow: 0 10px 30px var(--shadow-color);
 }
 
-/* Title */
 h1 {
-    font-size: 26px;
-    color: #2c3e50;
-    margin-bottom: 15px;
-    border-bottom: 2px solid #64b3f4;
-    display: inline-block;
-    padding-bottom: 5px;
+    font-size: 2rem;
+    color: var(--primary-color);
+    margin-bottom: 1.5rem;
+    border-bottom: 2px solid var(--secondary-color);
+    padding-bottom: 0.5rem;
 }
 
-/* Dropdown Styling */
-label {
-    font-weight: bold;
-    color: #34495e;
-    margin-right: 8px;
+.folder-section, .sighting-section {
+    margin: 1.5rem 0;
 }
 
-select {
-    padding: 8px;
-    font-size: 16px;
+input, select, button {
+    width: 100%;
+    padding: 0.75rem;
+    margin: 0.5rem 0;
+    font-size: 1rem;
     border-radius: 5px;
-    border: 1px solid #ccc;
-    background: white;
+    border: 1px solid var(--input-border);
     transition: all 0.3s ease;
 }
 
-select:hover {
-    background: #e3f2fd;
-    cursor: pointer;
+input:focus, select:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 2px rgba(0, 115, 230, 0.2);
 }
 
-/* Sighting List */
-.sighting-list {
-    margin-top: 20px;
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-}
-
-/* Individual Sighting Cards */
-.sighting-card {
-    padding: 15px;
-    border-radius: 8px;
-    background: #ffffff;
-    box-shadow: 2px 3px 8px rgba(0, 0, 0, 0.1);
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
-    position: relative;
-    overflow: hidden;
-}
-
-/* Card Hover Effects */
-.sighting-card:hover {
-    transform: scale(1.02);
-    box-shadow: 3px 5px 10px rgba(0, 0, 0, 0.2);
-}
-
-/* Sighting Card Content */
-.sighting-card strong {
-    display: block;
-    font-size: 18px;
-    color: #2c3e50;
-    margin-bottom: 4px;
-}
-
-.sighting-card small {
-    color: #7f8c8d;
-    font-size: 14px;
-}
-
-.sighting-card em {
-    display: block;
-    font-size: 15px;
-    color: #2980b9;
-    margin-top: 4px;
-}
-
-/* Wikipedia Link */
-.sighting-card a {
-    display: inline-block;
-    margin-top: 8px;
-    padding: 6px 10px;
-    font-size: 14px;
-    text-decoration: none;
+button {
+    background-color: var(--primary-color);
     color: white;
-    background-color: #0073e6;
-    border-radius: 5px;
-    transition: background 0.3s ease;
+    cursor: pointer;
+    border: none;
+    font-weight: bold;
+    transition: background-color 0.3s ease;
+}
+
+button:hover {
+    background-color: #005bb5;
+}
+
+.sighting-list {
+    margin-top: 2rem;
+}
+
+.sighting-card {
+    padding: 1rem;
+    border-radius: 8px;
+    background: var(--card-background);
+    box-shadow: 0 4px 6px var(--shadow-color);
+    margin-bottom: 1rem;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.sighting-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 6px 12px var(--shadow-color);
+}
+
+.sighting-card a {
+    color: var(--primary-color);
+    text-decoration: none;
+    font-weight: bold;
 }
 
 .sighting-card a:hover {
-    background-color: #005bb5;
-    text-decoration: none;
+    text-decoration: underline;
 }
 
-/* Fade-in Animation */
-@keyframes fadeIn {
-    from {
-        opacity: 0;
-        transform: translateY(-10px);
+@media (max-width: 768px) {
+    .container {
+        width: 95%;
+        padding: 1.5rem;
     }
-    to {
-        opacity: 1;
-        transform: translateY(0);
+
+    h1 {
+        font-size: 1.75rem;
     }
 }

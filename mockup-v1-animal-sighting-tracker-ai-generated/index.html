@@ -9,14 +9,45 @@
 <body>
 <div class="container">
     <h1>Animal Sighting Tracker</h1>
-    <label for="sort">Sort by:</label>
-    <select id="sort">
-        <option value="date">Date</option>
-        <option value="species">Species</option>
-        <option value="location">Location</option>
-    </select>
-    <div id="sighting-list" class="sighting-list"></div>
+
+    <div class="folder-section">
+        <label for="folderName">New Folder Name:</label>
+        <input type="text" id="folderName" placeholder="Enter folder name">
+        <button onclick="createFolder()">Create Folder</button>
+    </div>
+
+    <div id="folders"></div>
+
+    <div class="sighting-section">
+        <h2>Add a Sighting</h2>
+
+        <label for="species">Species Name:</label>
+        <input type="text" id="species" placeholder="Enter species name">
+
+        <label for="location">Location:</label>
+        <input type="text" id="location" placeholder="Enter location">
+
+        <label for="date">Date:</label>
+        <input type="date" id="date">
+
+        <label for="folderSelect">Folder:</label>
+        <select id="folderSelect"></select>
+
+        <button onclick="addSighting()">Add Sighting</button>
+    </div>
+
+    <div class="sighting-list">
+        <h2>Sightings</h2>
+
+        <label for="filterFolder">Filter by Folder:</label>
+        <select id="filterFolder" onchange="filterSightings()">
+            <option value="all">All Folders</option>
+        </select>
+
+        <div id="sightings"></div>
+    </div>
 </div>
+
 <script src="script.js"></script>
 </body>
 </html>

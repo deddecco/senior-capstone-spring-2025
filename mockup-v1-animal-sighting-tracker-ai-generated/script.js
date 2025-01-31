@@ -1,42 +1,71 @@
-document.addEventListener("DOMContentLoaded", () => {
-    const sightingList = document.getElementById("sighting-list");
-    const sortSelect = document.getElementById("sort");
+let folders = {};
+let sightings = [];
 
-    let sightings = [
-        {species: "Bald Eagle", date: "2024-02-01", location: "Yellowstone National Park"},
-        {species: "Great Horned Owl", date: "2024-01-25", location: "Appalachian Trail"},
-        {species: "Snowy Egret", date: "2024-01-20", location: "Everglades National Park"},
-        {species: "Peregrine Falcon", date: "2024-01-15", location: "Grand Canyon"}
-    ];
-
-    function getWikipediaLink(species) {
-        return `https://en.wikipedia.org/wiki/${species.replace(/ /g, "_")}`;
+function createFolder() {
+    let folderName = document.getElementById('folderName').value.trim();
+    if (folderName && !Object.hasOwn(folders, folderName)) {
+        folders[folderName] = [];
+        updateFolderDropdowns();
+        displayFolders();
+        document.getElementById('folderName').value = '';
     }
+}
 
-    function renderSightings() {
-        sightingList.innerHTML = "";
-        sightings.forEach(sighting => {
-            const sightingCard = document.createElement("div");
-            sightingCard.className = "sighting-card";
-            sightingCard.innerHTML = `<strong>${sighting.species}</strong><br>
-                                      <small>${sighting.date}</small><br>
-                                      <em>${sighting.location}</em><br>
-                                      <a href="${getWikipediaLink(sighting.species)}" target="_blank">Learn More</a>`;
-            sightingList.appendChild(sightingCard);
-        });
-    }
+function updateFolderDropdowns() {
+    let folderSelect = document.getElementById('folderSelect');
+    let filterFolder = document.getElementById('filterFolder');
+    folderSelect.innerHTML = '';
+    filterFolder.innerHTML = '<option value="all">All Folders</option>';
 
-    sortSelect.addEventListener("change", (e) => {
-        const sortBy = e.target.value;
-        if (sortBy === "date") {
-            sightings.sort((a, b) => new Date(b.date) - new Date(a.date));
-        } else if (sortBy === "species") {
-            sightings.sort((a, b) => a.species.localeCompare(b.species));
-        } else if (sortBy === "location") {
-            sightings.sort((a, b) => a.location.localeCompare(b.location));
-        }
-        renderSightings();
+    Object.keys(folders).forEach(folder => {
+        folderSelect.innerHTML += `<option value="${folder}">${folder}</option>`;
+        filterFolder.innerHTML += `<option value="${folder}">${folder}</option>`;
     });
+}
 
-    renderSightings();
-});
+function displayFolders() {
+    let folderDiv = document.getElementById('folders');
+    folderDiv.innerHTML = '';
+    Object.keys(folders).forEach(folder => {
+        folderDiv.innerHTML += `<div class="folder"><strong>${folder}</strong></div>`;
+    });
+}
+
+function addSighting() {
+    let species = document.getElementById('species').value.trim();
+    let location = document.getElementById('location').value.trim();
+    let date = document.getElementById('date').value;
+    let folder = document.getElementById('folderSelect').value;
+
+    if (species && location && date && folder) {
+        let sighting = {species, location, date, folder};
+        sightings.push(sighting);
+        folders[folder].push(sighting);
+        displaySightings();
+        document.getElementById('species').value = '';
+        document.getElementById('location').value = '';
+        document.getElementById('date').value = '';
+    }
+}
+
+function displaySightings() {
+    let sightingsDiv = document.getElementById('sightings');
+    sightingsDiv.innerHTML = '';
+    let filter = document.getElementById('filterFolder').value;
+    let filteredSightings = filter === 'all' ? sightings : folders[filter];
+
+    filteredSightings.forEach(sighting => {
+        sightingsDiv.innerHTML += `
+            <div class="sighting-card">
+                <strong>${sighting.species}</strong> seen at <em>${sighting.location}</em> on ${sighting.date}
+                <br><a href="https://en.wikipedia.org/wiki/${sighting.species}" target="_blank">Learn More</a>
+            </div>
+        `;
+    });
+}
+
+function filterSightings() {
+    displaySightings();
+}
+
+updateFolderDropdowns();
