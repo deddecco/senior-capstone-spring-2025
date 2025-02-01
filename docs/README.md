@@ -1,8 +1,8 @@
 # Senior Capstone Project - Spring 2025
 ## Students
 - Andre
-- abc
-- xyz
+- Nate
+- Waleed
 
 ## Description
 
