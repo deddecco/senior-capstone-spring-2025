@@ -1,13 +1,14 @@
 :root {
     --primary-color: #2c3e50;
-    --secondary-color: #34495e;
+    --secondary-color: #5d6d7e;
     --background-color: #f0f2f5;
     --card-background: #ffffff;
-    --shadow-color: rgba(0, 0, 0, 0.1);
+    --shadow-color: rgba(0, 0, 0, 0.12);
     --resume-color: #2196f3;
     --interview-color: #ffc107;
     --accepted-color: #4caf50;
     --rejected-color: #f44336;
+    --border-radius: 14px;
     --transition-speed: 0.3s;
 }
 
@@ -27,6 +28,7 @@ body {
     display: flex;
     justify-content: center;
     align-items: center;
+    transition: background 0.3s ease-in-out;
 }
 
 .container {
@@ -34,15 +36,16 @@ body {
     width: 100%;
     background: var(--card-background);
     padding: 2rem;
-    border-radius: 12px;
+    border-radius: var(--border-radius);
     box-shadow: 0 10px 30px var(--shadow-color);
+    transition: box-shadow var(--transition-speed) ease;
 }
 
 h1 {
     text-align: center;
     color: var(--primary-color);
     margin-bottom: 2rem;
-    font-size: 2.5rem;
+    font-size: 2.4rem;
     font-weight: 700;
     letter-spacing: 0.5px;
 }
@@ -54,57 +57,72 @@ h1 {
 
 .job-card {
     padding: 1.5rem;
-    border-radius: 8px;
-    box-shadow: 0 4px 6px var(--shadow-color);
+    border-radius: var(--border-radius);
+    box-shadow: 0 4px 8px var(--shadow-color);
     transition: transform var(--transition-speed) ease, box-shadow var(--transition-speed) ease;
-    border-left: 5px solid transparent;
+    border-left: 6px solid transparent;
+    position: relative;
+    overflow: hidden;
 }
 
 .job-card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 8px 15px var(--shadow-color);
+    transform: translateY(-6px);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);
 }
 
 .resume-sent {
-    background-color: rgba(33, 150, 243, 0.1);
+    background-color: rgba(33, 150, 243, 0.08);
     border-left-color: var(--resume-color);
 }
 
 .interview-scheduled {
-    background-color: rgba(255, 193, 7, 0.1);
+    background-color: rgba(255, 193, 7, 0.08);
     border-left-color: var(--interview-color);
 }
 
 .accepted-offer {
-    background-color: rgba(76, 175, 80, 0.1);
+    background-color: rgba(76, 175, 80, 0.08);
     border-left-color: var(--accepted-color);
 }
 
 .rejected {
-    background-color: rgba(244, 67, 54, 0.1);
+    background-color: rgba(244, 67, 54, 0.08);
     border-left-color: var(--rejected-color);
 }
 
 .job-card h3 {
     margin-bottom: 0.5rem;
     color: var(--primary-color);
-    font-size: 1.2rem;
+    font-size: 1.3rem;
 }
 
 .job-card p {
     margin: 0.25rem 0;
     color: var(--secondary-color);
-    font-size: 0.95rem;
+    font-size: 1rem;
 }
 
 .status-tag {
     display: inline-block;
-    padding: 0.25rem 0.5rem;
-    border-radius: 4px;
-    font-size: 0.8rem;
+    padding: 0.4rem 0.6rem;
+    border-radius: 6px;
+    font-size: 0.85rem;
     font-weight: bold;
     text-transform: uppercase;
     margin-top: 0.5rem;
+    opacity: 0;
+    animation: fadeIn 0.5s ease-in-out forwards;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(5px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
 .resume-sent .status-tag {
@@ -114,7 +132,7 @@ h1 {
 
 .interview-scheduled .status-tag {
     background-color: var(--interview-color);
-    color: var(--primary-color);
+    color: black;
 }
 
 .accepted-offer .status-tag {
@@ -127,6 +145,32 @@ h1 {
     color: white;
 }
 
+/* Dark Mode Support */
+@media (prefers-color-scheme: dark) {
+    :root {
+        --background-color: #1e272e;
+        --card-background: #2f3640;
+        --primary-color: #dcdde1;
+        --secondary-color: #718093;
+        --shadow-color: rgba(0, 0, 0, 0.3);
+    }
+
+    body {
+        background-color: var(--background-color);
+        color: var(--primary-color);
+    }
+
+    .container {
+        background: var(--card-background);
+    }
+
+    .job-card h3,
+    .job-card p {
+        color: var(--primary-color);
+    }
+}
+
+/* Responsive Adjustments */
 @media (max-width: 600px) {
     .container {
         padding: 1.5rem;
@@ -141,3 +185,79 @@ h1 {
         padding: 1rem;
     }
 }
+
+.dark-mode {
+    --background-color: #1e272e;
+    --card-background: #2f3640;
+    --primary-color: #dcdde1;
+    --secondary-color: #718093;
+    --shadow-color: rgba(0, 0, 0, 0.3);
+    background-color: var(--background-color);
+    color: var(--primary-color);
+}
+
+.dark-mode .container {
+    background: var(--card-background);
+}
+
+.dark-mode .job-card h3,
+.dark-mode .job-card p {
+    color: var(--primary-color);
+}
+
+.sort-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 12px;
+    margin-bottom: 1.5rem;
+}
+
+.sort-buttons button {
+    background: linear-gradient(135deg, #007bff, #0056b3);
+    color: white;
+    border: none;
+    padding: 12px 18px;
+    font-size: 1rem;
+    font-weight: bold;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s ease-in-out;
+    box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.2);
+}
+
+.sort-buttons button:hover {
+    background: linear-gradient(135deg, #0056b3, #003f7f);
+    transform: scale(1.05);
+}
+
+.sort-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 12px;
+    margin-bottom: 1.5rem;
+}
+
+.sort-buttons button {
+    background: linear-gradient(135deg, #007bff, #0056b3);
+    color: white;
+    border: none;
+    padding: 12px 18px;
+    font-size: 1rem;
+    font-weight: bold;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s ease-in-out;
+    box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.2);
+}
+
+.sort-buttons button:hover {
+    background: linear-gradient(135deg, #0056b3, #003f7f);
+    transform: scale(1.05);
+}
+
+/* Style for the active sorting button */
+.sort-buttons button.active {
+    background: linear-gradient(135deg, #28a745, #1e7e34);
+    box-shadow: 0 0 10px rgba(40, 167, 69, 0.5);
+}
+

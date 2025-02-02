@@ -9,14 +9,18 @@
 <body>
 <div class="container">
     <h1>Job Application Tracker</h1>
-    <label for="sort">Sort by:</label>
-    <select id="sort">
-        <option value="date">Date</option>
-        <option value="company">Company</option>
-        <option value="status">Status</option>
-    </select>
+
+    <!-- Sorting Buttons -->
+    <div class="sort-buttons">
+        <button data-sort="date">Sort by Date</button>
+        <button data-sort="company">Sort by Company</button>
+        <button data-sort="status">Sort by Status</button>
+    </div>
+
+    <!-- Job List -->
     <div id="job-list" class="job-list"></div>
 </div>
+
 <script src="script.js"></script>
 </body>
 </html>
