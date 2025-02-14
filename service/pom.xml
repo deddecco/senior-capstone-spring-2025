@@ -78,19 +78,6 @@
             <version>1.32.1</version>
         </dependency>
 
-        <!-- Google Calendar API Services -->
-        <dependency>
-            <groupId>com.google.apis</groupId>
-            <artifactId>google-api-services-calendar</artifactId>
-            <version>v3-rev305-1.25.0</version>
-        </dependency>
-
-        <!-- Twilio SDK -->
-        <dependency>
-            <groupId>com.twilio.sdk</groupId>
-            <artifactId>twilio</artifactId>
-            <version>9.5.1</version>
-        </dependency>
 
         <!-- Firebase Admin SDK -->
         <dependency>
