@@ -14,3 +14,16 @@ Content-Type: application/json
 
 ###
 GET http://localhost:8080/profile/current
+###
+GET http://localhost:8080/profile/view
+
+
+###
+POST http://localhost:8080/profile/save
+Content-Type: application/json
+
+{
+  "name": "Alice",
+  "email": "alice@alice.com",
+  "department": "IT"
+}

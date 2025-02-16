@@ -7,11 +7,11 @@ import java.util.UUID;
 
 @Data
 @Builder
-public class CurrentProfileResponse {
+public class Profile {
      public UUID id;
      public String name;
      public String email;
-     public String currentTitle;
+     public String title;
      public String bio;
      public String location;
 }

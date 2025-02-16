@@ -1,25 +1,25 @@
 package edu.uis.csc478.sp25.jobtracker.controller;
 
-import edu.uis.csc478.sp25.jobtracker.model.CurrentProfileResponse;
-import edu.uis.csc478.sp25.jobtracker.service.UserProfileService;
+import edu.uis.csc478.sp25.jobtracker.model.Profile;
+import edu.uis.csc478.sp25.jobtracker.service.ProfileService;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/profile")
 public class ProfileController {
-     final UserProfileService service;
+     final ProfileService service;
 
-     public ProfileController(UserProfileService service) {
+     public ProfileController(ProfileService service) {
           this.service = service;
      }
 
      @GetMapping("current")
-     CurrentProfileResponse getCurrentProfile() {
+     Profile getCurrentProfile() {
           return service.getCurrentProfile();
      }
 
-     /*@PostMapping("my-timezone")
-     void setTimeZone(@RequestBody TimeZoneRequest timeZone) {
-          service.setTimeZone(timeZone);
-     }*/
+     @PostMapping("save")
+     void saveProfile(@RequestBody Profile profile) {
+          service.saveProfile(profile);
+     }
 }
