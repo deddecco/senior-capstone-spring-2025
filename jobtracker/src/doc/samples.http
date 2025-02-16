@@ -1,0 +1,16 @@
+###
+# @name Get current time
+GET http://localhost:8080/time/current
+
+###
+#
+POST http://localhost:8080/time/my-timezone
+Content-Type: application/json
+
+{
+  "timeZone": "GMT-05:00"
+}
+
+
+###
+GET http://localhost:8080/profile/current

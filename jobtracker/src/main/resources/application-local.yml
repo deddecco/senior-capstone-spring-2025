@@ -1,0 +1,7 @@
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5432/jobtracker
+    driverClassName: org.postgresql.Driver
+    username: admin
+    password: admin
+

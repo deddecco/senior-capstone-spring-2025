@@ -5,7 +5,7 @@ import jakarta.persistence.*;
 import java.util.UUID;
 
 @Entity
-@Table(name = "Seeker")
+@Table(name = "Seekers")
 
 //class represents a job-seeker's profile in the database
 public class Seeker {

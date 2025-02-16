@@ -1,0 +1,22 @@
+services:
+  # --- Capstone Project DB Server ---
+  jt-db:
+    image: postgres:16.4-bookworm
+    user: "${UID:-1000}:${GID:-1000}"
+    environment:
+      POSTGRES_PASSWORD: admin
+      POSTGRES_USER: admin
+      POSTGRES_DB: jobtracker
+    volumes:
+      - ./jt-server/data/db:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    depends_on:
+      - jt-db-init
+
+  jt-db-init:
+    image: busybox
+    command: ["/bin/sh", "-c", "mkdir -p /data/db && chown ${UID:-1000}:${GID:-1000} /data/db"]
+    volumes:
+      - ./jt-server/data:/data
+    user: root
