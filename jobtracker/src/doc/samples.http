@@ -12,14 +12,18 @@ Content-Type: application/json
 }
 
 
+
 ###
-GET http://localhost:8080/profile/current
+GET http://localhost:8080/profiles/current
+
+###
+GET http://localhost:8080/profiles/02ba21b1-4432-4267-a5ca-639774679244
 
 ###
 GET http://localhost:8080/profile/view
 
 ###
-POST http://localhost:8080/profile/save
+POST http://localhost:8080/profiles
 Content-Type: application/json
 
 {
@@ -28,4 +32,31 @@ Content-Type: application/json
   "currentTitle": "Software Engineer",
   "bio": "This is John's bio.",
   "location": "New York, USA"
+}
+
+
+###
+PUT http://localhost:8080/profiles/current
+Content-Type: application/json
+
+{
+  "user_id": "02ba21b1-4432-4267-a5ca-639774679244",
+  "name": "Ellie",
+  "email": "ellie@ellie.com",
+  "title": "Software Reliability Engineer II",
+  "bio": "writing code fueled by coffee since 2017",
+  "location": "Remote"
+}
+
+###
+PUT http://localhost:8080/profiles/02ba21b1-4432-4267-a5ca-639774679244
+Content-Type: application/json
+
+{
+"user_id": "02ba21b1-4432-4267-a5ca-639774679244",
+"name": "Ellie Smith",
+"email": "ellie@ellie.com",
+"title": "Software Reliability Engineer II",
+"bio": "writing code fueled by coffee since 2017",
+"location": "Remote/US"
 }

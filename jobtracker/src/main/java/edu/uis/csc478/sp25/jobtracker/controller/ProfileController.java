@@ -5,12 +5,14 @@ import edu.uis.csc478.sp25.jobtracker.service.ProfileService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import static org.springframework.http.ResponseEntity.*;
+import java.util.UUID;
+
 import static org.springframework.http.ResponseEntity.internalServerError;
+import static org.springframework.http.ResponseEntity.ok;
 
 @RestController
-@RequestMapping("/profile")
-// this class calls the service
+// *** THIS IS NOW "PROFILES", NO LONGER "PROFILE" *** //
+@RequestMapping("/profiles")
 public class ProfileController {
      private final ProfileService service;
 
@@ -18,20 +20,71 @@ public class ProfileController {
           this.service = service;
      }
 
-     // get requests
+     ///////////
+     // USER //
+     /////////
+
+     // PASS
+     // current user only
+     // GET /profiles/current
+     // get your own profile
      @GetMapping("/current")
      public ResponseEntity<Profile> getCurrentProfile() {
           return service.getCurrentProfile();
      }
 
-     // post requests
-     @PostMapping("/save")
-     public ResponseEntity<String> saveProfile(@RequestBody Profile profile) {
+     // PASS
+     // current user
+     // PUT /profiles/current
+     // update your own profile
+     @PutMapping("/current")
+     public ResponseEntity<String> updateCurrentProfile(@RequestBody Profile profile) {
           try {
-               service.saveProfile(profile);
-               return ok("Profile saved successfully!");
+               service.updateCurrentProfile(profile);
+               return ok("Profile updated successfully!");
           } catch (Exception e) {
-               return internalServerError().body("Failed to save profile: " + e.getMessage());
+               return internalServerError().body("Failed to update profile: " + e.getMessage());
+          }
+     }
+
+     ////////////
+     // ADMIN //
+    ///////////
+
+     // PASS
+     // admin only
+     // GET /profiles/{profileId}
+     // see a profile as an admin; send a GET with an ID
+     @GetMapping("/{profileId}")
+     public ResponseEntity<Profile> getProfileById(@PathVariable UUID profileId) {
+          return service.getProfileById(profileId);
+     }
+
+     // PASS
+     // admin only
+     // PUT /profiles/{profileId}
+     // update a profile as an admin; send a PUT with an ID
+     @PutMapping("/{profileId}")
+     public ResponseEntity<String> updateProfileById(@PathVariable UUID profileId,
+                                                     @RequestBody Profile profile) {
+          try {
+               service.updateProfileById(profileId, profile);
+               return ok("Profile updated successfully!");
+          } catch (Exception e) {
+               return internalServerError().body("Failed to update profile: " + e.getMessage());
+          }
+     }
+     // PASS
+     // admin only
+     // POST /profiles
+     // create a profile as an admin; send a POST without an ID
+     @PostMapping
+     public ResponseEntity<String> createProfile(@RequestBody Profile profile) {
+          try {
+               service.createProfile(profile);
+               return ok("Profile created successfully!");
+          } catch (Exception e) {
+               return internalServerError().body("Failed to create profile: " + e.getMessage());
           }
      }
 }
