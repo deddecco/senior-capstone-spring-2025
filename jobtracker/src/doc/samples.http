@@ -11,13 +11,11 @@ Content-Type: application/json
   "timeZone": "GMT-05:00"
 }
 
-
-
 ###
 GET http://localhost:8080/profiles/current
 
 ###
-GET http://localhost:8080/profiles/02ba21b1-4432-4267-a5ca-639774679244
+GET http://localhost:8080/profiles/2a77f495-3307-4176-be02-421f321afcb4
 
 ###
 GET http://localhost:8080/profile/view
@@ -27,13 +25,12 @@ POST http://localhost:8080/profiles
 Content-Type: application/json
 
 {
-  "name": "John Doe",
-  "email": "john.doe@example.com",
+  "name": "John Smith",
+  "email": "john.smith@example.com",
   "currentTitle": "Software Engineer",
   "bio": "This is John's bio.",
   "location": "New York, USA"
 }
-
 
 ###
 PUT http://localhost:8080/profiles/current
@@ -41,7 +38,7 @@ Content-Type: application/json
 
 {
   "user_id": "02ba21b1-4432-4267-a5ca-639774679244",
-  "name": "Ellie",
+  "name": "Ellie Wilson",
   "email": "ellie@ellie.com",
   "title": "Software Reliability Engineer II",
   "bio": "writing code fueled by coffee since 2017",
@@ -49,11 +46,11 @@ Content-Type: application/json
 }
 
 ###
-PUT http://localhost:8080/profiles/02ba21b1-4432-4267-a5ca-639774679244
+PUT http://localhost:8080/profiles/02ba21b1-4432-4267-a5ca-639774679245
 Content-Type: application/json
 
 {
-"user_id": "02ba21b1-4432-4267-a5ca-639774679244",
+"user_id": "02ba21b1-4432-4267-a5ca-639774679245",
 "name": "Ellie Smith",
 "email": "ellie@ellie.com",
 "title": "Software Reliability Engineer II",
