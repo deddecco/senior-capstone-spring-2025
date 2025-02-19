@@ -10,7 +10,8 @@ import java.util.UUID;
 @Builder
 // the fields in a Profile class correspond to the columns in a profile table
 public class Profile {
-     @Id public UUID user_id;
+     @Id
+     public UUID user_id;
      public String name;
      public String email;
      public String title;
