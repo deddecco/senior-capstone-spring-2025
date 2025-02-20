@@ -10,4 +10,15 @@ public class JobService {
      public JobService(JobRepository repository) {
           this.repository = repository;
      }
+
+     // GET /jobs
+
+     // GET /jobs/{id}
+
+     // POST /jobs
+
+     // PUT /jobs/{id}
+
+     // GET /jobs/search
+
 }
