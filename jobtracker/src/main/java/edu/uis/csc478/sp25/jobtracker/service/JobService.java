@@ -11,14 +11,19 @@ public class JobService {
           this.repository = repository;
      }
 
+     //// USER ////
+
      // GET /jobs
 
      // GET /jobs/{id}
+
+     // GET /jobs/search
+
+     //// ADMIN /////
 
      // POST /jobs
 
      // PUT /jobs/{id}
 
-     // GET /jobs/search
-
+     // DELETE /admin/jobs/{id}
 }
