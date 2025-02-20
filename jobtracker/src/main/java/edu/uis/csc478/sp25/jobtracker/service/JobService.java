@@ -20,12 +20,11 @@ public class JobService {
           this.repository = repository;
      }
 
-
      public List<Job> getAllJobs() {
           return (List<Job>) repository.findAll();
      }
 
-
+     // create a new job, assuming one with the same job id does not yet exist
      public ResponseEntity<String> createJob(Job newJob) {
           if (existsByUUID(newJob.id)) {
                return new ResponseEntity<>("Job already exists.", CONFLICT);
@@ -78,4 +77,14 @@ public class JobService {
                                  String location) {
           return repository.findByFilters(title, level, minSalary, maxSalary, location);
      }
+
+     public ResponseEntity<String> deleteJob(UUID jobId) {
+          if (!repository.existsById(jobId)) {
+               return new ResponseEntity<>("Job not found.", NOT_FOUND);
+          }
+
+          repository.deleteById(jobId);
+          return new ResponseEntity<>("Job deleted successfully.", OK);
+     }
+
 }

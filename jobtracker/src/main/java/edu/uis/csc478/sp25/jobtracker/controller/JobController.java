@@ -2,6 +2,7 @@ package edu.uis.csc478.sp25.jobtracker.controller;
 
 import edu.uis.csc478.sp25.jobtracker.model.Job;
 import edu.uis.csc478.sp25.jobtracker.service.JobService;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -57,8 +58,11 @@ public class JobController {
              @RequestParam(required = false) Integer minSalary,
              @RequestParam(required = false) Integer maxSalary,
              @RequestParam(required = false) String location) {
-
-          List<Job> matchingJobs = service.searchJobs(title, level, minSalary, maxSalary, location);
+          List<Job> matchingJobs = service.searchJobs(title,
+                  level,
+                  minSalary,
+                  maxSalary,
+                  location);
 
           // the request was successful but found no matches
           if (matchingJobs.isEmpty()) {
@@ -88,21 +92,28 @@ public class JobController {
 
      // PUT /jobs/{id}
      @PutMapping("/{id}")
-     public ResponseEntity<String> updateJob(@PathVariable UUID id,
-                                             @RequestBody Job job) {
+     public ResponseEntity<String> updateJob(@PathVariable UUID id, @RequestBody Job job) {
+          // if the job id in the path and request do not match, then the request should not go through
+          // because those two things deal with different jobs, and using one to update the other would be a mistake
           if (!job.getId().equals(id)) {
-               return ResponseEntity.badRequest()
-                       .body("The job ID in the path does not match the ID in the request body.");
+               return badRequest().body("The job ID in the path does not match the ID in the request body.");
           }
 
           return service.updateJobById(id, job);
      }
 
-
      // DELETE /jobs/{id}
      @DeleteMapping("/{id}")
      public ResponseEntity<Void> deleteJob(@PathVariable UUID id) {
-          // Implementation
-          return null;
+          // delete a job if it exists
+          try {
+               service.deleteJob(id);
+               return noContent().build();
+          }
+          // do not allow the deletion of a job that does not exist
+          catch (Exception e) {
+               return status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+          }
      }
+
 }
