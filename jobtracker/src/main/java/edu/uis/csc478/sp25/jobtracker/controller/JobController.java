@@ -50,13 +50,12 @@ public class JobController {
 
      // PUT /jobs/{id}
      @PutMapping("/{id}")
-
      public ResponseEntity<Job> updateJob(@PathVariable UUID id, @RequestBody Job job) {
           // Implementation
           return null;
      }
 
-     // DELETE /admin/jobs/{id}
+     // DELETE /jobs/{id}
      @DeleteMapping("/{id}")
      public ResponseEntity<Void> deleteJob(@PathVariable UUID id) {
           // Implementation

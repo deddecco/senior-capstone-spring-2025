@@ -88,7 +88,8 @@ public class ProfileService {
 
      // Utility method to copy properties from the updated profile to the existing one
      private ResponseEntity<String> applyProfileUpdates(Profile existingProfile, Profile updatedProfile) {
-          copyProperties(updatedProfile, existingProfile, "id"); // Exclude 'id' to prevent overwriting
+          // Exclude 'id' to prevent overwriting
+          copyProperties(updatedProfile, existingProfile, "id");
           repository.save(existingProfile);
           return new ResponseEntity<>("Profile updated successfully.", OK);
      }
