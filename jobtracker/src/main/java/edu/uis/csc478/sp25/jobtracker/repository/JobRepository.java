@@ -6,5 +6,5 @@ import org.springframework.data.repository.CrudRepository;
 import java.util.UUID;
 
 // Interface for CRUD operations-- calls to this get converted by Spring behind the scenes to SQL statements
-public interface InterviewRepository extends CrudRepository<Profile, UUID> {
+public interface JobRepository extends CrudRepository<Profile, UUID> {
 }

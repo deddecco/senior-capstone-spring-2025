@@ -2,8 +2,6 @@ package edu.uis.csc478.sp25.jobtracker.service;
 
 import edu.uis.csc478.sp25.jobtracker.model.Profile;
 import edu.uis.csc478.sp25.jobtracker.repository.ProfileRepository;
-import org.springframework.beans.BeanUtils;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
