@@ -54,17 +54,18 @@ public class ProfileController {
           UUID loggedInId = getLoggedInUserId();
 
           // Check if logged-in ID matches the expected constant
-          if (!loggedInId.equals(LOGGED_IN_USER_ID)) {
+          if (loggedInId.equals(LOGGED_IN_USER_ID)) {
+               try {
+                    service.updateCurrentProfile(profile);
+                    return ok("Profile updated successfully!");
+               } catch (Exception e) {
+                    return internalServerError().body("Failed to update profile: " + e.getMessage());
+               }
+          } else {
                return new ResponseEntity<>("You are not authorized to update this profile",
                        FORBIDDEN);
           }
 
-          try {
-               service.updateCurrentProfile(profile);
-               return ok("Profile updated successfully!");
-          } catch (Exception e) {
-               return internalServerError().body("Failed to update profile: " + e.getMessage());
-          }
      }
 
      ////////////
@@ -107,13 +108,14 @@ public class ProfileController {
      public ResponseEntity<String> createProfile(@RequestBody Profile profile) {
           try {
                // Check if the email already exists
-               if (service.existsByEmail(profile.getEmail())) {
+               if (!service.existsByEmail(profile.getEmail())) {
+                    // Use CREATED status for creation
+                    service.createProfile(profile);
+                    return new ResponseEntity<>("Profile created successfully!", CREATED);
+               } else {
                     return new ResponseEntity<>("Email already exists.", CONFLICT);
                }
 
-               service.createProfile(profile);
-               // Use CREATED status for creation
-               return new ResponseEntity<>("Profile created successfully!", CREATED);
           } catch (Exception e) {
                return internalServerError().body("Failed to create profile: " + e.getMessage());
           }
