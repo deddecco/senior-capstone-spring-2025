@@ -14,6 +14,7 @@ import java.util.UUID;
 import static org.springframework.http.HttpStatus.*;
 import static org.springframework.http.ResponseEntity.*;
 
+@CrossOrigin
 @RestController
 @RequestMapping("/jobs")
 public class JobController {
