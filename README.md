@@ -15,6 +15,6 @@ We have chosen to develop a job-tracking application that will help users track,
 We are building the back end with the Java SpringBoot framework, the front end with React/JS, and the database with PostgreSQL. As of 2/19/25, the database is hosted locally, but it will eventually be on Supabase using their free plan. Supabase will also handle things like authentication, security, etc. 
 
 ## Contributors
-Andre da Silva
-Nate Elsner
-Waleed Kaleem
+* Andre da Silva
+* Nate Elsner
+* Waleed Kaleem
