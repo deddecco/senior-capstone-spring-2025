@@ -1,0 +1,11 @@
+.landing-container{
+    margin: 2rem;
+    text-align: center;
+    background-color: #f0f0f0;
+    padding: 2rem;
+    border-radius: 8px;
+}
+
+.landing-container h1, p{
+    color: #1a1a1a;
+}
