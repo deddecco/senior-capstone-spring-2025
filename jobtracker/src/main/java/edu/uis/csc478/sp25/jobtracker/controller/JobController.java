@@ -93,7 +93,8 @@ public class JobController {
 
      // PUT /jobs/{id}
      @PutMapping("/{id}")
-     public ResponseEntity<String> updateJob(@PathVariable UUID id, @RequestBody Job job) {
+     public ResponseEntity<String> updateJob(@PathVariable UUID id,
+                                             @RequestBody Job job) {
           // if the job id in the path and request do not match, then the request should not go through
           // because those two things deal with different jobs, and using one to update the other would be a mistake
           if (!job.getId().equals(id)) {

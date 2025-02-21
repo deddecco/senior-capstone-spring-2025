@@ -56,18 +56,19 @@ public class JobService {
           Optional<Job> existingJob = repository.findById(jobID);
 
           if (existingJob.isPresent()) {
-               return applyProfileUpdates(existingJob.get(), updatedJob);
+               return applyJobUpdates(existingJob.get(), updatedJob);
           } else {
-               return new ResponseEntity<>("Job not found.", NOT_FOUND);
+               return new ResponseEntity<>("Job not found. Cannot update job that does not exist", NOT_FOUND);
           }
      }
 
      // Utility method to copy properties from the updated job to the existing one
-     private ResponseEntity<String> applyProfileUpdates(Job existingJob, Job updatedJob) {
+     private ResponseEntity<String> applyJobUpdates(Job existingJob,
+                                                    Job updatedJob) {
           // Exclude 'id' to prevent overwriting
           copyProperties(updatedJob, existingJob, "id");
           repository.save(existingJob);
-          return new ResponseEntity<>("Profile updated successfully.", OK);
+          return new ResponseEntity<>("Job updated successfully.", OK);
      }
 
      public List<Job> searchJobs(String title,
@@ -80,7 +81,8 @@ public class JobService {
 
      public ResponseEntity<String> deleteJob(UUID jobId) {
           if (!repository.existsById(jobId)) {
-               return new ResponseEntity<>("Job not found.", NOT_FOUND);
+               return new ResponseEntity<>("Job not found. Cannot delete job that does not exist",
+                       NOT_FOUND);
           }
 
           repository.deleteById(jobId);
