@@ -5,8 +5,10 @@ import edu.uis.csc478.sp25.jobtracker.model.TimeZoneRequest;
 import edu.uis.csc478.sp25.jobtracker.service.CurrentTimeService;
 import org.springframework.web.bind.annotation.*;
 
+
 @RestController
 @RequestMapping("/time")
+@CrossOrigin
 public class CurrentTimeController {
      final CurrentTimeService service;
 
