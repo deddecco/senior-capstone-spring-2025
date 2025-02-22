@@ -8,7 +8,6 @@ import java.util.UUID;
 
 @Data
 @Builder
-// the fields in a Job class correspond to the columns in an job table
 public class Job {
      @Id
      public UUID id;
@@ -17,4 +16,5 @@ public class Job {
      public int minSalary;
      public int maxSalary;
      public String location;
+     public String status;
 }
