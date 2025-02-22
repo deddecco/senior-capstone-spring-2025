@@ -7,42 +7,43 @@ function SignIn() {
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
-  const navigate = useNavigate();
   const { signIn } = useAuth();
+  const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setError('');
+    setLoading(true);
+
     try {
-      setError('');
-      setLoading(true);
       const { error } = await signIn(email, password);
       if (error) throw error;
-      navigate('/dashboard');
-    } catch (error) {
-      setError(error.message);
+      navigate('/');
+    } catch (err) {
+      setError(err.message || 'Failed to sign in');
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-background">
-      <div className="w-full max-w-md p-8 space-y-6 bg-card rounded-lg border border-border">
-        <div className="text-center">
-          <h2 className="text-3xl font-bold">Sign In</h2>
-          <p className="text-muted-foreground mt-2">Welcome back! Please sign in to continue.</p>
+    <div className="min-h-screen bg-background flex items-center justify-center p-4">
+      <div className="w-full max-w-md">
+        <div className="text-center mb-8">
+          <h1 className="text-2xl font-bold">Welcome back</h1>
+          <p className="text-muted-foreground mt-2">Sign in to your account</p>
         </div>
-        
+
         {error && (
-          <div className="p-3 text-sm bg-destructive/10 border border-destructive/20 text-destructive rounded-md">
+          <div className="mb-4 p-4 text-sm bg-destructive/10 text-destructive rounded-md">
             {error}
           </div>
         )}
 
         <form onSubmit={handleSubmit} className="space-y-4">
-          <div className="space-y-2">
-            <label htmlFor="email" className="text-sm font-medium">
-              Email Address
+          <div>
+            <label htmlFor="email" className="block text-sm font-medium mb-2">
+              Email
             </label>
             <input
               id="email"
@@ -53,9 +54,9 @@ function SignIn() {
               required
             />
           </div>
-          
-          <div className="space-y-2">
-            <label htmlFor="password" className="text-sm font-medium">
+
+          <div>
+            <label htmlFor="password" className="block text-sm font-medium mb-2">
               Password
             </label>
             <input
@@ -71,16 +72,16 @@ function SignIn() {
           <button
             type="submit"
             disabled={loading}
-            className="w-full py-2 px-4 bg-primary text-primary-foreground rounded-md hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed"
+            className="w-full py-2 px-4 bg-primary text-primary-foreground rounded-md font-medium disabled:opacity-50"
           >
             {loading ? 'Signing in...' : 'Sign In'}
           </button>
         </form>
 
-        <div className="text-center text-sm">
+        <div className="mt-6 text-center text-sm">
           <span className="text-muted-foreground">Don't have an account? </span>
           <Link to="/signup" className="text-primary hover:underline">
-            Sign Up
+            Sign up
           </Link>
         </div>
       </div>

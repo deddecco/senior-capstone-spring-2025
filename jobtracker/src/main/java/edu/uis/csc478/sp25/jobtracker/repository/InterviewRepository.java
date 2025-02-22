@@ -15,13 +15,13 @@ import java.util.UUID;
 public interface InterviewRepository extends CrudRepository<Interview, UUID> {
 
      @Query("""
-                 SELECT * FROM interview 
-                 WHERE user_id = :userId 
-                 AND format = :format 
-                 AND round = :round 
-                 AND date = CAST(:date AS DATE) 
+                 SELECT * FROM interview\s
+                 WHERE user_id = :userId\s
+                 AND format = :format\s
+                 AND round = :round\s
+                 AND date = CAST(:date AS DATE)\s
                  AND time = CAST(:time AS TIME)
-             """)
+            \s""")
      List<Interview> findByFilters(
              @Param("userId") UUID userId,
              @Param("format") String format,

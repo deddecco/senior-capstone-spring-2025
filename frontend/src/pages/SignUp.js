@@ -3,137 +3,119 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 
 function SignUp() {
-  const [formData, setFormData] = useState({
-    firstName: '',
-    lastName: '',
-    email: '',
-    password: '',
-    confirmPassword: ''
-  });
+  const [firstName, setFirstName] = useState('');
+  const [lastName, setLastName] = useState('');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
-  const navigate = useNavigate();
   const { signUp } = useAuth();
-
-  const handleChange = (e) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value
-    });
-  };
+  const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
-    if (formData.password !== formData.confirmPassword) {
+    setError('');
+
+    if (password !== confirmPassword) {
       return setError('Passwords do not match');
     }
 
+    setLoading(true);
+
     try {
-      setError('');
-      setLoading(true);
-      const { error } = await signUp(
-        formData.email,
-        formData.password,
-        formData.firstName,
-        formData.lastName
-      );
+      const { error } = await signUp(email, password, firstName, lastName);
       if (error) throw error;
       navigate('/signup-confirmation');
-    } catch (error) {
-      setError(error.message);
+    } catch (err) {
+      setError(err.message || 'Failed to create account');
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-background py-12 px-4">
-      <div className="w-full max-w-md p-8 space-y-6 bg-card rounded-lg border border-border">
-        <div className="text-center">
-          <h2 className="text-3xl font-bold">Create Account</h2>
-          <p className="text-muted-foreground mt-2">Sign up to start tracking your job applications</p>
+    <div className="min-h-screen bg-background flex items-center justify-center p-4">
+      <div className="w-full max-w-md">
+        <div className="text-center mb-8">
+          <h1 className="text-2xl font-bold">Create an account</h1>
+          <p className="text-muted-foreground mt-2">Enter your details to get started</p>
         </div>
 
         {error && (
-          <div className="p-3 text-sm bg-destructive/10 border border-destructive/20 text-destructive rounded-md">
+          <div className="mb-4 p-4 text-sm bg-destructive/10 text-destructive rounded-md">
             {error}
           </div>
         )}
-        
+
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="grid grid-cols-2 gap-4">
-            <div className="space-y-2">
-              <label htmlFor="firstName" className="text-sm font-medium">
+            <div>
+              <label htmlFor="firstName" className="block text-sm font-medium mb-2">
                 First Name
               </label>
               <input
                 id="firstName"
-                name="firstName"
                 type="text"
-                value={formData.firstName}
-                onChange={handleChange}
+                value={firstName}
+                onChange={(e) => setFirstName(e.target.value)}
                 className="w-full p-2 rounded-md border border-input bg-background"
                 required
               />
             </div>
-            
-            <div className="space-y-2">
-              <label htmlFor="lastName" className="text-sm font-medium">
+
+            <div>
+              <label htmlFor="lastName" className="block text-sm font-medium mb-2">
                 Last Name
               </label>
               <input
                 id="lastName"
-                name="lastName"
                 type="text"
-                value={formData.lastName}
-                onChange={handleChange}
+                value={lastName}
+                onChange={(e) => setLastName(e.target.value)}
                 className="w-full p-2 rounded-md border border-input bg-background"
                 required
               />
             </div>
           </div>
 
-          <div className="space-y-2">
-            <label htmlFor="email" className="text-sm font-medium">
-              Email Address
+          <div>
+            <label htmlFor="email" className="block text-sm font-medium mb-2">
+              Email
             </label>
             <input
               id="email"
-              name="email"
               type="email"
-              value={formData.email}
-              onChange={handleChange}
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
               className="w-full p-2 rounded-md border border-input bg-background"
               required
             />
           </div>
 
-          <div className="space-y-2">
-            <label htmlFor="password" className="text-sm font-medium">
+          <div>
+            <label htmlFor="password" className="block text-sm font-medium mb-2">
               Password
             </label>
             <input
               id="password"
-              name="password"
               type="password"
-              value={formData.password}
-              onChange={handleChange}
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
               className="w-full p-2 rounded-md border border-input bg-background"
               required
             />
           </div>
 
-          <div className="space-y-2">
-            <label htmlFor="confirmPassword" className="text-sm font-medium">
+          <div>
+            <label htmlFor="confirmPassword" className="block text-sm font-medium mb-2">
               Confirm Password
             </label>
             <input
               id="confirmPassword"
-              name="confirmPassword"
               type="password"
-              value={formData.confirmPassword}
-              onChange={handleChange}
+              value={confirmPassword}
+              onChange={(e) => setConfirmPassword(e.target.value)}
               className="w-full p-2 rounded-md border border-input bg-background"
               required
             />
@@ -142,16 +124,16 @@ function SignUp() {
           <button
             type="submit"
             disabled={loading}
-            className="w-full py-2 px-4 bg-primary text-primary-foreground rounded-md hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed"
+            className="w-full py-2 px-4 bg-primary text-primary-foreground rounded-md font-medium disabled:opacity-50"
           >
-            {loading ? 'Creating Account...' : 'Create Account'}
+            {loading ? 'Creating account...' : 'Sign Up'}
           </button>
         </form>
 
-        <div className="text-center text-sm">
+        <div className="mt-6 text-center text-sm">
           <span className="text-muted-foreground">Already have an account? </span>
           <Link to="/signin" className="text-primary hover:underline">
-            Sign In
+            Sign in
           </Link>
         </div>
       </div>
