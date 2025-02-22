@@ -1,6 +1,6 @@
 import { BrowserRouter as Router, Routes, Route} from "react-router-dom";
-import TestingAPI from './TestingAPI';
-import LandingPage from './LandingPage';
+import TestingAPI from './pages/TestingAPI.jsx';
+import LandingPage from './pages/LandingPage.jsx';
 
 function App(){
     return(
