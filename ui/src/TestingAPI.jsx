@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import {Link} from 'react-router-dom';
 import './TestingAPI.css'
 
 function TestingAPI() {
@@ -50,6 +51,9 @@ function TestingAPI() {
     return (
         <div className="container">
             <h1>API Testing Interface</h1>
+            <Link to="/landing-page">
+                <button>Landing Page</button>
+            </Link>
 
             <section className="time-section">
                 <h2>Get Current Time</h2>
