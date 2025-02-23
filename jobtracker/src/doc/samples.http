@@ -1,6 +1,9 @@
+@basic-password = c76bf3d5-e82d-41dd-a703-29e41ea1a23d
+
 ###
 # @name Get current time
 GET http://localhost:8080/time/current
+Authorization: Basic user {{basic-password}}
 
 ###
 #
@@ -13,6 +16,7 @@ Content-Type: application/json
 
 ###
 GET http://localhost:8080/profiles/current
+Authorization: Basic user {{basic-password}}
 
 ###
 GET http://localhost:8080/profiles/2a77f495-3307-4176-be02-421f321afcb4
