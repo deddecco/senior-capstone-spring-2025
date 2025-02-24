@@ -149,6 +149,10 @@ function Home() {
             <button className="px-8 py-3 text-lg font-medium border border-input bg-background hover:bg-accent hover:text-accent-foreground rounded-md">
               Learn More
             </button>
+            {/* New API Testing button */}
+            <Link to="/testingapi" className="px-8 py-3 text-lg font-medium border border-input bg-accent text-accent-foreground hover:bg-accent/90 rounded-md">
+              API Testing
+            </Link>
           </div>
         </div>
 
