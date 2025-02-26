@@ -1,5 +1,5 @@
 @basic-password = 90b799ea-c60b-48fc-8436-7ef1b4cd4e34
-@deddecco-jwt = eyJhbGciOiJIUzI1NiIsImtpZCI6IkpWeEJ2bWx5Tk5XcHpkdU0iLCJ0eXAiOiJKV1QifQ.eyJpc3MiOiJodHRwczovL25ldXVydWR2cW91emVmaHZ1Z3p0LnN1cGFiYXNlLmNvL2F1dGgvdjEiLCJzdWIiOiJkMjQzNjkxNC1mYzE1LTQ0Y2QtOTJlZi0yZWYxODc4NjdmZTQiLCJhdWQiOiJhdXRoZW50aWNhdGVkIiwiZXhwIjoxNzQwNTM0MjAwLCJpYXQiOjE3NDA1MzA2MDAsImVtYWlsIjoic3BvbmdlYm9iQG1haWxpbmF0b3IuY29tIiwicGhvbmUiOiIiLCJhcHBfbWV0YWRhdGEiOnsicHJvdmlkZXIiOiJlbWFpbCIsInByb3ZpZGVycyI6WyJlbWFpbCJdfSwidXNlcl9tZXRhZGF0YSI6eyJlbWFpbF92ZXJpZmllZCI6dHJ1ZX0sInJvbGUiOiJhdXRoZW50aWNhdGVkIiwiYWFsIjoiYWFsMSIsImFtciI6W3sibWV0aG9kIjoicGFzc3dvcmQiLCJ0aW1lc3RhbXAiOjE3NDA1MzA2MDB9XSwic2Vzc2lvbl9pZCI6IjgxZWFhNTkwLTEyMjEtNGJhNy05M2JjLTFhMzU5YjAyZmYxNyIsImlzX2Fub255bW91cyI6ZmFsc2V9.EGVF_mXrXKGgOoeQUxezf-bk6ptlfcctOitv9gxwbGs
+@deddecco-jwt = eyJhbGciOiJIUzI1NiIsImtpZCI6IkpWeEJ2bWx5Tk5XcHpkdU0iLCJ0eXAiOiJKV1QifQ.eyJpc3MiOiJodHRwczovL25ldXVydWR2cW91emVmaHZ1Z3p0LnN1cGFiYXNlLmNvL2F1dGgvdjEiLCJzdWIiOiIzZWQ0ODRhZC03YmFjLTQ5MDYtYjU2Yy05OTRiMzI1ODY1ZjIiLCJhdWQiOiJhdXRoZW50aWNhdGVkIiwiZXhwIjoxNzQwNjA5ODY0LCJpYXQiOjE3NDA2MDYyNjQsImVtYWlsIjoiYW5kcmUucC5kYXNpbHZhLjFAZ21haWwuY29tIiwicGhvbmUiOiIiLCJhcHBfbWV0YWRhdGEiOnsicHJvdmlkZXIiOiJlbWFpbCIsInByb3ZpZGVycyI6WyJlbWFpbCJdfSwidXNlcl9tZXRhZGF0YSI6eyJlbWFpbCI6ImFuZHJlLnAuZGFzaWx2YS4xQGdtYWlsLmNvbSIsImVtYWlsX3ZlcmlmaWVkIjp0cnVlLCJmaXJzdF9uYW1lIjoiQW5kcmUiLCJsYXN0X25hbWUiOiJEYSBTaWx2YSIsInBob25lX3ZlcmlmaWVkIjpmYWxzZSwic3ViIjoiM2VkNDg0YWQtN2JhYy00OTA2LWI1NmMtOTk0YjMyNTg2NWYyIn0sInJvbGUiOiJhdXRoZW50aWNhdGVkIiwiYWFsIjoiYWFsMSIsImFtciI6W3sibWV0aG9kIjoicGFzc3dvcmQiLCJ0aW1lc3RhbXAiOjE3NDA2MDYyNjR9XSwic2Vzc2lvbl9pZCI6IjllNjMzYjI4LWQwNjktNGQxMS1hNjY2LTZhZjIzN2UxYmZmZSIsImlzX2Fub255bW91cyI6ZmFsc2V9.Zag4mFUFV8AGPMNOQKpW_p_LCXQPshjLl_0cMgzV3FE
 
 ###
 # @name Get current time
@@ -25,7 +25,7 @@ GET http://localhost:8080/profiles/current
 Authorization: Basic user {{basic-password}}
 
 ###
-GET http://localhost:8080/profiles/2a77f495-3307-4176-be02-421f321afcb4
+GET http://localhost:8080/profiles/a8a9af75-f71d-44a0-89c6-6315bfd88407
 Authorization: Bearer {{deddecco-jwt}}
 
 
@@ -65,10 +65,10 @@ PUT http://localhost:8080/profiles/02ba21b1-4432-4267-a5ca-639774679245
 Content-Type: application/json
 
 {
-"user_id": "02ba21b1-4432-4267-a5ca-639774679245",
-"name": "Ellie Smith",
-"email": "ellie@ellie.com",
-"title": "Software Reliability Engineer II",
-"bio": "writing code fueled by coffee since 2017",
-"location": "Remote/US"
+  "user_id": "02ba21b1-4432-4267-a5ca-639774679245",
+  "name": "Ellie Smith",
+  "email": "ellie@ellie.com",
+  "title": "Software Reliability Engineer II",
+  "bio": "writing code fueled by coffee since 2017",
+  "location": "Remote/US"
 }

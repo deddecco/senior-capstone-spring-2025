@@ -4,16 +4,19 @@ import edu.uis.csc478.sp25.jobtracker.model.Profile;
 import edu.uis.csc478.sp25.jobtracker.service.ProfileService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
-import static java.util.UUID.fromString;
 import static org.springframework.http.HttpStatus.*;
 import static org.springframework.http.ResponseEntity.internalServerError;
 import static org.springframework.http.ResponseEntity.ok;
+
 
 @CrossOrigin
 @RestController
@@ -21,7 +24,6 @@ import static org.springframework.http.ResponseEntity.ok;
 public class ProfileController {
      // Example constant ID for the logged-in user
      private final ProfileService service;
-     private static final UUID LOGGED_IN_USER_ID = fromString("02ba21b1-4432-4267-a5ca-639774679244");
 
      public ProfileController(ProfileService service) {
           this.service = service;
@@ -29,6 +31,7 @@ public class ProfileController {
 
      ///////////
      // USER //
+
      /// //////
 
      // Get Current Profile
@@ -36,42 +39,31 @@ public class ProfileController {
      public ResponseEntity<Profile> getCurrentProfile() {
           UUID loggedInId = getLoggedInUserId();
 
-          // todo-- get this from supabase- no more hard-coding
-          // Check if logged-in ID matches the expected constant
-          if (!loggedInId.equals(LOGGED_IN_USER_ID)) {
-               // Forbidden if IDs don't match
-               return new ResponseEntity<>(FORBIDDEN);
-          }
-
-          ResponseEntity<Profile> profileResponse = service.getCurrentProfile();
+          ResponseEntity<Profile> profileResponse = service.getCurrentProfile(loggedInId);
           if (profileResponse.getBody() == null) {
                return new ResponseEntity<>(NOT_FOUND);
           }
           return ok(profileResponse.getBody());
      }
 
+
      // Update Current Profile
      @PutMapping("/current")
      public ResponseEntity<String> updateCurrentProfile(@RequestBody Profile profile) {
           UUID loggedInId = getLoggedInUserId();
 
-          // Check if logged-in ID matches the expected constant
-          if (loggedInId.equals(LOGGED_IN_USER_ID)) {
-               try {
-                    service.updateCurrentProfile(profile);
-                    return ok("Profile updated successfully!");
-               } catch (Exception e) {
-                    return internalServerError().body("Failed to update profile: " + e.getMessage());
-               }
-          } else {
-               return new ResponseEntity<>("You are not authorized to update this profile",
-                       FORBIDDEN);
+          try {
+               service.updateCurrentProfile(loggedInId, profile);
+               return ok("Profile updated successfully!");
+          } catch (Exception e) {
+               return internalServerError().body("Failed to update profile: " + e.getMessage());
           }
-
      }
+
 
      ////////////
      // ADMIN //
+
      /// ////////
 
 // Get Profile By ID (Admin)
@@ -124,7 +116,14 @@ public class ProfileController {
      }
 
      private UUID getLoggedInUserId() {
-          // todo: Replace with actual authentication logic
-          return fromString("02ba21b1-4432-4267-a5ca-639774679244");
+          Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+          if (authentication != null && authentication.getPrincipal() instanceof Jwt jwt) {
+               String userId = jwt.getClaim("user_id");
+               if (userId != null) {
+                    return UUID.fromString(userId);
+               }
+          }
+          throw new RuntimeException("No valid authentication found");
      }
+
 }

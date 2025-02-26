@@ -20,9 +20,9 @@ public class CurrentTimeController {
 
      @GetMapping("current")
      CurrentTimeResponse getCurrentTime(@AuthenticationPrincipal Jwt jwt) {
-          // todo: change this so it gets id not email
+          // todo: change this so it gets id not email -- done
           // todo: then do this in profile controller to get the uuid of the user
-          System.out.println("User: " + jwt.getClaim("email"));
+          System.out.println("user_id of the user is: " + jwt.getClaim("user_id"));
           return service.getCurrentTime();
      }
 

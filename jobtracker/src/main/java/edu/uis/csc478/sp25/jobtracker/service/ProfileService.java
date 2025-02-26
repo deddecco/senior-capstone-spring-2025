@@ -20,10 +20,8 @@ public class ProfileService {
      }
 
      // Get the profile of the currently logged-in user
-     public ResponseEntity<Profile> getCurrentProfile() {
-          // Placeholder for current user ID
-          UUID id = UUID.fromString("02ba21b1-4432-4267-a5ca-639774679244");
-          Optional<Profile> profile = repository.findById(id);
+     public ResponseEntity<Profile> getCurrentProfile(UUID loggedInUserId) {
+          Optional<Profile> profile = repository.findById(loggedInUserId);
 
           if (profile.isPresent()) {
                return new ResponseEntity<>(profile.get(), OK);
@@ -33,10 +31,8 @@ public class ProfileService {
      }
 
      // Update the profile of the currently logged-in user
-     public ResponseEntity<String> updateCurrentProfile(Profile updatedProfile) {
-          // Placeholder for current user ID
-          UUID id = UUID.fromString("02ba21b1-4432-4267-a5ca-639774679244");
-          Optional<Profile> existingProfile = repository.findById(id);
+     public ResponseEntity<String> updateCurrentProfile(UUID loggedInUserId, Profile updatedProfile) {
+          Optional<Profile> existingProfile = repository.findById(loggedInUserId);
 
           if (existingProfile.isPresent()) {
                return applyProfileUpdates(existingProfile.get(), updatedProfile);
