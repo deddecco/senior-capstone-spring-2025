@@ -36,6 +36,7 @@ public class ProfileController {
      public ResponseEntity<Profile> getCurrentProfile() {
           UUID loggedInId = getLoggedInUserId();
 
+          // todo-- get this from supabase- no more hard-coding
           // Check if logged-in ID matches the expected constant
           if (!loggedInId.equals(LOGGED_IN_USER_ID)) {
                // Forbidden if IDs don't match

@@ -27,6 +27,8 @@ public class JobController {
 
      /// / USER ////
 
+     // todo: write documentation for this api
+
      // GET /jobs
      @GetMapping
      public ResponseEntity<List<Job>> getAllJobs() {
