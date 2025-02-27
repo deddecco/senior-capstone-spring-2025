@@ -5,6 +5,7 @@ import Home from './pages/Home';
 import SignIn from './pages/SignIn';
 import SignUp from './pages/SignUp';
 import TestingAPI from './pages/TestingAPI';
+import Design from './pages/Design';
 import SignUpConfirmation from './pages/SignUpConfirmation';
 import './App.css';
 
@@ -18,6 +19,7 @@ function App() {
           <Route path="/signup" element={<SignUp />} />
           <Route path="/signup-confirmation" element={<SignUpConfirmation />} />
           <Route path="/testingapi" element={<TestingAPI />} />
+          <Route path="/design" element={<Design />} />
         </Routes>
       </Router>
     </AuthProvider>
