@@ -13,6 +13,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
+import static java.util.UUID.*;
 import static org.springframework.http.HttpStatus.*;
 import static org.springframework.http.ResponseEntity.internalServerError;
 import static org.springframework.http.ResponseEntity.ok;
@@ -78,7 +79,7 @@ public class ProfileController {
 
                return new ResponseEntity<>(errorResponse, HttpStatus.NOT_FOUND);
           }
-          return ResponseEntity.ok(profileResponse.getBody());
+          return ok(profileResponse.getBody());
      }
 
 
@@ -120,7 +121,7 @@ public class ProfileController {
           if (authentication != null && authentication.getPrincipal() instanceof Jwt jwt) {
                String userId = jwt.getClaim("user_id");
                if (userId != null) {
-                    return UUID.fromString(userId);
+                    return fromString(userId);
                }
           }
           throw new RuntimeException("No valid authentication found");
