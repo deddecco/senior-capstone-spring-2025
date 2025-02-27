@@ -36,6 +36,7 @@ public class ProfileController {
 
      // Get Current Profile
      @GetMapping("/current")
+     // if the profile cannot be found, return an error, but if the profile can be found, return it
      public ResponseEntity<Profile> getCurrentProfile() {
           UUID loggedInId = getLoggedInUserId();
 
@@ -49,13 +50,20 @@ public class ProfileController {
 
      // Update Current Profile
      @PutMapping("/current")
+     // take in a profile
+     // if the profile attempting to be updated is the profile of the user currently logged in, allow the update
+     // otherwise do not, and throw an exception
      public ResponseEntity<String> updateCurrentProfile(@RequestBody Profile profile) {
-          UUID loggedInId = getLoggedInUserId();
 
+          // determine the UUID of the current user
+          UUID loggedInId = getLoggedInUserId();
+          // if they are updating their own, existing profile, let them through
           try {
                service.updateCurrentProfile(loggedInId, profile);
                return ok("Profile updated successfully!");
-          } catch (Exception e) {
+          }
+          // throw an error otherwise
+          catch (Exception e) {
                return internalServerError().body("Failed to update profile: " + e.getMessage());
           }
      }
@@ -67,9 +75,11 @@ public class ProfileController {
      /// ////////
 
 // Get Profile By ID (Admin)
+     // as an admin, see any profile, by its id
      @GetMapping("/{profileId}")
      public ResponseEntity<Object> getProfileById(@PathVariable UUID profileId) {
           ResponseEntity<Profile> profileResponse = service.getProfileById(profileId);
+          // if the profile with that id doesn't exist, throw an error
           if (profileResponse.getBody() == null) {
                Map<String, Object> errorResponse = new HashMap<>();
                errorResponse.put("status", HttpStatus.NOT_FOUND.value());
@@ -78,6 +88,7 @@ public class ProfileController {
 
                return new ResponseEntity<>(errorResponse, HttpStatus.NOT_FOUND);
           }
+          // if it does exist, let an admin user see it
           return ok(profileResponse.getBody());
      }
 
@@ -86,13 +97,18 @@ public class ProfileController {
      @PutMapping("/{profileId}")
      public ResponseEntity<String> updateProfileById(@PathVariable UUID profileId,
                                                      @RequestBody Profile profile) {
+          // if a certain profile exists, allow an admin to update it
           try {
                if (!service.existsById(profileId)) {
                     return new ResponseEntity<>("Profile not found", NOT_FOUND);
                }
+               // do the update
                service.updateProfileById(profileId, profile);
+               // return an OK status code with this message
                return ok("Profile updated successfully!");
-          } catch (Exception e) {
+          }
+          // if it doesn't exist, throw an error
+          catch (Exception e) {
                return internalServerError().body("Failed to update profile: " + e.getMessage());
           }
      }
@@ -115,14 +131,21 @@ public class ProfileController {
           }
      }
 
+
+     // determine the UUID of the user currently logged in
      private UUID getLoggedInUserId() {
+          // this is from Spring Security
           Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+          // if that object isn't null and is a JWT-- a JSON Web Token
           if (authentication != null && authentication.getPrincipal() instanceof Jwt jwt) {
+               // find the user_id (which is a UUID) inside the JWT
                String userId = jwt.getClaim("user_id");
+               // if there is an id inside the JWT, return it
                if (userId != null) {
                     return fromString(userId);
                }
           }
+          // if there is not, throw an error
           throw new RuntimeException("No valid authentication found");
      }
 

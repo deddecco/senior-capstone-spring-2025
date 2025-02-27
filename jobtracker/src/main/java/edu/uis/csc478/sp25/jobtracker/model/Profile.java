@@ -8,7 +8,7 @@ import java.util.UUID;
 
 @Data
 @Builder
-// the fields in a Profile class correspond to the columns in a profile table
+// the fields in a Profile object correspond to the columns in a profile table
 public class Profile {
      @Id
      public UUID user_id;

@@ -27,8 +27,7 @@ public class JobController {
 
      /// / USER ////
 
-     // todo: write documentation for this api
-
+     // todo: make this user-private
      // GET /jobs
      @GetMapping
      public ResponseEntity<List<Job>> getAllJobs() {
@@ -39,6 +38,7 @@ public class JobController {
 
      // GET /jobs/{id}
      @GetMapping("/{id}")
+     // return a job with a specific id, or throw an error if that ID doesn't exist
      public ResponseEntity<Object> getJobById(@PathVariable UUID id) {
           ResponseEntity<Job> jobResponse = service.getJobById(id);
           if (jobResponse.getBody() != null) {
@@ -53,6 +53,9 @@ public class JobController {
      }
 
      // GET /jobs/search
+     //todo: make this user-private, or public;
+     // Alice should be able to search through all her jobs,
+     // and all public ones, but none of Bob's private ones
      @GetMapping("/search")
      public ResponseEntity<List<Job>> searchJobs(
              // none of these params are required; you can search for a job with any subset of these
@@ -78,10 +81,11 @@ public class JobController {
      /// / ADMIN /////
 
      // POST /jobs
+     // create a new job record if it doesn't exist; and if it does, throw an exception
      @PostMapping
      public ResponseEntity<String> createJob(@RequestBody Job job) {
           try {
-               // Check if the email already exists
+               // Check if the job record already exists
                if (service.existsByUUID(job.getId())) {
                     return new ResponseEntity<>("Job already exists.", CONFLICT);
                }
@@ -94,6 +98,7 @@ public class JobController {
      }
 
      // PUT /jobs/{id}
+     // update an existing job
      @PutMapping("/{id}")
      public ResponseEntity<String> updateJob(@PathVariable UUID id,
                                              @RequestBody Job job) {
@@ -107,6 +112,7 @@ public class JobController {
      }
 
      // DELETE /jobs/{id}
+     // remove a job record, and throw an exception if attempting to remove one that does not exist
      @DeleteMapping("/{id}")
      public ResponseEntity<Void> deleteJob(@PathVariable UUID id) {
           // delete a job if it exists
@@ -119,5 +125,4 @@ public class JobController {
                return status(HttpStatus.INTERNAL_SERVER_ERROR).build();
           }
      }
-
 }

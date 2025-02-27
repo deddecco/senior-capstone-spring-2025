@@ -8,6 +8,7 @@ import java.util.UUID;
 
 @Data
 @Builder
+// the fields in a Job object correspond to the columns of the job table
 public class Job {
      @Id
      public UUID id;

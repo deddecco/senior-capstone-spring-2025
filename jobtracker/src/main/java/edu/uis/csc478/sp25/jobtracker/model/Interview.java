@@ -11,7 +11,7 @@ import java.util.UUID;
 
 @Data
 @Builder
-// the fields in an Interview class correspond to the columns in an interview table
+// the fields in an Interview object correspond to the columns in an interview table
 public class Interview {
      @Id
      public UUID id;

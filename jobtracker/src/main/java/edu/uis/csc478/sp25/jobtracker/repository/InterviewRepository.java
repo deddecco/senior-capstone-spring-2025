@@ -12,6 +12,7 @@ import java.util.List;
 import java.util.UUID;
 
 @Repository
+// Interface for CRUD operations-- calls to this get converted by Spring behind the scenes to SQL statements
 public interface InterviewRepository extends CrudRepository<Interview, UUID> {
 
      @Query("""

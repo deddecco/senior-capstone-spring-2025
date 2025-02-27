@@ -7,7 +7,7 @@ import org.springframework.data.repository.query.Param;
 
 import java.util.List;
 import java.util.UUID;
-
+// Interface for CRUD operations-- calls to this get converted by Spring behind the scenes to SQL statements
 public interface JobRepository extends CrudRepository<Job, UUID> {
 
      @Query("SELECT * FROM job WHERE " +

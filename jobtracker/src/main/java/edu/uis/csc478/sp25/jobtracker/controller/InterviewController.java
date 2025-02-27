@@ -29,6 +29,8 @@ public class InterviewController {
      /// / USER ////
 
      // GET /interviews
+     // todo: make this user-private
+     // see a list of all your interviews
      @GetMapping
      public ResponseEntity<List<Interview>> getAllInterviews() {
           List<Interview> interviews = service.getAllInterviews();
@@ -36,6 +38,7 @@ public class InterviewController {
      }
 
      // GET /interviews/{id}
+     // see the details of one particular interview if it exists; otherwise, throw an error
      @GetMapping("/{id}")
      public ResponseEntity<Object> getInterviewById(@PathVariable UUID id) {
           ResponseEntity<Interview> interviewResponse = service.getInterviewById(id);
@@ -49,6 +52,7 @@ public class InterviewController {
           return new ResponseEntity<>(errorResponse, NOT_FOUND);
      }
 
+     // todo: make this user-private
      // GET /interviews/search
      @GetMapping("/search")
      public ResponseEntity<List<Interview>> searchInterviews(
@@ -64,6 +68,7 @@ public class InterviewController {
      /// / ADMIN /////
 
      // POST /interviews
+     // create a new interview record, as long as it doesn't already exist
      @PostMapping
      public ResponseEntity<String> createInterview(@RequestBody Interview interview) {
           try {
@@ -78,8 +83,10 @@ public class InterviewController {
      }
 
      // PUT /interviews/{id}
+     // update an interview record that alredy exists
      @PutMapping("/{id}")
-     public ResponseEntity<String> updateInterview(@PathVariable UUID id, @RequestBody Interview interview) {
+     public ResponseEntity<String> updateInterview(@PathVariable UUID id,
+                                                   @RequestBody Interview interview) {
           if (!interview.getId().equals(id)) {
                return badRequest().body("The interview ID in the path does not match the ID in the request body.");
           }
@@ -87,6 +94,7 @@ public class InterviewController {
      }
 
      // DELETE /interviews/{id}
+     // delete an existing interview record, or throw an exception if attempting to delete something that doesn't exist
      @DeleteMapping("/{id}")
      public ResponseEntity<Void> deleteInterview(@PathVariable UUID id) {
           try {
