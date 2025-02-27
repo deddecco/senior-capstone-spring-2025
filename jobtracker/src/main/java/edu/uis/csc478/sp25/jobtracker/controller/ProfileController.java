@@ -23,7 +23,6 @@ import static org.springframework.http.ResponseEntity.ok;
 @RestController
 @RequestMapping("/profiles")
 public class ProfileController {
-     // Example constant ID for the logged-in user
      private final ProfileService service;
 
      public ProfileController(ProfileService service) {
