@@ -25,6 +25,7 @@ import static org.springframework.http.ResponseEntity.ok;
 public class ProfileController {
      private final ProfileService service;
 
+     // controller constructors take in service layers
      public ProfileController(ProfileService service) {
           this.service = service;
      }

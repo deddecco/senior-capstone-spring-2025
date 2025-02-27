@@ -22,6 +22,7 @@ public class InterviewController {
 
      private final InterviewService service;
 
+     // controller constructors take in service layers
      public InterviewController(InterviewService service) {
           this.service = service;
      }
@@ -34,6 +35,7 @@ public class InterviewController {
      @GetMapping
      public ResponseEntity<List<Interview>> getAllInterviews() {
           List<Interview> interviews = service.getAllInterviews();
+          // if interviews is not empty, send OK, otherwise send noContent
           return !interviews.isEmpty() ? ok(interviews) : noContent().build();
      }
 
@@ -62,6 +64,7 @@ public class InterviewController {
              @RequestParam(required = false) LocalDate date,
              @RequestParam(required = false) LocalTime time) {
           List<Interview> matchingInterviews = service.searchInterviews(userId, format, round, date, time);
+          // if matchingInterviews isn't empty, send OK, otherwise send noContent
           return !matchingInterviews.isEmpty() ? ok(matchingInterviews) : noContent().build();
      }
 
@@ -83,7 +86,7 @@ public class InterviewController {
      }
 
      // PUT /interviews/{id}
-     // update an interview record that alredy exists
+     // update an interview record that already exists
      @PutMapping("/{id}")
      public ResponseEntity<String> updateInterview(@PathVariable UUID id,
                                                    @RequestBody Interview interview) {
@@ -94,7 +97,8 @@ public class InterviewController {
      }
 
      // DELETE /interviews/{id}
-     // delete an existing interview record, or throw an exception if attempting to delete something that doesn't exist
+     // delete an existing interview record, or throw an exception if attempting
+     // to delete something that doesn't exist
      @DeleteMapping("/{id}")
      public ResponseEntity<Void> deleteInterview(@PathVariable UUID id) {
           try {

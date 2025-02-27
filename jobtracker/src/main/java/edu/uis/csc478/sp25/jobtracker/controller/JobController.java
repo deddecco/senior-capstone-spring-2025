@@ -21,6 +21,7 @@ public class JobController {
 
      private final JobService service;
 
+     // controller constructors take in service layers
      public JobController(JobService service) {
           this.service = service;
      }
