@@ -29,6 +29,11 @@ public class InterviewService {
           return repository.findByUserId(userId);
      }
 
+     /**
+      * @param id     the id of an interview
+      * @param userId the id of the user whose interview records will be fetched
+      * @return a response entity indicating that there are interviews or that there are not
+      */
      // GET /interviews/{id}
      public ResponseEntity<Interview> getInterviewByIdForUser(UUID id, UUID userId) {
           Optional<Interview> interviewOptional = repository.findByIdAndUserId(id, userId);
@@ -42,15 +47,34 @@ public class InterviewService {
      }
 
 
+     /**
+      * @param userId the id of the user the interview is for
+      * @param format the format of the interview-- an optional parameter
+      * @param round the round of the interview-- an optional parameter
+      * @param date the date of the interview-- an optional parameter
+      * @param time the time of the interview -- an optional parameter
+      * @return the interviews that match the filters
+      */
      // GET /interviews/search
-     public List<Interview> searchInterviewsForUser(UUID userId, String format, String round, LocalDate date, LocalTime time) {
+     public List<Interview> searchInterviewsForUser(UUID userId,
+                                                    String format,
+                                                    String round,
+                                                    LocalDate date,
+                                                    LocalTime time) {
           return repository.findByFiltersAndUserId(userId, format, round, date, time);
      }
 
+     /**
+      * @param interview an interview object containing its information, to be put into a sql table with a schema set by the Interview class in the model package
+      * @param userId    the id of the user the interview is for
+      * @return a ResponseEntity with info about whether the insertion was successful or not
+      */
      // POST /interviews
      public ResponseEntity<String> createInterview(Interview interview, UUID userId) {
           if (!existsByUUID(interview.id)) {
-               interview.user_id = userId;
+               if (interview.user_id != userId) {
+                    return new ResponseEntity<>("Cannot create interviews for someone else", FORBIDDEN);
+               }
                repository.save(interview);
                return new ResponseEntity<>("Interview created successfully!", CREATED);
           } else {
@@ -58,11 +82,21 @@ public class InterviewService {
           }
      }
 
+     /**
+      * @param id        the primary key of the interview table, identifying an interview
+      * @param interview an interview object containing the properties of an interview
+      * @param userId    the id of the user for whom the interview is scheduled
+      * @return a ReponseEntity indicating the success or failure of the update
+      */
      // PUT /interviews/{id}
-     public ResponseEntity<String> updateInterviewById(UUID id, Interview interview, UUID userId) {
+     public ResponseEntity<String> updateInterviewById(UUID id,
+                                                       Interview interview,
+                                                       UUID userId) {
           if (repository.existsByIdAndUserId(id, userId)) {
                if (!interview.id.equals(id)) {
                     return badRequest().body("ID mismatch between path and request body.");
+               } else if (!interviewBelongsToUser(id, userId)) {
+                    return new ResponseEntity<>("Cannot update someone else's interview", FORBIDDEN);
                }
                interview.user_id = userId;
                repository.save(interview);
@@ -72,9 +106,18 @@ public class InterviewService {
           }
      }
 
+     /**
+      * @param id     the primary key identifying the interview to be deleted
+      * @param userId the user id to validate that a user is only deleting their own interviews
+      * @return a ResponseEntity with info about the success or failure of deletion
+      */
      // DELETE /interviews/{id}
-     public ResponseEntity<String> deleteInterviewById(UUID id, UUID userId) {
+     public ResponseEntity<String> deleteInterviewById(UUID id,
+                                                       UUID userId) {
           if (repository.existsByIdAndUserId(id, userId)) {
+               if (!interviewBelongsToUser(id, userId)) {
+                    return new ResponseEntity<>("cannot delete someone else's interviews.", FORBIDDEN);
+               }
                repository.deleteById(id);
                return ok("Interview deleted successfully");
           } else {

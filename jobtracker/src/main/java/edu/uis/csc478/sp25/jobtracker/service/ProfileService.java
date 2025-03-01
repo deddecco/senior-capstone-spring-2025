@@ -19,6 +19,10 @@ public class ProfileService {
           this.repository = repository;
      }
 
+     /**
+      * @param loggedInUserId the user id of the user that is logged in, extracted from the validated JWT bearer token they signed in with
+      * @return a RepsponseEntity with a status of whether the profile could or could not be located
+      */
      // Get the profile of the currently logged-in user
      public ResponseEntity<Profile> getCurrentProfile(UUID loggedInUserId) {
           Optional<Profile> profile = repository.findById(loggedInUserId);
@@ -30,8 +34,14 @@ public class ProfileService {
           }
      }
 
+     /**
+      * @param loggedInUserId the user id of the user that is logged in, extracted from the validated JWT bearer token they signed in with
+      * @param updatedProfile the updated profile, with new values to replace old/existing ones
+      * @return a RepsponseEntity with a status of whether the profile could or could not be updated
+      */
      // Update the profile of the currently logged-in user
-     public ResponseEntity<String> updateCurrentProfile(UUID loggedInUserId, Profile updatedProfile) {
+     public ResponseEntity<String> updateCurrentProfile(UUID loggedInUserId,
+                                                        Profile updatedProfile) {
           Optional<Profile> existingProfile = repository.findById(loggedInUserId);
 
           if (existingProfile.isPresent()) {
