@@ -3,6 +3,9 @@ package edu.uis.csc478.sp25.jobtracker.controller;
 import edu.uis.csc478.sp25.jobtracker.model.Interview;
 import edu.uis.csc478.sp25.jobtracker.service.InterviewService;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
@@ -12,7 +15,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
-import static org.springframework.http.HttpStatus.*;
+import static java.util.UUID.fromString;
+import static org.springframework.http.HttpStatus.NOT_FOUND;
 import static org.springframework.http.ResponseEntity.*;
 
 @CrossOrigin
@@ -22,90 +26,81 @@ public class InterviewController {
 
      private final InterviewService service;
 
-     // controller constructors take in service layers
      public InterviewController(InterviewService service) {
           this.service = service;
      }
 
-     /// / USER ////
-
-     // GET /interviews
-     // todo: make this user-private
-     // see a list of all your interviews
      @GetMapping
      public ResponseEntity<List<Interview>> getAllInterviews() {
-          List<Interview> interviews = service.getAllInterviews();
-          // if interviews is not empty, send OK, otherwise send noContent
+          UUID userId = getLoggedInUserId();
+          List<Interview> interviews = service.getAllInterviewsForUser(userId);
           return !interviews.isEmpty() ? ok(interviews) : noContent().build();
      }
 
-     // GET /interviews/{id}
-     // see the details of one particular interview if it exists; otherwise, throw an error
      @GetMapping("/{id}")
      public ResponseEntity<Object> getInterviewById(@PathVariable UUID id) {
-          ResponseEntity<Interview> interviewResponse = service.getInterviewById(id);
-          if (interviewResponse.getBody() != null) {
+          UUID userId = getLoggedInUserId();
+          ResponseEntity<Interview> interviewResponse = service.getInterviewByIdForUser(id, userId);
+          if (interviewResponse.getStatusCode().is2xxSuccessful()) {
                return ok(interviewResponse.getBody());
           }
           Map<String, Object> errorResponse = new HashMap<>();
           errorResponse.put("status", NOT_FOUND.value());
           errorResponse.put("error", "Not Found");
-          errorResponse.put("message", "An interview with ID " + id + " does not exist");
+          errorResponse.put("message", "An interview with ID " + id + " does not exist or you don't have access to it");
           return new ResponseEntity<>(errorResponse, NOT_FOUND);
      }
 
-     // todo: make this user-private
-     // GET /interviews/search
      @GetMapping("/search")
      public ResponseEntity<List<Interview>> searchInterviews(
-             @RequestParam(required = false) UUID userId,
              @RequestParam(required = false) String format,
              @RequestParam(required = false) String round,
              @RequestParam(required = false) LocalDate date,
              @RequestParam(required = false) LocalTime time) {
-          List<Interview> matchingInterviews = service.searchInterviews(userId, format, round, date, time);
-          // if matchingInterviews isn't empty, send OK, otherwise send noContent
+          UUID userId = getLoggedInUserId();
+          List<Interview> matchingInterviews = service.searchInterviewsForUser(userId, format, round, date, time);
           return !matchingInterviews.isEmpty() ? ok(matchingInterviews) : noContent().build();
      }
 
-     /// / ADMIN /////
-
-     // POST /interviews
-     // create a new interview record, as long as it doesn't already exist
      @PostMapping
      public ResponseEntity<String> createInterview(@RequestBody Interview interview) {
           try {
-               if (service.existsByUUID(interview.getId())) {
-                    return new ResponseEntity<>("Interview already exists.", CONFLICT);
-               }
-               service.createInterview(interview);
-               return new ResponseEntity<>("Interview created successfully!", CREATED);
+               UUID userId = getLoggedInUserId();
+               return service.createInterview(interview, userId);
           } catch (Exception e) {
                return internalServerError().body("Failed to create interview: " + e.getMessage());
           }
      }
 
-     // PUT /interviews/{id}
-     // update an interview record that already exists
      @PutMapping("/{id}")
      public ResponseEntity<String> updateInterview(@PathVariable UUID id,
                                                    @RequestBody Interview interview) {
-          if (!interview.getId().equals(id)) {
+          UUID userId = getLoggedInUserId();
+          if (!interview.id.equals(id)) {
                return badRequest().body("The interview ID in the path does not match the ID in the request body.");
           }
-          return service.updateInterviewById(id, interview);
+          return service.updateInterviewById(id, interview, userId);
      }
 
-     // DELETE /interviews/{id}
-     // delete an existing interview record, or throw an exception if attempting
-     // to delete something that doesn't exist
+
      @DeleteMapping("/{id}")
-     public ResponseEntity<Void> deleteInterview(@PathVariable UUID id) {
+     public ResponseEntity<String> deleteInterview(@PathVariable UUID id) {
           try {
-               service.deleteInterviewById(id);
-               return noContent().build();
+               UUID userId = getLoggedInUserId();
+               return service.deleteInterviewById(id, userId);
           } catch (Exception e) {
-               return status(INTERNAL_SERVER_ERROR).build();
+               return internalServerError().body("Failed to delete interview: " + e.getMessage());
           }
+     }
+
+     private UUID getLoggedInUserId() {
+          Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+          if (authentication != null && authentication.getPrincipal() instanceof Jwt jwt) {
+               String userId = jwt.getClaim("user_id");
+               if (userId != null) {
+                    return fromString(userId);
+               }
+          }
+          throw new RuntimeException("No valid authentication found");
      }
 }

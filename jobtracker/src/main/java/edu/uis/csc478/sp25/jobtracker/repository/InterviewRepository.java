@@ -9,25 +9,34 @@ import org.springframework.stereotype.Repository;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 @Repository
-// Interface for CRUD operations-- calls to this get converted by Spring behind the scenes to SQL statements
 public interface InterviewRepository extends CrudRepository<Interview, UUID> {
 
+     @Query("SELECT * FROM interview WHERE user_id = :userId")
+     List<Interview> findByUserId(@Param("userId") UUID userId);
+
+     @Query("SELECT * FROM interview WHERE id = :id AND user_id = :userId")
+     Optional<Interview> findByIdAndUserId(@Param("id") UUID id, @Param("userId") UUID userId);
+
      @Query("""
-                 SELECT * FROM interview\s
-                 WHERE user_id = :userId\s
-                 AND format = :format\s
-                 AND round = :round\s
-                 AND date = CAST(:date AS DATE)\s
-                 AND time = CAST(:time AS TIME)
-            \s""")
-     List<Interview> findByFilters(
+             SELECT * FROM interview
+             WHERE user_id = :userId
+             AND (:format IS NULL OR format = :format)
+             AND (:round IS NULL OR round = :round)
+             AND (:date IS NULL OR date = CAST(:date AS DATE))
+             AND (:time IS NULL OR time = CAST(:time AS TIME))
+             """)
+     List<Interview> findByFiltersAndUserId(
              @Param("userId") UUID userId,
              @Param("format") String format,
              @Param("round") String round,
              @Param("date") LocalDate date,
              @Param("time") LocalTime time
      );
+
+     @Query("SELECT EXISTS(SELECT 1 FROM interview WHERE id = :id AND user_id = :userId)")
+     boolean existsByIdAndUserId(@Param("id") UUID id, @Param("userId") UUID userId);
 }
