@@ -72,7 +72,7 @@ public class InterviewService {
      // POST /interviews
      public ResponseEntity<String> createInterview(Interview interview, UUID userId) {
           if (!existsByUUID(interview.id)) {
-               if (interview.user_id != userId) {
+               if (!interviewBelongsToUser(interview.id, userId)) {
                     return new ResponseEntity<>("Cannot create interviews for someone else", FORBIDDEN);
                }
                repository.save(interview);
@@ -86,7 +86,7 @@ public class InterviewService {
       * @param id        the primary key of the interview table, identifying an interview
       * @param interview an interview object containing the properties of an interview
       * @param userId    the id of the user for whom the interview is scheduled
-      * @return a ReponseEntity indicating the success or failure of the update
+      * @return a ResponseEntity indicating the success or failure of the update
       */
      // PUT /interviews/{id}
      public ResponseEntity<String> updateInterviewById(UUID id,

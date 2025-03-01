@@ -30,6 +30,9 @@ public class InterviewController {
           this.service = service;
      }
 
+     /**
+      * @return a response entity with either an OK code and a list of all interviews associated wth a user, or noContent if there are none
+      */
      @GetMapping
      public ResponseEntity<List<Interview>> getAllInterviews() {
           UUID userId = getLoggedInUserId();
@@ -37,6 +40,11 @@ public class InterviewController {
           return !interviews.isEmpty() ? ok(interviews) : noContent().build();
      }
 
+
+     /**
+      * @param id to find an interview
+      * @return that interview to be displayed by the frontend
+      */
      @GetMapping("/{id}")
      public ResponseEntity<Object> getInterviewById(@PathVariable UUID id) {
           UUID userId = getLoggedInUserId();
@@ -51,6 +59,13 @@ public class InterviewController {
           return new ResponseEntity<>(errorResponse, NOT_FOUND);
      }
 
+     /**
+      * @param format optional parameter for the search
+      * @param round optional parameter for the search
+      * @param date optional parameter for the search
+      * @param time optional parameter for the search
+      * @return all the interviews that match any/all the parameters given in teh query
+      */
      @GetMapping("/search")
      public ResponseEntity<List<Interview>> searchInterviews(
              @RequestParam(required = false) String format,
@@ -62,6 +77,10 @@ public class InterviewController {
           return !matchingInterviews.isEmpty() ? ok(matchingInterviews) : noContent().build();
      }
 
+     /**
+      * @param interview an interview
+      * @return either that an interview was created, or an error explaining why not
+      */
      @PostMapping
      public ResponseEntity<String> createInterview(@RequestBody Interview interview) {
           try {
@@ -72,6 +91,11 @@ public class InterviewController {
           }
      }
 
+     /**
+      * @param id of an interview
+      * @param interview replacement values for the fields of that interview-- do not change ids
+      * @return either that the interview was updated, or an error explaining why not
+      */
      @PutMapping("/{id}")
      public ResponseEntity<String> updateInterview(@PathVariable UUID id,
                                                    @RequestBody Interview interview) {
@@ -83,6 +107,10 @@ public class InterviewController {
      }
 
 
+     /**
+      * @param id of the interview to be deleted
+      * @return either that the interview was deleted, or an error explaining why not
+      */
      @DeleteMapping("/{id}")
      public ResponseEntity<String> deleteInterview(@PathVariable UUID id) {
           try {
@@ -93,6 +121,9 @@ public class InterviewController {
           }
      }
 
+     /**
+      * @return the uuid of the user currently logged in, from the JWT Bearer token they authenticated with
+      */
      private UUID getLoggedInUserId() {
           Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
           if (authentication != null && authentication.getPrincipal() instanceof Jwt jwt) {
