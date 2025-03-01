@@ -32,9 +32,15 @@ public class InterviewService {
      // GET /interviews/{id}
      public ResponseEntity<Interview> getInterviewByIdForUser(UUID id, UUID userId) {
           Optional<Interview> interviewOptional = repository.findByIdAndUserId(id, userId);
-          return interviewOptional.map(ResponseEntity::ok)
-                  .orElseGet(() -> ResponseEntity.notFound().build());
+
+          if (interviewOptional.isPresent()) {
+               Interview interview = interviewOptional.get();
+               return ResponseEntity.ok(interview);
+          } else {
+               return ResponseEntity.notFound().build();
+          }
      }
+
 
      // GET /interviews/search
      public List<Interview> searchInterviewsForUser(UUID userId, String format, String round, LocalDate date, LocalTime time) {
