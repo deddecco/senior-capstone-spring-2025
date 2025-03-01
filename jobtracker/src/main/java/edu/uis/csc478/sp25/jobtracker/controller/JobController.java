@@ -4,6 +4,9 @@ import edu.uis.csc478.sp25.jobtracker.model.Job;
 import edu.uis.csc478.sp25.jobtracker.service.JobService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
@@ -11,8 +14,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
-import static org.springframework.http.HttpStatus.*;
-import static org.springframework.http.ResponseEntity.*;
+import static java.util.UUID.fromString;
+import static org.springframework.http.HttpStatus.NOT_FOUND;
+import static org.springframework.http.ResponseEntity.noContent;
+import static org.springframework.http.ResponseEntity.ok;
 
 @CrossOrigin
 @RestController
@@ -21,109 +26,100 @@ public class JobController {
 
      private final JobService service;
 
-     // controller constructors take in service layers
      public JobController(JobService service) {
           this.service = service;
      }
 
-     /// / USER ////
-
-     // todo: make this user-private
-     // GET /jobs
      @GetMapping
      public ResponseEntity<List<Job>> getAllJobs() {
-          List<Job> jobs = service.getAllJobs();
-          boolean matchingJobsExist = !jobs.isEmpty();
-          return matchingJobsExist ? ok(jobs) : noContent().build();
+          UUID userId = getLoggedInUserId();
+          List<Job> userJobs = service.getAllJobsForUser(userId);
+          return !userJobs.isEmpty() ? ok(userJobs) : noContent().build();
      }
 
-     // GET /jobs/{id}
      @GetMapping("/{id}")
-     // return a job with a specific id, or throw an error if that ID doesn't exist
      public ResponseEntity<Object> getJobById(@PathVariable UUID id) {
-          ResponseEntity<Job> jobResponse = service.getJobById(id);
-          if (jobResponse.getBody() != null) {
-               return ok(jobResponse.getBody());
+          UUID userId = getLoggedInUserId();
+          ResponseEntity<Job> jobResponse = service.getJobById(id, userId);
+
+          if (jobResponse.getStatusCode() == HttpStatus.OK && jobResponse.getBody() != null) {
+               return ResponseEntity.ok(jobResponse.getBody());
           }
+
           Map<String, Object> errorResponse = new HashMap<>();
           errorResponse.put("status", NOT_FOUND.value());
           errorResponse.put("error", "Not Found");
-          errorResponse.put("message", "A job with ID " + id + " does not exist");
+          errorResponse.put("message", "A job with ID " + id + " does not exist or you don't have permission to view it");
 
           return new ResponseEntity<>(errorResponse, NOT_FOUND);
      }
 
-     // GET /jobs/search
-     //todo: make this user-private, or public;
-     // Alice should be able to search through all her jobs,
-     // and all public ones, but none of Bob's private ones
      @GetMapping("/search")
      public ResponseEntity<List<Job>> searchJobs(
-             // none of these params are required; you can search for a job with any subset of these
              @RequestParam(required = false) String title,
              @RequestParam(required = false) String level,
              @RequestParam(required = false) Integer minSalary,
              @RequestParam(required = false) Integer maxSalary,
              @RequestParam(required = false) String location) {
-          List<Job> matchingJobs = service.searchJobs(title,
+
+          UUID userId = getLoggedInUserId();
+
+          List<Job> matchingJobs = service.searchJobs(
+                  userId,
+                  title,
                   level,
                   minSalary,
                   maxSalary,
-                  location);
+                  location
+          );
 
-          // the request was successful but found no matches
-          if (matchingJobs.isEmpty()) {
-               return noContent().build();
-          }
-          // the request was successful and found matches
-          return ok(matchingJobs);
+          return !matchingJobs.isEmpty() ? ok(matchingJobs) : noContent().build();
      }
 
-     /// / ADMIN /////
-
-     // POST /jobs
-     // create a new job record if it doesn't exist; and if it does, throw an exception
      @PostMapping
      public ResponseEntity<String> createJob(@RequestBody Job job) {
           try {
-               // Check if the job record already exists
-               if (service.existsByUUID(job.getId())) {
-                    return new ResponseEntity<>("Job already exists.", CONFLICT);
-               }
-               service.createJob(job);
-               // Use CREATED status for creation
-               return new ResponseEntity<>("Job created successfully!", CREATED);
+               UUID userId = getLoggedInUserId();
+               job.user_id = userId;
+               return service.createJob(job, userId);
           } catch (Exception e) {
-               return internalServerError().body("Failed to create job: " + e.getMessage());
+               return ResponseEntity.internalServerError().body("Failed to create job: " + e.getMessage());
           }
      }
 
-     // PUT /jobs/{id}
-     // update an existing job
      @PutMapping("/{id}")
-     public ResponseEntity<String> updateJob(@PathVariable UUID id,
-                                             @RequestBody Job job) {
-          // if the job id in the path and request do not match, then the request should not go through
-          // because those two things deal with different jobs, and using one to update the other would be a mistake
-          if (!job.getId().equals(id)) {
-               return badRequest().body("The job ID in the path does not match the ID in the request body.");
+     public ResponseEntity<String> updateJob(@PathVariable UUID id, @RequestBody Job job) {
+          UUID userId = getLoggedInUserId();
+
+          if (job.id.equals(id)) {
+               if (userId.equals(job.user_id)) {
+                    return service.updateJobById(id, job, userId);
+               }
+               return ResponseEntity.status(HttpStatus.FORBIDDEN).body("You don't have permission to update this job.");
+          } else {
+               return ResponseEntity.badRequest().body("The job ID in the path does not match the ID in the request body.");
           }
 
-          return service.updateJobById(id, job);
      }
 
-     // DELETE /jobs/{id}
-     // remove a job record, and throw an exception if attempting to remove one that does not exist
      @DeleteMapping("/{id}")
-     public ResponseEntity<Void> deleteJob(@PathVariable UUID id) {
-          // delete a job if it exists
+     public ResponseEntity<String> deleteJob(@PathVariable UUID id) {
           try {
-               service.deleteJob(id);
-               return noContent().build();
+               UUID userId = getLoggedInUserId();
+               return service.deleteJob(id, userId);
+          } catch (Exception e) {
+               return ResponseEntity.internalServerError().body("Failed to delete job: " + e.getMessage());
           }
-          // do not allow the deletion of a job that does not exist
-          catch (Exception e) {
-               return status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+     }
+
+     private UUID getLoggedInUserId() {
+          Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+          if (authentication != null && authentication.getPrincipal() instanceof Jwt jwt) {
+               String userId = jwt.getClaim("user_id");
+               if (userId != null) {
+                    return fromString(userId);
+               }
           }
+          throw new RuntimeException("No valid authentication found");
      }
 }

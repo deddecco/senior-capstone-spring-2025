@@ -6,21 +6,32 @@ import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.query.Param;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
-// Interface for CRUD operations-- calls to this get converted by Spring behind the scenes to SQL statements
+
 public interface JobRepository extends CrudRepository<Job, UUID> {
 
-     @Query("SELECT * FROM job WHERE " +
-             "(:title IS NULL OR title LIKE CONCAT('%', :title, '%')) AND " +
-             "(:level IS NULL OR level = :level) AND " +
-             "(:minSalary IS NULL OR min_salary >= :minSalary) AND " +
-             "(:maxSalary IS NULL OR max_salary <= :maxSalary) AND " +
-             "(:location IS NULL OR location LIKE CONCAT('%', :location, '%'))")
+     @Query("""
+                 SELECT * FROM job 
+                 WHERE (:userId IS NULL OR user_id = :userId)
+                 AND (:title IS NULL OR LOWER(title) LIKE LOWER(CONCAT('%', :title, '%')))
+                 AND (:level IS NULL OR LOWER(level) = LOWER(:level))
+                 AND (:minSalary IS NULL OR minsalary >= :minSalary)
+                 AND (:maxSalary IS NULL OR maxsalary <= :maxSalary)
+                 AND (:location IS NULL OR LOWER(location) LIKE LOWER(CONCAT('%', :location, '%')))
+             """)
      List<Job> findByFilters(
+             @Param("userId") UUID userId,
              @Param("title") String title,
              @Param("level") String level,
              @Param("minSalary") Integer minSalary,
              @Param("maxSalary") Integer maxSalary,
              @Param("location") String location
      );
+
+     List<Job> findAllByUser_id(UUID user_id);
+
+     Optional<Job> findByIdAndUser_id(UUID id, UUID userId);
+
+     boolean existsByIdAndUser_id(UUID id, UUID userId);
 }

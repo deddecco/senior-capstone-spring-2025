@@ -20,35 +20,38 @@ public class JobService {
           this.repository = repository;
      }
 
-     public List<Job> getAllJobs() {
-          return (List<Job>) repository.findAll();
+     public List<Job> getAllJobsForUser(UUID userId) {
+          return repository.findAllByUser_id(userId);
      }
 
      /**
       * @param newJob a Job entity
-      * @return a ReponseEntity with a status of either CONFLICT or CREATED
+      * @param userId the ID of the user creating the job
+      * @return a ResponseEntity with a status of either CONFLICT or CREATED
       */
-     // create a new job, assuming one with the same job id does not yet exist
-     public ResponseEntity<String> createJob(Job newJob) {
-          if (existsByUUID(newJob.id)) {
+     public ResponseEntity<String> createJob(Job newJob, UUID userId) {
+          if (newJob.id == null) {
+               newJob.id = UUID.randomUUID();
+          } else if (repository.existsById(newJob.id)) {
                return new ResponseEntity<>("Job already exists.", CONFLICT);
           }
+          newJob.user_id = userId;
           repository.save(newJob);
           return new ResponseEntity<>("Job created successfully.", CREATED);
      }
 
-     // Check if a profile exists by ID
+     // Check if a job exists by ID
      public boolean existsByUUID(UUID jobID) {
           return repository.existsById(jobID);
      }
 
      /**
-      * @param jobID a particular id of a job
-      * @return a ReponseEntity with a status of either OK or NOT FOUND
+      * @param jobID  a particular id of a job
+      * @param userId the ID of the user requesting the job
+      * @return a ResponseEntity with a status of either OK or NOT FOUND
       */
-     // Get a specific profile by ID (Admin)
-     public ResponseEntity<Job> getJobById(UUID jobID) {
-          Optional<Job> job = repository.findById(jobID);
+     public ResponseEntity<Job> getJobById(UUID jobID, UUID userId) {
+          Optional<Job> job = repository.findByIdAndUser_id(jobID, userId);
 
           if (job.isPresent()) {
                return new ResponseEntity<>(job.get(), OK);
@@ -58,67 +61,62 @@ public class JobService {
      }
 
      /**
-      * @param jobID the id of the job to be updated
+      * @param jobID      the id of the job to be updated
       * @param updatedJob the new job details to take the place of the current values
-      *                   for those fields in the job with the given id
-      * @return a ReponseEntity that either signals OK or throws an error
+      * @param userId     the ID of the user updating the job
+      * @return a ResponseEntity that either signals OK or throws an error
       */
-     // Update a specific profile by ID (Admin)
-     public ResponseEntity<String> updateJobById(UUID jobID,
-                                                 Job updatedJob) {
-          ResponseEntity<String> result;
-          Optional<Job> existingJob = repository.findById(jobID);
+     public ResponseEntity<String> updateJobById(UUID jobID, Job updatedJob, UUID userId) {
+          Optional<Job> existingJob = repository.findByIdAndUser_id(jobID, userId);
 
           if (existingJob.isPresent()) {
-               result = applyJobUpdates(existingJob.get(), updatedJob);
+               return applyJobUpdates(existingJob.get(), updatedJob);
           } else {
-               result = new ResponseEntity<>("Job not found. Cannot update job that does not exist", NOT_FOUND);
+               return new ResponseEntity<>("Job not found or you don't have permission to update it.", NOT_FOUND);
           }
-          return result;
      }
 
      /**
       * @param existingJob an existing job
-      * @param updatedJob an updated job
+      * @param updatedJob  an updated job
       * @return a ResponseEntity with a status indicating whether the update happened or not
       */
-     // Utility method to copy properties from the updated job to the existing one
-     private ResponseEntity<String> applyJobUpdates(Job existingJob,
-                                                    Job updatedJob) {
-          // Exclude 'id' to prevent overwriting
-          copyProperties(updatedJob, existingJob, "id");
+     private ResponseEntity<String> applyJobUpdates(Job existingJob, Job updatedJob) {
+          // Exclude 'id' and 'user_id' to prevent overwriting
+          copyProperties(updatedJob, existingJob, "id", "user_id");
           repository.save(existingJob);
           return new ResponseEntity<>("Job updated successfully.", OK);
      }
 
      /**
-      * @param title an optional parameter for job titles
-      * @param level an option parameter for values like "entry level" or "senior" or "director" or others
+      * @param userId    the ID of the user performing the search
+      * @param title     an optional parameter for job titles
+      * @param level     an optional parameter for values like "entry level" or "senior" or "director" or others
       * @param minSalary an optional parameter for the minimum matching salary
       * @param maxSalary an optional parameter for the maximum matching salary
-      * @param location an optional parameter for the location in which the job is advertised
-      * @return the jobs that match the filters applied by the paramteres that were given, or all matching jobs the user can see
+      * @param location  an optional parameter for the location in which the job is advertised
+      * @return the jobs that match the filters applied by the parameters that were given, including the user's jobs and potentially other visible jobs
       */
-     public List<Job> searchJobs(String title,
+     public List<Job> searchJobs(UUID userId,
+                                 String title,
                                  String level,
                                  Integer minSalary,
                                  Integer maxSalary,
                                  String location) {
-          return repository.findByFilters(title, level, minSalary, maxSalary, location);
+          return repository.findByFilters(userId, title, level, minSalary, maxSalary, location);
      }
 
      /**
-      * @param jobId of the job to be deleted
+      * @param jobId  of the job to be deleted
+      * @param userId the ID of the user deleting the job
       * @return a ResponseEntity with a status of the deletion
       */
-     public ResponseEntity<String> deleteJob(UUID jobId) {
-          if (!repository.existsById(jobId)) {
-               return new ResponseEntity<>("Job not found. Cannot delete job that does not exist",
-                       NOT_FOUND);
+     public ResponseEntity<String> deleteJob(UUID jobId, UUID userId) {
+          if (!repository.existsByIdAndUser_id(jobId, userId)) {
+               return new ResponseEntity<>("Job not found or you don't have permission to delete it.", NOT_FOUND);
           }
 
           repository.deleteById(jobId);
           return new ResponseEntity<>("Job deleted successfully.", OK);
      }
-
 }

@@ -18,4 +18,5 @@ public class Job {
      public int maxSalary;
      public String location;
      public String status;
+     public UUID user_id;
 }
