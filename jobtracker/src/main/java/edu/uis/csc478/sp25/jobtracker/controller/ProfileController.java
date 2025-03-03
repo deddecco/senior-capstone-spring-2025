@@ -1,33 +1,31 @@
 package edu.uis.csc478.sp25.jobtracker.controller;
 
 import edu.uis.csc478.sp25.jobtracker.model.Profile;
+import edu.uis.csc478.sp25.jobtracker.auth.UserIdExtractor;
 import edu.uis.csc478.sp25.jobtracker.service.ProfileService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
-import static java.util.UUID.*;
 import static org.springframework.http.HttpStatus.*;
 import static org.springframework.http.ResponseEntity.internalServerError;
 import static org.springframework.http.ResponseEntity.ok;
-
 
 @CrossOrigin
 @RestController
 @RequestMapping("/profiles")
 public class ProfileController {
      private final ProfileService service;
+     private final UserIdExtractor userIdExtractor;
 
      // controller constructors take in service layers
-     public ProfileController(ProfileService service) {
+     public ProfileController(ProfileService service, UserIdExtractor userIdExtractor) {
           this.service = service;
+          this.userIdExtractor = userIdExtractor;
      }
 
      ///////////
@@ -39,7 +37,7 @@ public class ProfileController {
      @GetMapping("/current")
      // if the profile cannot be found, return an error, but if the profile can be found, return it
      public ResponseEntity<Profile> getCurrentProfile() {
-          UUID loggedInId = getLoggedInUserId();
+          UUID loggedInId = userIdExtractor.getLoggedInUserId();
 
           ResponseEntity<Profile> profileResponse = service.getCurrentProfile(loggedInId);
           if (profileResponse.getBody() == null) {
@@ -49,6 +47,10 @@ public class ProfileController {
      }
 
 
+     /**
+      * @param profile a profile to be updated
+      * @return a ResponseEntity with the success or failure of the update
+      */
      // Update Current Profile
      @PutMapping("/current")
      // take in a profile
@@ -57,7 +59,7 @@ public class ProfileController {
      public ResponseEntity<String> updateCurrentProfile(@RequestBody Profile profile) {
 
           // determine the UUID of the current user
-          UUID loggedInId = getLoggedInUserId();
+          UUID loggedInId = userIdExtractor.getLoggedInUserId();
           // if they are updating their own, existing profile, let them through
           try {
                service.updateCurrentProfile(loggedInId, profile);
@@ -77,6 +79,10 @@ public class ProfileController {
 
 // Get Profile By ID (Admin)
      // as an admin, see any profile, by its id
+     /**
+      * @param profileId a profile's id
+      * @return a ResponseEntity with the profile, if it exists, so that an admin user can see it
+      */
      @GetMapping("/{profileId}")
      public ResponseEntity<Object> getProfileById(@PathVariable UUID profileId) {
           ResponseEntity<Profile> profileResponse = service.getProfileById(profileId);
@@ -94,6 +100,11 @@ public class ProfileController {
      }
 
 
+     /**
+      * @param profileId the id of a profile to be updated
+      * @param profile the new details
+      * @return a ResponseEntity with the success or failure of the update operation
+      */
      // Update Profile By ID (Admin)
      @PutMapping("/{profileId}")
      public ResponseEntity<String> updateProfileById(@PathVariable UUID profileId,
@@ -114,6 +125,10 @@ public class ProfileController {
           }
      }
 
+     /**
+      * @param profile a new profile
+      * @return a ResponseEntity indicating success or failure of the create operation
+      */
      // Create New Profile (Admin)
      @PostMapping
      public ResponseEntity<String> createProfile(@RequestBody Profile profile) {
@@ -131,26 +146,4 @@ public class ProfileController {
                return internalServerError().body("Failed to create profile: " + e.getMessage());
           }
      }
-
-
-
-     //todo: throw this into another class to remove duplicates
-
-     // determine the UUID of the user currently logged in
-     private UUID getLoggedInUserId() {
-          // this is from Spring Security
-          Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-          // if that object isn't null and is a JWT-- a JSON Web Token
-          if (authentication != null && authentication.getPrincipal() instanceof Jwt jwt) {
-               // find the user_id (which is a UUID) inside the JWT
-               String userId = jwt.getClaim("user_id");
-               // if there is an id inside the JWT, return it
-               if (userId != null) {
-                    return fromString(userId);
-               }
-          }
-          // if there is not, throw an error
-          throw new RuntimeException("No valid authentication found");
-     }
-
 }

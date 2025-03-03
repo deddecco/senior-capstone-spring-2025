@@ -34,4 +34,13 @@ public interface JobRepository extends CrudRepository<Job, UUID> {
      Optional<Job> findByIdAndUser_id(UUID id, UUID userId);
 
      boolean existsByIdAndUser_id(UUID id, UUID userId);
+
+     @Query("""
+             SELECT status, COUNT(*) as count
+             FROM job
+             WHERE user_id = :userId
+             GROUP BY status
+             """)
+     List<Object[]> countJobsByStatus(@Param("userId") UUID userId);
+
 }

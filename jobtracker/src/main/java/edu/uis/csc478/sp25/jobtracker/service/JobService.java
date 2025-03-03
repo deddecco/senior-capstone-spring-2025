@@ -5,9 +5,7 @@ import edu.uis.csc478.sp25.jobtracker.repository.JobRepository;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 
 import static org.springframework.beans.BeanUtils.copyProperties;
 import static org.springframework.http.HttpStatus.*;
@@ -118,5 +116,26 @@ public class JobService {
 
           repository.deleteById(jobId);
           return new ResponseEntity<>("Job deleted successfully.", OK);
+     }
+
+     // todo: start counting how many of each status exist
+     public Map<String, Integer> getJobStatusCounts(UUID userId) {
+          List<Object[]> results = repository.countJobsByStatus(userId);
+          Map<String, Integer> statusCounts = new HashMap<>();
+
+          // Initialize all statuses with 0 count
+          String[] statuses = {"Saved", "Applied", "Screening", "Interview", "Rejected", "Offer", "Hired"};
+          for (String status : statuses) {
+               statusCounts.put(status, 0);
+          }
+
+          // Update counts from the query results
+          for (Object[] result : results) {
+               String status = (String) result[0];
+               Integer count = (Integer) result[1];
+               statusCounts.put(status, count);
+          }
+
+          return statusCounts;
      }
 }
