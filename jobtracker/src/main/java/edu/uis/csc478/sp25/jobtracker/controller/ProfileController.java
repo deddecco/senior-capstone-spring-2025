@@ -133,6 +133,9 @@ public class ProfileController {
      }
 
 
+
+     //todo: throw this into another class to remove duplicates
+
      // determine the UUID of the user currently logged in
      private UUID getLoggedInUserId() {
           // this is from Spring Security

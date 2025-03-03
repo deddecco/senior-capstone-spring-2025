@@ -122,4 +122,6 @@ public class JobController {
           }
           throw new RuntimeException("No valid authentication found");
      }
+
+     // todo: start counting how many of each status exist
 }
