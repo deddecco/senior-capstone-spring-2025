@@ -20,7 +20,7 @@
 
 ```text
 /senior-capstone
-  ├── /ui              # React-based UI component
+  ├── /frontend              # React-based UI component
   ├── /service         # Java-based Rest services
   └── /db              # DB/SQL scripts
 ```
