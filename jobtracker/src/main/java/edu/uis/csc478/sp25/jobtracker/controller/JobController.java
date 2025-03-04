@@ -91,6 +91,17 @@ public class JobController {
      }
 
      /**
+      * @return a ResponseEntity with the status-count pairs for the user
+      */
+     @GetMapping("/status-counts")
+     public ResponseEntity<Map<String, Integer>> getJobStatusCounts() {
+          UUID userId = userIdExtractor.getLoggedInUserId();
+          Map<String, Integer> statusCounts = service.getJobStatusCounts(userId);
+          return ResponseEntity.ok(statusCounts);
+     }
+
+
+     /**
       * @param job a job object with its properties specified
       * @return a ResponseEntity indicating success or failure of the creation
       */
