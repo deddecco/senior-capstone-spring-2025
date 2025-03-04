@@ -18,7 +18,7 @@ function SignIn() {
     try {
       const { error } = await signIn(email, password);
       if (error) throw error;
-      navigate('/');
+      navigate('/dashboard');
     } catch (err) {
       setError(err.message || 'Failed to sign in');
     } finally {
