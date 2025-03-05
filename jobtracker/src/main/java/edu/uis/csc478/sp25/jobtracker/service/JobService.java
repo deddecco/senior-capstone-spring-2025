@@ -19,7 +19,7 @@ public class JobService {
      }
 
      public List<Job> getAllJobsForUser(UUID userId) {
-          return repository.findAllByUser_id(userId);
+          return repository.findAllByUserId(userId);
      }
 
      /**
@@ -33,7 +33,7 @@ public class JobService {
           } else if (repository.existsById(newJob.id)) {
                return new ResponseEntity<>("Job already exists.", CONFLICT);
           }
-          newJob.user_id = userId;
+          newJob.userId = userId;
           repository.save(newJob);
           return new ResponseEntity<>("Job created successfully.", CREATED);
      }
@@ -49,7 +49,7 @@ public class JobService {
       * @return a ResponseEntity with a status of either OK or NOT FOUND
       */
      public ResponseEntity<Job> getJobById(UUID jobID, UUID userId) {
-          Optional<Job> job = repository.findByIdAndUser_id(jobID, userId);
+          Optional<Job> job = repository.findByIdAndUserId(jobID, userId);
 
           if (job.isPresent()) {
                return new ResponseEntity<>(job.get(), OK);
@@ -65,7 +65,7 @@ public class JobService {
       * @return a ResponseEntity that either signals OK or throws an error
       */
      public ResponseEntity<String> updateJobById(UUID jobID, Job updatedJob, UUID userId) {
-          Optional<Job> existingJob = repository.findByIdAndUser_id(jobID, userId);
+          Optional<Job> existingJob = repository.findByIdAndUserId(jobID, userId);
 
           if (existingJob.isPresent()) {
                return applyJobUpdates(existingJob.get(), updatedJob);
@@ -80,8 +80,7 @@ public class JobService {
       * @return a ResponseEntity with a status indicating whether the update happened or not
       */
      private ResponseEntity<String> applyJobUpdates(Job existingJob, Job updatedJob) {
-          // Exclude 'id' and 'user_id' to prevent overwriting
-          copyProperties(updatedJob, existingJob, "id", "user_id");
+          copyProperties(updatedJob, existingJob, "id", "userId");
           repository.save(existingJob);
           return new ResponseEntity<>("Job updated successfully.", OK);
      }
@@ -110,7 +109,7 @@ public class JobService {
       * @return a ResponseEntity with a status of the deletion
       */
      public ResponseEntity<String> deleteJob(UUID jobId, UUID userId) {
-          if (!repository.existsByIdAndUser_id(jobId, userId)) {
+          if (!repository.existsByIdAndUserId(jobId, userId)) {
                return new ResponseEntity<>("Job not found or you don't have permission to delete it.", NOT_FOUND);
           }
 
@@ -118,7 +117,6 @@ public class JobService {
           return new ResponseEntity<>("Job deleted successfully.", OK);
      }
 
-     // todo: start counting how many of each status exist
      public Map<String, Integer> getJobStatusCounts(UUID userId) {
           List<Object[]> results = repository.countJobsByStatus(userId);
           Map<String, Integer> statusCounts = new HashMap<>();
@@ -132,7 +130,7 @@ public class JobService {
           // Update counts from the query results
           for (Object[] result : results) {
                String status = (String) result[0];
-               Integer count = (Integer) result[1];
+               Integer count = ((Number) result[1]).intValue();
                statusCounts.put(status, count);
           }
 

@@ -1,7 +1,7 @@
 package edu.uis.csc478.sp25.jobtracker.controller;
 
-import edu.uis.csc478.sp25.jobtracker.model.Job;
 import edu.uis.csc478.sp25.jobtracker.auth.UserIdExtractor;
+import edu.uis.csc478.sp25.jobtracker.model.Job;
 import edu.uis.csc478.sp25.jobtracker.service.JobService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -61,11 +61,11 @@ public class JobController {
      }
 
      /**
-      * @param title optional search parameter
-      * @param level optional search parameter
+      * @param title     optional search parameter
+      * @param level     optional search parameter
       * @param minSalary optional search parameter
       * @param maxSalary optional search parameter
-      * @param location optional search parameter
+      * @param location  optional search parameter
       * @return the jobs that match the provided parameters, or all matching jobs if none specified
       */
      @GetMapping("/search")
@@ -109,7 +109,7 @@ public class JobController {
      public ResponseEntity<String> createJob(@RequestBody Job job) {
           try {
                UUID userId = userIdExtractor.getLoggedInUserId();
-               job.user_id = userId;
+               job.userId = userId;
                return service.createJob(job, userId);
           } catch (Exception e) {
                return ResponseEntity.internalServerError().body("Failed to create job: " + e.getMessage());
@@ -117,7 +117,7 @@ public class JobController {
      }
 
      /**
-      * @param id the id of the job to be updated
+      * @param id  the id of the job to be updated
       * @param job the new details
       * @return a ResponseEntity indicating success or failure of the update
       */
@@ -127,7 +127,7 @@ public class JobController {
           UUID userId = userIdExtractor.getLoggedInUserId();
 
           if (job.id.equals(id)) {
-               if (userId.equals(job.user_id)) {
+               if (userId.equals(job.userId)) {
                     return service.updateJobById(id, job, userId);
                }
                return ResponseEntity.status(HttpStatus.FORBIDDEN).body("You don't have permission to update this job.");
