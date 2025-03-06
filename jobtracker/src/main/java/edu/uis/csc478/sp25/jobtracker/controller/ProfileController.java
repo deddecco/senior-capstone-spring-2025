@@ -1,7 +1,6 @@
 package edu.uis.csc478.sp25.jobtracker.controller;
 
 import edu.uis.csc478.sp25.jobtracker.model.Profile;
-import edu.uis.csc478.sp25.jobtracker.auth.UserIdExtractor;
 import edu.uis.csc478.sp25.jobtracker.service.ProfileService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -20,12 +19,10 @@ import static org.springframework.http.ResponseEntity.ok;
 @RequestMapping("/profiles")
 public class ProfileController {
      private final ProfileService service;
-     private final UserIdExtractor userIdExtractor;
 
      // controller constructors take in service layers
-     public ProfileController(ProfileService service, UserIdExtractor userIdExtractor) {
+     public ProfileController(ProfileService service) {
           this.service = service;
-          this.userIdExtractor = userIdExtractor;
      }
 
      ///////////
@@ -37,7 +34,7 @@ public class ProfileController {
      @GetMapping("/current")
      // if the profile cannot be found, return an error, but if the profile can be found, return it
      public ResponseEntity<Profile> getCurrentProfile() {
-          UUID loggedInId = userIdExtractor.getLoggedInUserId();
+          UUID loggedInId = service.getLoggedInUserId();
 
           ResponseEntity<Profile> profileResponse = service.getCurrentProfile(loggedInId);
           if (profileResponse.getBody() == null) {
@@ -59,7 +56,7 @@ public class ProfileController {
      public ResponseEntity<String> updateCurrentProfile(@RequestBody Profile profile) {
 
           // determine the UUID of the current user
-          UUID loggedInId = userIdExtractor.getLoggedInUserId();
+          UUID loggedInId = service.getLoggedInUserId();
           // if they are updating their own, existing profile, let them through
           try {
                service.updateCurrentProfile(loggedInId, profile);
@@ -79,6 +76,7 @@ public class ProfileController {
 
 // Get Profile By ID (Admin)
      // as an admin, see any profile, by its id
+
      /**
       * @param profileId a profile's id
       * @return a ResponseEntity with the profile, if it exists, so that an admin user can see it
@@ -102,7 +100,7 @@ public class ProfileController {
 
      /**
       * @param profileId the id of a profile to be updated
-      * @param profile the new details
+      * @param profile   the new details
       * @return a ResponseEntity with the success or failure of the update operation
       */
      // Update Profile By ID (Admin)

@@ -3,6 +3,9 @@ package edu.uis.csc478.sp25.jobtracker.service;
 import edu.uis.csc478.sp25.jobtracker.model.Interview;
 import edu.uis.csc478.sp25.jobtracker.repository.InterviewRepository;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -133,5 +136,16 @@ public class InterviewService {
      // Helper method to check if an interview belongs to a user
      public boolean interviewBelongsToUser(UUID id, UUID userId) {
           return repository.existsByIdAndUserId(id, userId);
+     }
+
+     public UUID getLoggedInUserId() {
+          Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+          if (authentication != null && authentication.getPrincipal() instanceof Jwt jwt) {
+               String userId = jwt.getClaim("user_id");
+               if (userId != null) {
+                    return UUID.fromString(userId);
+               }
+          }
+          throw new RuntimeException("No valid authentication found");
      }
 }

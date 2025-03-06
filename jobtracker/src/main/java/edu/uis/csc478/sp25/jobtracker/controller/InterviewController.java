@@ -1,7 +1,6 @@
 package edu.uis.csc478.sp25.jobtracker.controller;
 
 import edu.uis.csc478.sp25.jobtracker.model.Interview;
-import edu.uis.csc478.sp25.jobtracker.auth.UserIdExtractor;
 import edu.uis.csc478.sp25.jobtracker.service.InterviewService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -22,11 +21,9 @@ import static org.springframework.http.ResponseEntity.*;
 public class InterviewController {
 
      private final InterviewService service;
-     private final UserIdExtractor userIdExtractor;
 
-     public InterviewController(InterviewService service, UserIdExtractor userIdExtractor) {
+     public InterviewController(InterviewService service) {
           this.service = service;
-          this.userIdExtractor = userIdExtractor;
      }
 
      /**
@@ -34,7 +31,7 @@ public class InterviewController {
       */
      @GetMapping
      public ResponseEntity<List<Interview>> getAllInterviews() {
-          UUID userId = userIdExtractor.getLoggedInUserId();
+          UUID userId = service.getLoggedInUserId();
           List<Interview> interviews = service.getAllInterviewsForUser(userId);
           return !interviews.isEmpty() ? ok(interviews) : noContent().build();
      }
@@ -46,7 +43,7 @@ public class InterviewController {
       */
      @GetMapping("/{id}")
      public ResponseEntity<Object> getInterviewById(@PathVariable UUID id) {
-          UUID userId = userIdExtractor.getLoggedInUserId();
+          UUID userId = service.getLoggedInUserId();
           ResponseEntity<Interview> interviewResponse = service.getInterviewByIdForUser(id, userId);
           if (interviewResponse.getStatusCode().is2xxSuccessful()) {
                return ok(interviewResponse.getBody());
@@ -71,7 +68,7 @@ public class InterviewController {
              @RequestParam(required = false) String round,
              @RequestParam(required = false) LocalDate date,
              @RequestParam(required = false) LocalTime time) {
-          UUID userId = userIdExtractor.getLoggedInUserId();
+          UUID userId = service.getLoggedInUserId();
           List<Interview> matchingInterviews = service.searchInterviewsForUser(userId, format, round, date, time);
           return !matchingInterviews.isEmpty() ? ok(matchingInterviews) : noContent().build();
      }
@@ -83,7 +80,7 @@ public class InterviewController {
      @PostMapping
      public ResponseEntity<String> createInterview(@RequestBody Interview interview) {
           try {
-               UUID userId = userIdExtractor.getLoggedInUserId();
+               UUID userId = service.getLoggedInUserId();
                return service.createInterview(interview, userId);
           } catch (Exception e) {
                return internalServerError().body("Failed to create interview: " + e.getMessage());
@@ -98,7 +95,7 @@ public class InterviewController {
      @PutMapping("/{id}")
      public ResponseEntity<String> updateInterview(@PathVariable UUID id,
                                                    @RequestBody Interview interview) {
-          UUID userId = userIdExtractor.getLoggedInUserId();
+          UUID userId = service.getLoggedInUserId();
           if (!interview.id.equals(id)) {
                return badRequest().body("The interview ID in the path does not match the ID in the request body.");
           }
@@ -113,7 +110,7 @@ public class InterviewController {
      @DeleteMapping("/{id}")
      public ResponseEntity<String> deleteInterview(@PathVariable UUID id) {
           try {
-               UUID userId = userIdExtractor.getLoggedInUserId();
+               UUID userId = service.getLoggedInUserId();
                return service.deleteInterviewById(id, userId);
           } catch (Exception e) {
                return internalServerError().body("Failed to delete interview: " + e.getMessage());

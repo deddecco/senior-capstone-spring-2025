@@ -3,6 +3,9 @@ package edu.uis.csc478.sp25.jobtracker.service;
 import edu.uis.csc478.sp25.jobtracker.model.Profile;
 import edu.uis.csc478.sp25.jobtracker.repository.ProfileRepository;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
@@ -21,7 +24,7 @@ public class ProfileService {
 
      /**
       * @param loggedInUserId the user id of the user that is logged in, extracted from the validated JWT bearer token they signed in with
-      * @return a RepsponseEntity with a status of whether the profile could or could not be located
+      * @return a ResponseEntity with a status of whether the profile could or could not be located
       */
      // Get the profile of the currently logged-in user
      public ResponseEntity<Profile> getCurrentProfile(UUID loggedInUserId) {
@@ -37,7 +40,7 @@ public class ProfileService {
      /**
       * @param loggedInUserId the user id of the user that is logged in, extracted from the validated JWT bearer token they signed in with
       * @param updatedProfile the updated profile, with new values to replace old/existing ones
-      * @return a RepsponseEntity with a status of whether the profile could or could not be updated
+      * @return a ResponseEntity with a status of whether the profile could or could not be updated
       */
      // Update the profile of the currently logged-in user
      public ResponseEntity<String> updateCurrentProfile(UUID loggedInUserId,
@@ -98,5 +101,16 @@ public class ProfileService {
           copyProperties(updatedProfile, existingProfile, "id");
           repository.save(existingProfile);
           return new ResponseEntity<>("Profile updated successfully.", OK);
+     }
+
+     public UUID getLoggedInUserId() {
+          Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+          if (authentication != null && authentication.getPrincipal() instanceof Jwt jwt) {
+               String userId = jwt.getClaim("user_id");
+               if (userId != null) {
+                    return UUID.fromString(userId);
+               }
+          }
+          throw new RuntimeException("No valid authentication found");
      }
 }

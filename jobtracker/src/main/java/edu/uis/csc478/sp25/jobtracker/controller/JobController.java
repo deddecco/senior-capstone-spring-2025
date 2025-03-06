@@ -1,6 +1,5 @@
 package edu.uis.csc478.sp25.jobtracker.controller;
 
-import edu.uis.csc478.sp25.jobtracker.auth.UserIdExtractor;
 import edu.uis.csc478.sp25.jobtracker.model.Job;
 import edu.uis.csc478.sp25.jobtracker.service.JobService;
 import org.springframework.http.HttpStatus;
@@ -22,11 +21,9 @@ import static org.springframework.http.ResponseEntity.ok;
 public class JobController {
 
      private final JobService service;
-     private final UserIdExtractor userIdExtractor;
 
-     public JobController(JobService service, UserIdExtractor userIdExtractor) {
+     public JobController(JobService service) {
           this.service = service;
-          this.userIdExtractor = userIdExtractor;
      }
 
      /**
@@ -34,7 +31,7 @@ public class JobController {
       */
      @GetMapping
      public ResponseEntity<List<Job>> getAllJobs() {
-          UUID userId = userIdExtractor.getLoggedInUserId();
+          UUID userId = service.getLoggedInUserId();
           List<Job> userJobs = service.getAllJobsForUser(userId);
           return !userJobs.isEmpty() ? ok(userJobs) : noContent().build();
      }
@@ -45,7 +42,7 @@ public class JobController {
       */
      @GetMapping("/{id}")
      public ResponseEntity<Object> getJobById(@PathVariable UUID id) {
-          UUID userId = userIdExtractor.getLoggedInUserId();
+          UUID userId = service.getLoggedInUserId();
           ResponseEntity<Job> jobResponse = service.getJobById(id, userId);
 
           if (jobResponse.getStatusCode() == HttpStatus.OK && jobResponse.getBody() != null) {
@@ -76,7 +73,7 @@ public class JobController {
              @RequestParam(required = false) Integer maxSalary,
              @RequestParam(required = false) String location) {
 
-          UUID userId = userIdExtractor.getLoggedInUserId();
+          UUID userId = service.getLoggedInUserId();
 
           List<Job> matchingJobs = service.searchJobs(
                   userId,
@@ -95,7 +92,7 @@ public class JobController {
       */
      @GetMapping("/status-counts")
      public ResponseEntity<Map<String, Integer>> getJobStatusCounts() {
-          UUID userId = userIdExtractor.getLoggedInUserId();
+          UUID userId = service.getLoggedInUserId();
           Map<String, Integer> statusCounts = service.getJobStatusCounts(userId);
           return ResponseEntity.ok(statusCounts);
      }
@@ -108,7 +105,7 @@ public class JobController {
      @PostMapping
      public ResponseEntity<String> createJob(@RequestBody Job job) {
           try {
-               UUID userId = userIdExtractor.getLoggedInUserId();
+               UUID userId = service.getLoggedInUserId();
                job.userId = userId;
                return service.createJob(job, userId);
           } catch (Exception e) {
@@ -124,7 +121,7 @@ public class JobController {
      @PutMapping("/{id}")
      public ResponseEntity<String> updateJob(@PathVariable UUID id,
                                              @RequestBody Job job) {
-          UUID userId = userIdExtractor.getLoggedInUserId();
+          UUID userId = service.getLoggedInUserId();
 
           if (job.id.equals(id)) {
                if (userId.equals(job.userId)) {
@@ -143,7 +140,7 @@ public class JobController {
      @DeleteMapping("/{id}")
      public ResponseEntity<String> deleteJob(@PathVariable UUID id) {
           try {
-               UUID userId = userIdExtractor.getLoggedInUserId();
+               UUID userId = service.getLoggedInUserId();
                return service.deleteJob(id, userId);
           } catch (Exception e) {
                return ResponseEntity.internalServerError().body("Failed to delete job: " + e.getMessage());
