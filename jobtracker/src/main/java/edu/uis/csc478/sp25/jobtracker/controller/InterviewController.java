@@ -7,12 +7,13 @@ import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
+import static java.util.Map.of;
 import static org.springframework.http.HttpStatus.NOT_FOUND;
+import static org.springframework.http.HttpStatus.OK;
 import static org.springframework.http.ResponseEntity.*;
 
 @CrossOrigin
@@ -27,15 +28,13 @@ public class InterviewController {
      }
 
      /**
-      * @return a response entity with either an OK code and a list of all interviews associated wth a user, or noContent if there are none
+      * @return a response entity with either an OK code and a list of all interviews associated with a user, or noContent if there are none
       */
      @GetMapping
      public ResponseEntity<List<Interview>> getAllInterviews() {
-          UUID userId = service.getLoggedInUserId();
-          List<Interview> interviews = service.getAllInterviewsForUser(userId);
+          List<Interview> interviews = service.getAllInterviewsForUser();
           return !interviews.isEmpty() ? ok(interviews) : noContent().build();
      }
-
 
      /**
       * @param id to find an interview
@@ -43,24 +42,27 @@ public class InterviewController {
       */
      @GetMapping("/{id}")
      public ResponseEntity<Object> getInterviewById(@PathVariable UUID id) {
-          UUID userId = service.getLoggedInUserId();
-          ResponseEntity<Interview> interviewResponse = service.getInterviewByIdForUser(id, userId);
-          if (interviewResponse.getStatusCode().is2xxSuccessful()) {
+          ResponseEntity<Interview> interviewResponse = service.getInterviewById(id);
+          if (interviewResponse.getStatusCode() == OK && interviewResponse.getBody() != null) {
                return ok(interviewResponse.getBody());
           }
-          Map<String, Object> errorResponse = new HashMap<>();
-          errorResponse.put("status", NOT_FOUND.value());
-          errorResponse.put("error", "Not Found");
-          errorResponse.put("message", "An interview with ID " + id + " does not exist or you don't have access to it");
+
+          Map<String, Object> errorResponse = of(
+                  "status", NOT_FOUND.value(),
+                  "error", "Not Found",
+                  "message", "An interview with ID " + id + " does not exist or you don't have access to it"
+          );
+
           return new ResponseEntity<>(errorResponse, NOT_FOUND);
      }
 
      /**
       * @param format optional parameter for the search
-      * @param round optional parameter for the search
-      * @param date optional parameter for the search
-      * @param time optional parameter for the search
-      * @return all the interviews that match any/all the parameters given in teh query
+      * @param round  optional parameter for the search
+      * @param date   optional parameter for the search
+      * @param time   optional parameter for the search
+      * @return all the interviews that match all the parameters given in the query,
+      * or all the user's interviews if none of the parameters are specified
       */
      @GetMapping("/search")
      public ResponseEntity<List<Interview>> searchInterviews(
@@ -68,8 +70,7 @@ public class InterviewController {
              @RequestParam(required = false) String round,
              @RequestParam(required = false) LocalDate date,
              @RequestParam(required = false) LocalTime time) {
-          UUID userId = service.getLoggedInUserId();
-          List<Interview> matchingInterviews = service.searchInterviewsForUser(userId, format, round, date, time);
+          List<Interview> matchingInterviews = service.searchInterviews(format, round, date, time);
           return !matchingInterviews.isEmpty() ? ok(matchingInterviews) : noContent().build();
      }
 
@@ -80,28 +81,25 @@ public class InterviewController {
      @PostMapping
      public ResponseEntity<String> createInterview(@RequestBody Interview interview) {
           try {
-               UUID userId = service.getLoggedInUserId();
-               return service.createInterview(interview, userId);
+               return service.createInterview(interview);
           } catch (Exception e) {
                return internalServerError().body("Failed to create interview: " + e.getMessage());
           }
      }
 
      /**
-      * @param id of an interview
+      * @param id        of an interview
       * @param interview replacement values for the fields of that interview-- do not change ids
       * @return either that the interview was updated, or an error explaining why not
       */
      @PutMapping("/{id}")
      public ResponseEntity<String> updateInterview(@PathVariable UUID id,
                                                    @RequestBody Interview interview) {
-          UUID userId = service.getLoggedInUserId();
           if (!interview.id.equals(id)) {
                return badRequest().body("The interview ID in the path does not match the ID in the request body.");
           }
-          return service.updateInterviewById(id, interview, userId);
+          return service.updateInterviewById(id, interview);
      }
-
 
      /**
       * @param id of the interview to be deleted
@@ -110,8 +108,7 @@ public class InterviewController {
      @DeleteMapping("/{id}")
      public ResponseEntity<String> deleteInterview(@PathVariable UUID id) {
           try {
-               UUID userId = service.getLoggedInUserId();
-               return service.deleteInterviewById(id, userId);
+               return service.deleteInterviewById(id);
           } catch (Exception e) {
                return internalServerError().body("Failed to delete interview: " + e.getMessage());
           }

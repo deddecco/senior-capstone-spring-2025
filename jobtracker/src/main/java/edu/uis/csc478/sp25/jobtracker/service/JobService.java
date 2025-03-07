@@ -2,10 +2,8 @@ package edu.uis.csc478.sp25.jobtracker.service;
 
 import edu.uis.csc478.sp25.jobtracker.model.Job;
 import edu.uis.csc478.sp25.jobtracker.repository.JobRepository;
+import edu.uis.csc478.sp25.jobtracker.security.SecurityUtil;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
@@ -15,22 +13,28 @@ import static org.springframework.http.HttpStatus.*;
 
 @Service
 public class JobService {
+
      private final JobRepository repository;
 
      public JobService(JobRepository repository) {
           this.repository = repository;
      }
 
-     public List<Job> getAllJobsForUser(UUID userId) {
-          return repository.findAllByUserId(userId);
+     // Helper method to get the logged-in user's ID
+     private UUID getLoggedInUserId() {
+          return SecurityUtil.getLoggedInUserId();
+     }
+
+     public List<Job> getAllJobsForUser() {
+          return repository.findAllByUserId(getLoggedInUserId());
      }
 
      /**
       * @param newJob a Job entity
-      * @param userId the ID of the user creating the job
       * @return a ResponseEntity with a status of either CONFLICT or CREATED
       */
-     public ResponseEntity<String> createJob(Job newJob, UUID userId) {
+     public ResponseEntity<String> createJob(Job newJob) {
+          UUID userId = getLoggedInUserId();
           if (newJob.id == null) {
                newJob.id = UUID.randomUUID();
           } else if (repository.existsById(newJob.id)) {
@@ -47,11 +51,11 @@ public class JobService {
      }
 
      /**
-      * @param jobID  a particular id of a job
-      * @param userId the ID of the user requesting the job
+      * @param jobID a particular id of a job
       * @return a ResponseEntity with a status of either OK or NOT FOUND
       */
-     public ResponseEntity<Job> getJobById(UUID jobID, UUID userId) {
+     public ResponseEntity<Job> getJobById(UUID jobID) {
+          UUID userId = getLoggedInUserId();
           Optional<Job> job = repository.findByIdAndUserId(jobID, userId);
 
           if (job.isPresent()) {
@@ -64,10 +68,10 @@ public class JobService {
      /**
       * @param jobID      the id of the job to be updated
       * @param updatedJob the new job details to take the place of the current values
-      * @param userId     the ID of the user updating the job
       * @return a ResponseEntity that either signals OK or throws an error
       */
-     public ResponseEntity<String> updateJobById(UUID jobID, Job updatedJob, UUID userId) {
+     public ResponseEntity<String> updateJobById(UUID jobID, Job updatedJob) {
+          UUID userId = getLoggedInUserId();
           Optional<Job> existingJob = repository.findByIdAndUserId(jobID, userId);
 
           if (existingJob.isPresent()) {
@@ -89,7 +93,6 @@ public class JobService {
      }
 
      /**
-      * @param userId    the ID of the user performing the search
       * @param title     an optional parameter for job titles
       * @param level     an optional parameter for values like "entry level" or "senior" or "director" or others
       * @param minSalary an optional parameter for the minimum matching salary
@@ -97,21 +100,16 @@ public class JobService {
       * @param location  an optional parameter for the location in which the job is advertised
       * @return the jobs that match the filters applied by the parameters that were given, including the user's jobs and potentially other visible jobs
       */
-     public List<Job> searchJobs(UUID userId,
-                                 String title,
-                                 String level,
-                                 Integer minSalary,
-                                 Integer maxSalary,
-                                 String location) {
-          return repository.findByFilters(userId, title, level, minSalary, maxSalary, location);
+     public List<Job> searchJobs(String title, String level, Integer minSalary, Integer maxSalary, String location) {
+          return repository.findByFilters(getLoggedInUserId(), title, level, minSalary, maxSalary, location);
      }
 
      /**
-      * @param jobId  of the job to be deleted
-      * @param userId the ID of the user deleting the job
+      * @param jobId of the job to be deleted
       * @return a ResponseEntity with a status of the deletion
       */
-     public ResponseEntity<String> deleteJob(UUID jobId, UUID userId) {
+     public ResponseEntity<String> deleteJob(UUID jobId) {
+          UUID userId = getLoggedInUserId();
           if (!repository.existsByIdAndUserId(jobId, userId)) {
                return new ResponseEntity<>("Job not found or you don't have permission to delete it.", NOT_FOUND);
           }
@@ -120,8 +118,8 @@ public class JobService {
           return new ResponseEntity<>("Job deleted successfully.", OK);
      }
 
-     public Map<String, Integer> getJobStatusCounts(UUID userId) {
-          List<Object[]> results = repository.countJobsByStatus(userId);
+     public Map<String, Integer> getJobStatusCounts() {
+          List<Object[]> results = repository.countJobsByStatus(getLoggedInUserId());
           Map<String, Integer> statusCounts = new HashMap<>();
 
           // Initialize all statuses with 0 count
@@ -138,16 +136,5 @@ public class JobService {
           }
 
           return statusCounts;
-     }
-
-     public UUID getLoggedInUserId() {
-          Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-          if (authentication != null && authentication.getPrincipal() instanceof Jwt jwt) {
-               String userId = jwt.getClaim("user_id");
-               if (userId != null) {
-                    return UUID.fromString(userId);
-               }
-          }
-          throw new RuntimeException("No valid authentication found");
      }
 }
