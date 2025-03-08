@@ -12,14 +12,14 @@ import java.util.UUID;
 public interface JobRepository extends CrudRepository<Job, UUID> {
 
      @Query("""
-             SELECT * FROM job 
-             WHERE (:userId IS NULL OR user_id = :userId)
-             AND (:title IS NULL OR LOWER(title) LIKE LOWER(CONCAT('%', :title, '%')))
-             AND (:level IS NULL OR LOWER(level) = LOWER(:level))
-             AND (:minSalary IS NULL OR minsalary >= :minSalary)
-             AND (:maxSalary IS NULL OR maxsalary <= :maxSalary)
-             AND (:location IS NULL OR LOWER(location) LIKE LOWER(CONCAT('%', :location, '%')))
-             """)
+            SELECT * FROM job 
+            WHERE (:userId IS NULL OR user_id = :userId)
+            AND (:title IS NULL OR LOWER(title) LIKE LOWER(CONCAT('%', :title, '%')))
+            AND (:level IS NULL OR LOWER(level) = LOWER(:level))
+            AND (:minSalary IS NULL OR minsalary >= :minSalary)
+            AND (:maxSalary IS NULL OR maxsalary <= :maxSalary)
+            AND (:location IS NULL OR LOWER(location) LIKE LOWER(CONCAT('%', :location, '%')))
+            """)
      List<Job> findByFilters(
              @Param("userId") UUID userId,
              @Param("title") String title,
@@ -29,17 +29,20 @@ public interface JobRepository extends CrudRepository<Job, UUID> {
              @Param("location") String location
      );
 
-     List<Job> findAllByUserId(UUID userId);
+     @Query("SELECT * FROM job WHERE user_id = :userId")
+     List<Job> findAllByUserId(@Param("userId") UUID userId);
 
-     Optional<Job> findByIdAndUserId(UUID id, UUID userId);
+     @Query("SELECT * FROM job WHERE id = :id AND user_id = :userId")
+     Optional<Job> findByIdAndUserId(@Param("id") UUID id, @Param("userId") UUID userId);
 
-     boolean existsByIdAndUserId(UUID id, UUID userId);
+     @Query("SELECT CASE WHEN EXISTS (SELECT 1 FROM job WHERE id = :id AND user_id = :userId) THEN TRUE ELSE FALSE END")
+     boolean existsByIdAndUserId(@Param("id") UUID id, @Param("userId") UUID userId);
 
      @Query("""
-             SELECT status, COUNT(*) as count
-             FROM job
-             WHERE user_id = :userId
-             GROUP BY status
-             """)
+            SELECT status, COUNT(*) as count
+            FROM job
+            WHERE user_id = :userId
+            GROUP BY status
+            """)
      List<Object[]> countJobsByStatus(@Param("userId") UUID userId);
 }

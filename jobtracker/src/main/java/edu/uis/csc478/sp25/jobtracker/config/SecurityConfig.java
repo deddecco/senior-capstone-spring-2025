@@ -15,27 +15,44 @@ import static org.springframework.security.oauth2.jwt.NimbusJwtDecoder.*;
 
 @Configuration
 @EnableWebSecurity
+// DO NOT DELETE THIS FILE
 public class SecurityConfig {
 
+     // injects the value of the 'supabase.jwt.secret' property from the environment variables
+     // secret is used to validate JWTs issued by Supabase.
      @Value("${supabase.jwt.secret}")
      private String jwtSecret;
 
+     /**
+      * configures the security filter chain for the application.
+      * @param http HttpSecurity object to configure security settings
+      * @return configured SecurityFilterChain
+      * @throws Exception if any configuration error occurs
+      */
      @Bean
      public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
           http
                   .authorizeHttpRequests(authorize -> authorize
+                          //  all incoming requests must be authenticated
                           .anyRequest().authenticated()
                   )
                   .oauth2ResourceServer(oauth2 -> oauth2
+                          // configure JWT-based authentication for the OAuth2 resource server
                           .jwt(jwt -> jwt.decoder(jwtDecoder()))
                   );
+          // builds and returns the configured SecurityFilterChain.
           return http.build();
      }
 
+     /**
+      * creates a JwtDecoder to validate incoming JWTs using the secret key
+       * @return a JwtDecoder configured with the secret key
+      */
      @Bean
      public JwtDecoder jwtDecoder() {
-          // Use the JWT secret from Supabase
+          // converts the JWT secret string into a SecretKey object using HMAC-SHA256 algorithm.
           SecretKey key = new SecretKeySpec(jwtSecret.getBytes(), "HmacSHA256");
+          // creates and returns a NimbusJwtDecoder configured with the secret key for verifying JWT signatures.
           return withSecretKey(key).build();
      }
 }

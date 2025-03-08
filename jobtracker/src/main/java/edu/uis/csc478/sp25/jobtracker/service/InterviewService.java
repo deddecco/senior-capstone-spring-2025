@@ -56,7 +56,10 @@ public class InterviewService {
       * @return the interviews that match the filters
       */
      // GET /interviews/search
-     public List<Interview> searchInterviews(String format, String round, LocalDate date, LocalTime time) {
+     public List<Interview> searchInterviews(String format,
+                                             String round,
+                                             LocalDate date,
+                                             LocalTime time) {
           UUID userId = SecurityUtil.getLoggedInUserId();
           return repository.findByFiltersAndUserId(userId, format, round, date, time);
      }
@@ -68,8 +71,10 @@ public class InterviewService {
      // POST /interviews
      public ResponseEntity<String> createInterview(Interview interview) {
           UUID userId = SecurityUtil.getLoggedInUserId();
+          //fixme
           if (!existsByUUID(interview.id)) {
-               interview.user_id = userId; // Set the user ID directly
+               // Set the user ID directly
+               interview.user_id = userId;
                repository.save(interview);
                return new ResponseEntity<>("Interview created successfully!", CREATED);
           } else {

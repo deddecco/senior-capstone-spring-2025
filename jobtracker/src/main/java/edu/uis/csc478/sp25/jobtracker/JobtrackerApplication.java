@@ -7,6 +7,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 public class JobtrackerApplication {
 
      public static void main(String[] args) {
+          // starts the Spring Boot application accepting calls to RESTful API
           SpringApplication.run(JobtrackerApplication.class, args);
      }
 

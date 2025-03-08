@@ -81,11 +81,6 @@ public class ProfileService {
           return new ResponseEntity<>("Profile created successfully.", CREATED);
      }
 
-     // Check if a profile exists by ID
-     public boolean existsById(UUID profileId) {
-          return repository.existsById(profileId);
-     }
-
      // Check if a profile with the same email exists
      public boolean existsByEmail(String email) {
           return repository.existsByEmail(email);

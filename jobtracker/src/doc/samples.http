@@ -1,5 +1,5 @@
 @basic-password = 90b799ea-c60b-48fc-8436-7ef1b4cd4e34
-@deddecco-jwt = eyJhbGciOiJIUzI1NiIsImtpZCI6IkpWeEJ2bWx5Tk5XcHpkdU0iLCJ0eXAiOiJKV1QifQ.eyJpc3MiOiJodHRwczovL25ldXVydWR2cW91emVmaHZ1Z3p0LnN1cGFiYXNlLmNvL2F1dGgvdjEiLCJzdWIiOiIzZWQ0ODRhZC03YmFjLTQ5MDYtYjU2Yy05OTRiMzI1ODY1ZjIiLCJhdWQiOiJhdXRoZW50aWNhdGVkIiwiZXhwIjoxNzQxMjc4MjU3LCJpYXQiOjE3NDEyNzQ2NTcsImVtYWlsIjoiYW5kcmUucC5kYXNpbHZhLjFAZ21haWwuY29tIiwicGhvbmUiOiIiLCJhcHBfbWV0YWRhdGEiOnsicHJvdmlkZXIiOiJlbWFpbCIsInByb3ZpZGVycyI6WyJlbWFpbCJdfSwidXNlcl9tZXRhZGF0YSI6eyJlbWFpbCI6ImFuZHJlLnAuZGFzaWx2YS4xQGdtYWlsLmNvbSIsImVtYWlsX3ZlcmlmaWVkIjp0cnVlLCJmaXJzdF9uYW1lIjoiQW5kcmUiLCJsYXN0X25hbWUiOiJEYSBTaWx2YSIsInBob25lX3ZlcmlmaWVkIjpmYWxzZSwic3ViIjoiM2VkNDg0YWQtN2JhYy00OTA2LWI1NmMtOTk0YjMyNTg2NWYyIn0sInJvbGUiOiJhdXRoZW50aWNhdGVkIiwiYWFsIjoiYWFsMSIsImFtciI6W3sibWV0aG9kIjoicGFzc3dvcmQiLCJ0aW1lc3RhbXAiOjE3NDEyNzQ2NTd9XSwic2Vzc2lvbl9pZCI6ImYwNGFkOWRjLWJmNTgtNDY5Yy05NWYwLWY4ZTk3ZmExMjA2NyIsImlzX2Fub255bW91cyI6ZmFsc2V9.hDcpWarzIEV_w4WLS93FsAvZM0I5nbgS_VtRMX4KOtI
+@deddecco-jwt = eyJhbGciOiJIUzI1NiIsImtpZCI6IkpWeEJ2bWx5Tk5XcHpkdU0iLCJ0eXAiOiJKV1QifQ.eyJpc3MiOiJodHRwczovL25ldXVydWR2cW91emVmaHZ1Z3p0LnN1cGFiYXNlLmNvL2F1dGgvdjEiLCJzdWIiOiIzZWQ0ODRhZC03YmFjLTQ5MDYtYjU2Yy05OTRiMzI1ODY1ZjIiLCJhdWQiOiJhdXRoZW50aWNhdGVkIiwiZXhwIjoxNzQxNDUyMjM3LCJpYXQiOjE3NDE0NDg2MzcsImVtYWlsIjoiYW5kcmUucC5kYXNpbHZhLjFAZ21haWwuY29tIiwicGhvbmUiOiIiLCJhcHBfbWV0YWRhdGEiOnsicHJvdmlkZXIiOiJlbWFpbCIsInByb3ZpZGVycyI6WyJlbWFpbCJdfSwidXNlcl9tZXRhZGF0YSI6eyJlbWFpbCI6ImFuZHJlLnAuZGFzaWx2YS4xQGdtYWlsLmNvbSIsImVtYWlsX3ZlcmlmaWVkIjp0cnVlLCJmaXJzdF9uYW1lIjoiQW5kcmUiLCJsYXN0X25hbWUiOiJEYSBTaWx2YSIsInBob25lX3ZlcmlmaWVkIjpmYWxzZSwic3ViIjoiM2VkNDg0YWQtN2JhYy00OTA2LWI1NmMtOTk0YjMyNTg2NWYyIn0sInJvbGUiOiJhdXRoZW50aWNhdGVkIiwiYWFsIjoiYWFsMSIsImFtciI6W3sibWV0aG9kIjoicGFzc3dvcmQiLCJ0aW1lc3RhbXAiOjE3NDE0NDg2Mzd9XSwic2Vzc2lvbl9pZCI6ImI4YWQzZWYyLWYyYzMtNDlmZi05YjkyLWZlMTIzNmQ5NzZkOSIsImlzX2Fub255bW91cyI6ZmFsc2V9.F35fvxCfqgk7nsazBYy2qIpMJPTfj8A3FIBmR0ywr8k
 
 ###
 # @name Get current time
@@ -36,14 +36,15 @@ Authorization: Bearer {{deddecco-jwt}}
 
 ###
 POST http://localhost:8080/profiles
+Authorization: Bearer {{deddecco-jwt}}
 Content-Type: application/json
 
 {
-  "name": "John Smith",
-  "email": "john.smith@example.com",
-  "currentTitle": "Software Engineer",
-  "bio": "This is John's bio.",
-  "location": "New York, USA"
+  "name": "Ben Wilson",
+  "email": "ben.wilson@example.com",
+  "currentTitle": "Lead Software Engineer",
+  "bio": "This is Ben's bio.",
+  "location": "Los Angeles"
 }
 
 ###
@@ -61,11 +62,13 @@ Authorization: Bearer {{deddecco-jwt}}
 }
 
 ###
-PUT http://localhost:8080/profiles/02ba21b1-4432-4267-a5ca-639774679245
+PUT http://localhost:8080/profiles/02ba21b1-4432-4267-a5ca-639774679244
 Content-Type: application/json
+Authorization: Bearer {{deddecco-jwt}}
+
 
 {
-  "user_id": "02ba21b1-4432-4267-a5ca-639774679245",
+  "user_id": "02ba21b1-4432-4267-a5ca-639774679244",
   "name": "Ellie Smith",
   "email": "ellie@ellie.com",
   "title": "Software Reliability Engineer II",

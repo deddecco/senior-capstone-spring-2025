@@ -37,7 +37,9 @@ public class JobService {
           UUID userId = getLoggedInUserId();
           if (newJob.id == null) {
                newJob.id = UUID.randomUUID();
-          } else if (repository.existsById(newJob.id)) {
+          }
+          //FIXME
+          else if (repository.existsById(newJob.id)) {
                return new ResponseEntity<>("Job already exists.", CONFLICT);
           }
           newJob.userId = userId;
