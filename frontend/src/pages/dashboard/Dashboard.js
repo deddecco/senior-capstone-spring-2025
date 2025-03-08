@@ -1,15 +1,15 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { BarChart, Calendar, Star } from 'lucide-react';
+import { api } from '../../lib/api';
 
 const Dashboard = () => {
-  // Mock data for the dashboard
-  const stats = {
+  const [stats, setStats] = useState({
     totalApplications: 24,
     pendingInterviews: 3,
     savedJobs: 12
-  };
+  });
 
-  const recentActivity = [
+  const [recentActivity, setRecentActivity] = useState([
     {
       company: 'Google',
       position: 'Senior Frontend Developer',
@@ -28,10 +28,141 @@ const Dashboard = () => {
       time: '2 days ago',
       icon: 'star'
     }
-  ];
+  ]);
+
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    fetchDashboardData();
+  }, []);
+
+  const fetchDashboardData = async () => {
+    try {
+      setLoading(true);
+      
+      // Fetch jobs
+      let jobs = [];
+      try {
+        jobs = await api.getJobs();
+      } catch (apiError) {
+        console.error('Backend API error when fetching jobs:', apiError);
+        // Try to get jobs from localStorage
+        const localJobs = localStorage.getItem('jobListings');
+        if (localJobs) {
+          jobs = JSON.parse(localJobs);
+        }
+      }
+      
+      // Fetch interviews
+      let interviews = [];
+      try {
+        interviews = await api.getInterviews();
+      } catch (err) {
+        console.error('Error fetching interviews:', err);
+      }
+      
+      // Calculate stats
+      const totalApplications = jobs.length;
+      const pendingInterviews = interviews.length;
+      const savedJobs = jobs.filter(job => job.status === 'Saved').length;
+      
+      setStats({
+        totalApplications,
+        pendingInterviews,
+        savedJobs
+      });
+      
+      // Create recent activity from jobs and interviews
+      const recentJobs = jobs.slice(0, 3).map(job => ({
+        company: job.company || 'Company',
+        position: job.title,
+        time: job.created_at ? new Date(job.created_at).toLocaleDateString() : job.posted || '2 hours ago',
+        icon: 'email'
+      }));
+      
+      if (recentJobs.length > 0) {
+        setRecentActivity(recentJobs);
+      } else {
+        setRecentActivity([
+          {
+            company: 'Google',
+            position: 'Senior Frontend Developer',
+            time: '2 hours ago',
+            icon: 'email'
+          },
+          {
+            company: 'Microsoft',
+            position: 'Full Stack Engineer',
+            time: 'Yesterday',
+            icon: 'calendar'
+          },
+          {
+            company: 'Amazon',
+            position: 'React Developer',
+            time: '2 days ago',
+            icon: 'star'
+          }
+        ]);
+      }
+      
+      if (jobs.length === 0 && interviews.length === 0) {
+        setError('Backend unavailable - showing local data');
+      } else {
+        setError(null);
+      }
+    } catch (err) {
+      console.error('Error fetching dashboard data:', err);
+      setError('Failed to fetch dashboard data');
+      
+      // Use mock data as fallback
+      setStats({
+        totalApplications: 24,
+        pendingInterviews: 3,
+        savedJobs: 12
+      });
+      
+      setRecentActivity([
+        {
+          company: 'Google',
+          position: 'Senior Frontend Developer',
+          time: '2 hours ago',
+          icon: 'email'
+        },
+        {
+          company: 'Microsoft',
+          position: 'Full Stack Engineer',
+          time: 'Yesterday',
+          icon: 'calendar'
+        },
+        {
+          company: 'Amazon',
+          position: 'React Developer',
+          time: '2 days ago',
+          icon: 'star'
+        }
+      ]);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  if (loading) {
+    return (
+      <div className="text-center py-8">
+        <p className="text-gray-500">Loading dashboard data...</p>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6">
+      {error && (
+        <div className="rounded-md bg-red-50 p-4 text-red-700 mb-4">
+          {error}
+        </div>
+      )}
+      
       <div className="flex items-center justify-between">
         <h1 className="text-3xl font-bold">Dashboard</h1>
         <div className="flex gap-3">
