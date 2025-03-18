@@ -3,17 +3,14 @@ package edu.uis.csc478.sp25.jobtracker.controller;
 import edu.uis.csc478.sp25.jobtracker.model.Job;
 import edu.uis.csc478.sp25.jobtracker.service.JobService;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
-import static java.util.Map.of;
 import static org.springframework.http.HttpStatus.NOT_FOUND;
 import static org.springframework.http.HttpStatus.OK;
-import static org.springframework.http.ResponseEntity.*;
 import static org.springframework.http.ResponseEntity.noContent;
 import static org.springframework.http.ResponseEntity.ok;
 
@@ -42,19 +39,20 @@ public class JobController {
       * @return a ResponseEntity with either the job or an error if it isn't found
       */
      @GetMapping("/{id}")
-     @PreAuthorize("hasRole('ADMIN') or @jobSecurity.checkOwner(#id)")
      public ResponseEntity<Object> getJobById(@PathVariable UUID id) {
           ResponseEntity<Job> jobResponse = service.getJobById(id);
+
           if (jobResponse.getStatusCode() == OK && jobResponse.getBody() != null) {
-               return ok(jobResponse.getBody());
-          } else {
-               Map<String, Object> errorResponse = of(
-                       "status", NOT_FOUND.value(),
-                       "error", "Not Found",
-                       "message", "A job with ID " + id + " does not exist"
-               );
-               return new ResponseEntity<>(errorResponse, NOT_FOUND);
+               return ResponseEntity.ok(jobResponse.getBody());
           }
+
+          Map<String, Object> errorResponse = Map.of(
+                  "status", NOT_FOUND.value(),
+                  "error", "Not Found",
+                  "message", "A job with ID " + id + " does not exist or you don't have permission to view it"
+          );
+
+          return new ResponseEntity<>(errorResponse, NOT_FOUND);
      }
 
      /**
@@ -84,7 +82,7 @@ public class JobController {
      @GetMapping("/status-counts")
      public ResponseEntity<Map<String, Integer>> getJobStatusCounts() {
           Map<String, Integer> statusCounts = service.getJobStatusCounts();
-          return ok(statusCounts);
+          return ResponseEntity.ok(statusCounts);
      }
 
      /**
@@ -96,7 +94,7 @@ public class JobController {
           try {
                return service.createJob(job);
           } catch (Exception e) {
-               return internalServerError().body("Failed to create job: " + e.getMessage());
+               return ResponseEntity.internalServerError().body("Failed to create job: " + e.getMessage());
           }
      }
 
@@ -106,13 +104,13 @@ public class JobController {
       * @return a ResponseEntity indicating success or failure of the update
       */
      @PutMapping("/{id}")
-     @PreAuthorize("hasRole('ADMIN') or @jobSecurity.checkOwner(#id)")
      public ResponseEntity<String> updateJob(@PathVariable UUID id,
                                              @RequestBody Job job) {
-          if (!job.id.equals(id)) {
-               return badRequest().body("The job ID in the path does not match the ID in the request body.");
+          if (job.id.equals(id)) {
+               return service.updateJobById(id, job);
+          } else {
+               return ResponseEntity.badRequest().body("The job ID in the path does not match the ID in the request body.");
           }
-          return service.updateJobById(id, job);
      }
 
      /**
@@ -120,12 +118,11 @@ public class JobController {
       * @return a ResponseEntity indicating success or failure of the deletion of that job
       */
      @DeleteMapping("/{id}")
-     @PreAuthorize("hasRole('ADMIN') or @jobSecurity.checkOwner(#id)")
      public ResponseEntity<String> deleteJob(@PathVariable UUID id) {
           try {
                return service.deleteJob(id);
           } catch (Exception e) {
-               return internalServerError().body("Failed to delete job: " + e.getMessage());
+               return ResponseEntity.internalServerError().body("Failed to delete job: " + e.getMessage());
           }
      }
 }

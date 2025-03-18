@@ -3,13 +3,11 @@ package edu.uis.csc478.sp25.jobtracker.controller;
 import edu.uis.csc478.sp25.jobtracker.model.Profile;
 import edu.uis.csc478.sp25.jobtracker.service.ProfileService;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
 import java.util.UUID;
 
-import static java.util.Map.of;
 import static org.springframework.http.HttpStatus.NOT_FOUND;
 import static org.springframework.http.ResponseEntity.internalServerError;
 import static org.springframework.http.ResponseEntity.ok;
@@ -28,7 +26,8 @@ public class ProfileController {
      // Get Current Profile
      @GetMapping("/current")
      public ResponseEntity<Profile> getCurrentProfile() {
-          return service.getCurrentProfile();
+          ResponseEntity<Profile> profileResponse = service.getCurrentProfile();
+          return profileResponse;
      }
 
      /**
@@ -45,13 +44,12 @@ public class ProfileController {
           }
      }
 
-     // Get Profile By ID (Admin or Owner)
+     // Get Profile By ID (Admin)
      @GetMapping("/{profileId}")
-     @PreAuthorize("hasRole('ADMIN') or @profileSecurity.checkOwner(#profileId)")
      public ResponseEntity<Object> getProfileById(@PathVariable UUID profileId) {
           ResponseEntity<Profile> profileResponse = service.getProfileById(profileId);
           if (profileResponse.getBody() == null) {
-               Map<String, Object> errorResponse = of(
+               Map<String, Object> errorResponse = Map.of(
                        "status", NOT_FOUND.value(),
                        "error", "Not Found",
                        "message", "A profile with ID " + profileId + " does not exist"
@@ -67,11 +65,11 @@ public class ProfileController {
       * @return a ResponseEntity with the success or failure of the update operation
       */
      @PutMapping("/{profileId}")
-     @PreAuthorize("hasRole('ADMIN') or @profileSecurity.checkOwner(#profileId)")
      public ResponseEntity<String> updateProfileById(@PathVariable UUID profileId,
                                                      @RequestBody Profile profile) {
           try {
-               return service.updateProfileById(profileId, profile);
+               ResponseEntity<String> response = service.updateProfileById(profileId, profile);
+               return response;
           } catch (Exception e) {
                return internalServerError().body("Failed to update profile: " + e.getMessage());
           }

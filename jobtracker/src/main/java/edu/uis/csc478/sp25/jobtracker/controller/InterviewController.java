@@ -1,10 +1,8 @@
 package edu.uis.csc478.sp25.jobtracker.controller;
 
 import edu.uis.csc478.sp25.jobtracker.model.Interview;
-import edu.uis.csc478.sp25.jobtracker.security.SecurityUtil;
 import edu.uis.csc478.sp25.jobtracker.service.InterviewService;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
@@ -13,9 +11,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
-import static edu.uis.csc478.sp25.jobtracker.security.SecurityUtil.*;
 import static java.util.Map.of;
 import static org.springframework.http.HttpStatus.NOT_FOUND;
+import static org.springframework.http.HttpStatus.OK;
 import static org.springframework.http.ResponseEntity.*;
 
 @CrossOrigin
@@ -44,27 +42,18 @@ public class InterviewController {
       */
      @GetMapping("/{id}")
      public ResponseEntity<Object> getInterviewById(@PathVariable UUID id) {
-          UUID userId = getLoggedInUserId();
-          Interview interview = service.getInterviewById(id).getBody();
-          if (interview != null) {
-               if (interview.user_id.equals(userId) || hasRole("ADMIN")) {
-                    return ok(interview);
-               } else {
-                    Map<String, Object> errorResponse = of(
-                            "status", NOT_FOUND.value(),
-                            "error", "Not Found",
-                            "message", "An interview with ID " + id + " does not exist or you don't have access to it"
-                    );
-                    return new ResponseEntity<>(errorResponse, NOT_FOUND);
-               }
-          } else {
-               Map<String, Object> errorResponse = of(
-                       "status", NOT_FOUND.value(),
-                       "error", "Not Found",
-                       "message", "An interview with ID " + id + " does not exist"
-               );
-               return new ResponseEntity<>(errorResponse, NOT_FOUND);
+          ResponseEntity<Interview> interviewResponse = service.getInterviewById(id);
+          if (interviewResponse.getStatusCode() == OK && interviewResponse.getBody() != null) {
+               return ok(interviewResponse.getBody());
           }
+
+          Map<String, Object> errorResponse = of(
+                  "status", NOT_FOUND.value(),
+                  "error", "Not Found",
+                  "message", "An interview with ID " + id + " does not exist or you don't have access to it"
+          );
+
+          return new ResponseEntity<>(errorResponse, NOT_FOUND);
      }
 
      /**
@@ -104,7 +93,6 @@ public class InterviewController {
       * @return either that the interview was updated, or an error explaining why not
       */
      @PutMapping("/{id}")
-     @PreAuthorize("hasRole('ADMIN') or @interviewSecurity.checkOwner(#id)")
      public ResponseEntity<String> updateInterview(@PathVariable UUID id,
                                                    @RequestBody Interview interview) {
           if (!interview.id.equals(id)) {
@@ -118,7 +106,6 @@ public class InterviewController {
       * @return either that the interview was deleted, or an error explaining why not
       */
      @DeleteMapping("/{id}")
-     @PreAuthorize("hasRole('ADMIN') or @interviewSecurity.checkOwner(#id)")
      public ResponseEntity<String> deleteInterview(@PathVariable UUID id) {
           try {
                return service.deleteInterviewById(id);

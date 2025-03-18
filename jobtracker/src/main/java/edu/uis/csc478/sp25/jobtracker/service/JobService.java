@@ -8,7 +8,6 @@ import org.springframework.stereotype.Service;
 
 import java.util.*;
 
-import static java.util.UUID.*;
 import static org.springframework.beans.BeanUtils.copyProperties;
 import static org.springframework.http.HttpStatus.*;
 
@@ -36,18 +35,21 @@ public class JobService {
       */
      public ResponseEntity<String> createJob(Job newJob) {
           UUID userId = getLoggedInUserId();
-
-          if (newJob.id != null && repository.existsById(newJob.id)) {
+          if (newJob.id == null) {
+               newJob.id = UUID.randomUUID();
+          }
+          //FIXME
+          else if (repository.existsById(newJob.id)) {
                return new ResponseEntity<>("Job already exists.", CONFLICT);
           }
-
-          if (newJob.id == null) {
-               newJob.id = randomUUID();
-          }
-
           newJob.userId = userId;
           repository.save(newJob);
           return new ResponseEntity<>("Job created successfully.", CREATED);
+     }
+
+     // Check if a job exists by ID
+     public boolean existsByUUID(UUID jobID) {
+          return repository.existsById(jobID);
      }
 
      /**
