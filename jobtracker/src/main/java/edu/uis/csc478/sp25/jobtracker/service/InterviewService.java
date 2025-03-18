@@ -68,17 +68,16 @@ public class InterviewService {
       * @param interview an interview object containing its information, to be put into a sql table with a schema set by the Interview class in the model package
       * @return a ResponseEntity with info about whether the insertion was successful or not
       */
-     // POST /interviews
+// POST /interviews
      public ResponseEntity<String> createInterview(Interview interview) {
-          UUID userId = SecurityUtil.getLoggedInUserId();
-          //fixme
-          if (!existsByUUID(interview.id)) {
-               // Set the user ID directly
-               interview.user_id = userId;
+          // Set the user ID
+          interview.user_id = SecurityUtil.getLoggedInUserId();
+          try {
                repository.save(interview);
                return new ResponseEntity<>("Interview created successfully!", CREATED);
-          } else {
-               return new ResponseEntity<>("Interview already exists.", CONFLICT);
+          } catch (Exception e) {
+               // Handle any exceptions that occur during saving, such as database errors
+               return new ResponseEntity<>("Failed to create interview: " + e.getMessage(), INTERNAL_SERVER_ERROR);
           }
      }
 
@@ -118,8 +117,4 @@ public class InterviewService {
           }
      }
 
-     // Helper method for existence check
-     public boolean existsByUUID(UUID id) {
-          return repository.existsById(id);
-     }
 }
