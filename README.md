@@ -18,3 +18,9 @@ We are building the back end with the Java SpringBoot framework, the front end w
 * Andre da Silva
 * Nate Elsner
 * Waleed Kaleem
+
+# To start
+* Make sure you have Docker Desktop
+* It should be able to run images sha256:a5d0ce49aa801d475da48f8cb163c354ab95cab073cd3c138bd458fc8257fbf1 and sha256:e62fbf9d3e2b49816a32c400ed2dba83e3b361e6833e624024309c35d334b412
+* Run the docker-compose file
+* Start the spring boot application
