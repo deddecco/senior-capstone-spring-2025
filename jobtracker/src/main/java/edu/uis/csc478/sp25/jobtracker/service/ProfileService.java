@@ -10,7 +10,8 @@ import java.util.Optional;
 import java.util.UUID;
 
 import static org.springframework.beans.BeanUtils.copyProperties;
-import static org.springframework.http.HttpStatus.*;
+import static org.springframework.http.HttpStatus.NOT_FOUND;
+import static org.springframework.http.HttpStatus.OK;
 
 @Service
 public class ProfileService {
@@ -73,12 +74,39 @@ public class ProfileService {
      }
 
      // Create a new profile (Admin only)
-     public ResponseEntity<String> createProfile(Profile newProfile) {
+     /*public ResponseEntity<String> createProfile(Profile newProfile) {
           if (existsByEmail(newProfile.getEmail())) {
                return new ResponseEntity<>("Email already exists.", CONFLICT);
           }
+
+          UUID loggedInUserId = getLoggedInUserId();
+          newProfile.setUser_id(loggedInUserId);
           repository.save(newProfile);
+
           return new ResponseEntity<>("Profile created successfully.", CREATED);
+     }*/
+
+     public Profile createProfile(UUID userId, Profile profile) {
+          // Check if profile exists first
+          if (repository.existsById(userId)) {
+               throw new RuntimeException("Profile already exists for this user");
+          }
+
+          // Set the user ID from the JWT
+          profile.setUser_id(userId);
+
+          // Use the custom insert method
+          repository.insertProfile(
+                  profile.getUser_id(),
+                  profile.getName(),
+                  profile.getEmail(),
+                  profile.getTitle(),
+                  profile.getBio(),
+                  profile.getLocation()
+          );
+
+          // Return the created profile
+          return profile;
      }
 
      // Check if a profile with the same email exists

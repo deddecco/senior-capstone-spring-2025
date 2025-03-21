@@ -1,0 +1,208 @@
+@basic-password = 90b799ea-c60b-48fc-8436-7ef1b4cd4e34
+@deddecco-jwt = eyJhbGciOiJIUzI1NiIsImtpZCI6IkpWeEJ2bWx5Tk5XcHpkdU0iLCJ0eXAiOiJKV1QifQ.eyJpc3MiOiJodHRwczovL25ldXVydWR2cW91emVmaHZ1Z3p0LnN1cGFiYXNlLmNvL2F1dGgvdjEiLCJzdWIiOiJkMjQzNjkxNC1mYzE1LTQ0Y2QtOTJlZi0yZWYxODc4NjdmZTQiLCJhdWQiOiJhdXRoZW50aWNhdGVkIiwiZXhwIjoxNzQyNDQxMDA4LCJpYXQiOjE3NDI0Mzc0MDgsImVtYWlsIjoic3BvbmdlYm9iQG1haWxpbmF0b3IuY29tIiwicGhvbmUiOiIiLCJhcHBfbWV0YWRhdGEiOnsicHJvdmlkZXIiOiJlbWFpbCIsInByb3ZpZGVycyI6WyJlbWFpbCJdfSwidXNlcl9tZXRhZGF0YSI6eyJlbWFpbF92ZXJpZmllZCI6dHJ1ZX0sInJvbGUiOiJhdXRoZW50aWNhdGVkIiwiYWFsIjoiYWFsMSIsImFtciI6W3sibWV0aG9kIjoicGFzc3dvcmQiLCJ0aW1lc3RhbXAiOjE3NDI0Mzc0MDh9XSwic2Vzc2lvbl9pZCI6ImU1MDk0MmQwLTc4NGYtNGM5Mi1hYzEwLTM5OGQxYzJhNTJkNSIsImlzX2Fub255bW91cyI6ZmFsc2V9.pDYDN6KvQ8guQmiwgZEE6x_casAi_pk0uraQ-0W_7BU
+
+###
+
+###
+GET http://localhost:8080/profiles/current
+Authorization: Basic user {{basic-password}}
+
+
+## works
+###
+GET http://localhost:8080/profiles/a8a9af75-f71d-44a0-89c6-6315bfd88407
+Authorization: Bearer {{deddecco-jwt2}}
+
+## fails on purpose
+###
+GET http://localhost:8080/profile/view
+Authorization: Bearer {{deddecco-jwt}}
+
+## fails on purpose-- already exists
+###
+POST http://localhost:8080/profiles
+Authorization: Bearer {{deddecco-jwt2}}
+Content-Type: application/json
+
+{
+  "name": "Ben Wilson",
+  "email": "ben.wilson@example.com",
+  "currentTitle": "Lead Software Engineer",
+  "bio": "This is Ben's bio.",
+  "location": "Los Angeles"
+}
+
+
+###
+# @name Spongebob's profile (submit only only once!)
+POST http://localhost:8080/profiles
+Authorization: Bearer {{auth-token}}
+Content-Type: application/json
+
+{
+  "name": "SpongeBob SquarePants",
+  "email": "spongebob@mailinator.com",
+  "currentTitle": "Lead Software Engineer",
+  "bio": "Ocean Specialist",
+  "location": "Hawaii"
+}
+
+
+###
+PUT http://localhost:8080/profiles
+Authorization: Bearer {{deddecco-jwt2}}
+Content-Type: application/json
+
+{
+  "name": "Ben Wilson",
+  "email": "ben.wilson@example.com",
+  "currentTitle": "Lead Software Engineer",
+  "bio": "This is Ben's bio.",
+  "location": "Los Angeles"
+}
+
+
+
+###
+## works
+PUT http://localhost:8080/profiles/b83ce91e-ac36-4b0e-a07e-1bc309f0a65a
+Authorization: Bearer {{deddecco-jwt2}}
+Content-Type: application/json
+
+{
+  "user_id": "b83ce91e-ac36-4b0e-a07e-1bc309f0a65a",
+  "name": "Fred James",
+  "email": "fred.james@example.com",
+  "title": "Lead Software Architect",
+  "bio": "I don't believe in bios; they just take up space",
+  "location": "Palo Alto"
+}
+
+
+
+###
+## works
+PUT http://localhost:8080/profiles/current
+Authorization: Bearer {{deddecco-jwt2}}
+Content-Type: application/json
+
+{
+  "user_id": "b0fef53f-be0e-4e51-9cd4-1405e67c5609",
+  "name": "Bill",
+  "email": "bill@bill.com",
+  "title": "Chief Engineer",
+  "bio": "you... do know who I am, right?",
+  "location": "Washington"
+}
+
+
+###
+## works
+PUT http://localhost:8080/profiles/02ba21b1-4432-4267-a5ca-639774679244
+Content-Type: application/json
+Authorization: Bearer {{deddecco-jwt2}}
+
+{
+  "user_id": "02ba21b1-4432-4267-a5ca-639774679244",
+  "name": "Ellie Smith",
+  "email": "ellie@ellie.com",
+  "title": "Software Reliability Engineer II",
+  "bio": "writing code fueled by coffee since 2017",
+  "location": "Remote/US"
+}
+
+###
+
+@school-jwt = eyJhbGciOiJIUzI1NiIsImtpZCI6IkpWeEJ2bWx5Tk5XcHpkdU0iLCJ0eXAiOiJKV1QifQ.eyJpc3MiOiJodHRwczovL25ldXVydWR2cW91emVmaHZ1Z3p0LnN1cGFiYXNlLmNvL2F1dGgvdjEiLCJzdWIiOiJkMjQzNjkxNC1mYzE1LTQ0Y2QtOTJlZi0yZWYxODc4NjdmZTQiLCJhdWQiOiJhdXRoZW50aWNhdGVkIiwiZXhwIjoxNzQyNDc5MjEyLCJpYXQiOjE3NDI0NzU2MTIsImVtYWlsIjoic3BvbmdlYm9iQG1haWxpbmF0b3IuY29tIiwicGhvbmUiOiIiLCJhcHBfbWV0YWRhdGEiOnsicHJvdmlkZXIiOiJlbWFpbCIsInByb3ZpZGVycyI6WyJlbWFpbCJdfSwidXNlcl9tZXRhZGF0YSI6eyJlbWFpbF92ZXJpZmllZCI6dHJ1ZX0sInJvbGUiOiJhdXRoZW50aWNhdGVkIiwiYWFsIjoiYWFsMSIsImFtciI6W3sibWV0aG9kIjoicGFzc3dvcmQiLCJ0aW1lc3RhbXAiOjE3NDI0NzU2MTJ9XSwic2Vzc2lvbl9pZCI6IjMyMjE1M2U1LTFjYjktNDkzOS1iMTE1LWI3M2ZkNTMzZWUxNCIsImlzX2Fub255bW91cyI6ZmFsc2V9.lbuPsK3B64MtA4j9p1r9djb6U8JgontfdlHABjVH6ZU
+@deddecco-jwt2 = eyJhbGciOiJIUzI1NiIsImtpZCI6IkpWeEJ2bWx5Tk5XcHpkdU0iLCJ0eXAiOiJKV1QifQ.eyJpc3MiOiJodHRwczovL25ldXVydWR2cW91emVmaHZ1Z3p0LnN1cGFiYXNlLmNvL2F1dGgvdjEiLCJzdWIiOiJkMjQzNjkxNC1mYzE1LTQ0Y2QtOTJlZi0yZWYxODc4NjdmZTQiLCJhdWQiOiJhdXRoZW50aWNhdGVkIiwiZXhwIjoxNzQyNTAxMDI0LCJpYXQiOjE3NDI0OTc0MjQsImVtYWlsIjoic3BvbmdlYm9iQG1haWxpbmF0b3IuY29tIiwicGhvbmUiOiIiLCJhcHBfbWV0YWRhdGEiOnsicHJvdmlkZXIiOiJlbWFpbCIsInByb3ZpZGVycyI6WyJlbWFpbCJdfSwidXNlcl9tZXRhZGF0YSI6eyJlbWFpbF92ZXJpZmllZCI6dHJ1ZX0sInJvbGUiOiJhdXRoZW50aWNhdGVkIiwiYWFsIjoiYWFsMSIsImFtciI6W3sibWV0aG9kIjoicGFzc3dvcmQiLCJ0aW1lc3RhbXAiOjE3NDI0OTc0MjR9XSwic2Vzc2lvbl9pZCI6IjE0YTIxNTRhLTkzNDUtNDg4Ni05NWFjLTQwNDYwMmZmNTAxZiIsImlzX2Fub255bW91cyI6ZmFsc2V9.6gWcEr1lHyYLdBY_Nb1e3UzrYN-p78ML1nEv0Cffuig
+
+###
+# copied from Chrome
+GET http://localhost:8080/jobs/7d61dd05-50cf-4da0-9199-b23c6f5475c8
+Authorization: Bearer {{deddecco-jwt2}}
+#Referer: http://localhost:3000/
+Content-Type: application/json
+
+###
+
+
+
+# curl 'http://localhost:8080/jobs'
+#  -H 'sec-ch-ua-platform: "Windows"'
+#  -H 'Authorization: Bearer eyJhbGciOiJIUzI1NiIsImtpZCI6IkpWeEJ2bWx5Tk5XcHpkdU0iLCJ0eXAiOiJKV1QifQ.eyJpc3MiOiJodHRwczovL25ldXVydWR2cW91emVmaHZ1Z3p0LnN1cGFiYXNlLmNvL2F1dGgvdjEiLCJzdWIiOiJkMjQzNjkxNC1mYzE1LTQ0Y2QtOTJlZi0yZWYxODc4NjdmZTQiLCJhdWQiOiJhdXRoZW50aWNhdGVkIiwiZXhwIjoxNzQyNTI5NTIyLCJpYXQiOjE3NDI1MjU5MjIsImVtYWlsIjoic3BvbmdlYm9iQG1haWxpbmF0b3IuY29tIiwicGhvbmUiOiIiLCJhcHBfbWV0YWRhdGEiOnsicHJvdmlkZXIiOiJlbWFpbCIsInByb3ZpZGVycyI6WyJlbWFpbCJdfSwidXNlcl9tZXRhZGF0YSI6eyJlbWFpbF92ZXJpZmllZCI6dHJ1ZX0sInJvbGUiOiJhdXRoZW50aWNhdGVkIiwiYWFsIjoiYWFsMSIsImFtciI6W3sibWV0aG9kIjoicGFzc3dvcmQiLCJ0aW1lc3RhbXAiOjE3NDI1MjU5MjJ9XSwic2Vzc2lvbl9pZCI6ImU3MmE1YWViLWIyYmYtNDhkOC04MGExLWQyYTRlOTZkMzNlNCIsImlzX2Fub255bW91cyI6ZmFsc2V9.qaXb13k1LNWBzhJsZp20SYLpkySMdhvms-FVMEIO6u0'
+#  -H 'Referer: http://localhost:3000/'
+#  -H 'User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/134.0.0.0 Safari/537.36 Edg/134.0.0.0'
+#  -H 'sec-ch-ua: "Chromium";v="134", "Not:A-Brand";v="24", "Microsoft Edge";v="134"'
+#  -H 'Content-Type: application/json'
+#  -H 'sec-ch-ua-mobile: ?0'
+GET http://localhost:8080/jobs
+sec-ch-ua-platform: "Windows"
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsImtpZCI6IkpWeEJ2bWx5Tk5XcHpkdU0iLCJ0eXAiOiJKV1QifQ.eyJpc3MiOiJodHRwczovL25ldXVydWR2cW91emVmaHZ1Z3p0LnN1cGFiYXNlLmNvL2F1dGgvdjEiLCJzdWIiOiJkMjQzNjkxNC1mYzE1LTQ0Y2QtOTJlZi0yZWYxODc4NjdmZTQiLCJhdWQiOiJhdXRoZW50aWNhdGVkIiwiZXhwIjoxNzQyNTI5NTIyLCJpYXQiOjE3NDI1MjU5MjIsImVtYWlsIjoic3BvbmdlYm9iQG1haWxpbmF0b3IuY29tIiwicGhvbmUiOiIiLCJhcHBfbWV0YWRhdGEiOnsicHJvdmlkZXIiOiJlbWFpbCIsInByb3ZpZGVycyI6WyJlbWFpbCJdfSwidXNlcl9tZXRhZGF0YSI6eyJlbWFpbF92ZXJpZmllZCI6dHJ1ZX0sInJvbGUiOiJhdXRoZW50aWNhdGVkIiwiYWFsIjoiYWFsMSIsImFtciI6W3sibWV0aG9kIjoicGFzc3dvcmQiLCJ0aW1lc3RhbXAiOjE3NDI1MjU5MjJ9XSwic2Vzc2lvbl9pZCI6ImU3MmE1YWViLWIyYmYtNDhkOC04MGExLWQyYTRlOTZkMzNlNCIsImlzX2Fub255bW91cyI6ZmFsc2V9.qaXb13k1LNWBzhJsZp20SYLpkySMdhvms-FVMEIO6u0
+Referer: http://localhost:3000/
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/134.0.0.0 Safari/537.36 Edg/134.0.0.0
+sec-ch-ua: "Chromium";v="134", "Not:A-Brand";v="24", "Microsoft Edge";v="134"
+sec-ch-ua-mobile: ?0
+Content-Type: application/json
+
+###
+
+
+
+# curl 'http://localhost:8080/jobs'
+#  -X 'OPTIONS'
+#  -H 'Accept: */*'
+#  -H 'Accept-Language: en-US,en;q=0.9,pt-BR;q=0.8,pt;q=0.7,it-IT;q=0.6,it;q=0.5'
+#  -H 'Access-Control-Request-Headers: authorization,content-type'
+#  -H 'Access-Control-Request-Method: GET'
+#  -H 'Connection: keep-alive'
+#  -H 'Origin: http://localhost:3000'
+#  -H 'Referer: http://localhost:3000/'
+#  -H 'Sec-Fetch-Dest: empty'
+#  -H 'Sec-Fetch-Mode: cors'
+#  -H 'Sec-Fetch-Site: same-site'
+#  -H 'User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/134.0.0.0 Safari/537.36'
+OPTIONS http://localhost:8080/jobs
+Accept: */*
+Accept-Language: en-US,en;q=0.9,pt-BR;q=0.8,pt;q=0.7,it-IT;q=0.6,it;q=0.5
+Access-Control-Request-Headers: authorization,content-type
+Access-Control-Request-Method: GET
+Connection: keep-alive
+Origin: http://localhost:3000
+Referer: http://localhost:3000/
+Sec-Fetch-Dest: empty
+Sec-Fetch-Mode: cors
+Sec-Fetch-Site: same-site
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/134.0.0.0 Safari/537.36
+
+###
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

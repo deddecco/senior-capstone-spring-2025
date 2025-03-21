@@ -16,4 +16,4 @@ export const getAuthHeader = async () => {
   return {
     Authorization: `Bearer ${token}`
   };
-}; 
+};

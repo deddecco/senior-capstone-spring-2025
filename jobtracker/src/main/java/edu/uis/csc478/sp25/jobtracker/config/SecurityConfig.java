@@ -3,15 +3,20 @@ package edu.uis.csc478.sp25.jobtracker.config;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.oauth2.jwt.JwtDecoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
+import java.util.Arrays;
 
-import static org.springframework.security.oauth2.jwt.NimbusJwtDecoder.*;
+import static org.springframework.security.oauth2.jwt.NimbusJwtDecoder.withSecretKey;
 
 @Configuration
 @EnableWebSecurity
@@ -25,6 +30,7 @@ public class SecurityConfig {
 
      /**
       * configures the security filter chain for the application.
+      *
       * @param http HttpSecurity object to configure security settings
       * @return configured SecurityFilterChain
       * @throws Exception if any configuration error occurs
@@ -32,7 +38,11 @@ public class SecurityConfig {
      @Bean
      public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
           http
+                  .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                   .authorizeHttpRequests(authorize -> authorize
+                          // Allow OPTIONS requests without authentication
+                          .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
+
                           //  all incoming requests must be authenticated
                           .anyRequest().authenticated()
                   )
@@ -44,9 +54,23 @@ public class SecurityConfig {
           return http.build();
      }
 
+     @Bean
+     public CorsConfigurationSource corsConfigurationSource() {
+          CorsConfiguration configuration = new CorsConfiguration();
+          configuration.setAllowedOrigins(Arrays.asList("*"));
+          configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
+          configuration.setAllowedHeaders(Arrays.asList("authorization", "content-type", "x-auth-token"));
+          configuration.setExposedHeaders(Arrays.asList("x-auth-token"));
+          configuration.setAllowCredentials(false);  // Set to false to allow wildcard origins
+          UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+          source.registerCorsConfiguration("/**", configuration);
+          return source;
+     }
+
      /**
       * creates a JwtDecoder to validate incoming JWTs using the secret key
-       * @return a JwtDecoder configured with the secret key
+      *
+      * @return a JwtDecoder configured with the secret key
       */
      @Bean
      public JwtDecoder jwtDecoder() {

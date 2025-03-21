@@ -1,7 +1,11 @@
+/*
 package edu.uis.csc478.sp25.jobtracker.controller;
 
 import edu.uis.csc478.sp25.jobtracker.model.Job;
 import edu.uis.csc478.sp25.jobtracker.service.JobService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -9,60 +13,50 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
-import static org.springframework.http.HttpStatus.NOT_FOUND;
-import static org.springframework.http.HttpStatus.OK;
-import static org.springframework.http.ResponseEntity.noContent;
-import static org.springframework.http.ResponseEntity.ok;
+import static java.util.Map.*;
+import static org.springframework.http.ResponseEntity.*;
 
 @CrossOrigin
 @RestController
 @RequestMapping("/jobs")
 public class JobController {
 
+     private static final Logger logger = LoggerFactory.getLogger(JobController.class);
      private final JobService service;
 
      public JobController(JobService service) {
           this.service = service;
      }
 
-     /**
-      * @return all jobs visible to the user
-      */
      @GetMapping
      public ResponseEntity<List<Job>> getAllJobs() {
-          List<Job> userJobs = service.getAllJobsForUser();
-          return !userJobs.isEmpty() ? ok(userJobs) : noContent().build();
+          try {
+               List<Job> userJobs = service.getAllJobsForUser();
+               return userJobs.isEmpty() ? noContent().build() : ok(userJobs);
+          } catch (Exception e) {
+               logger.error("Error fetching jobs for user", e);
+               return status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+          }
      }
 
-     /**
-      * @param id the id of the job to be retrieved
-      * @return a ResponseEntity with either the job or an error if it isn't found
-      */
      @GetMapping("/{id}")
      public ResponseEntity<Object> getJobById(@PathVariable UUID id) {
-          ResponseEntity<Job> jobResponse = service.getJobById(id);
-
-          if (jobResponse.getStatusCode() == OK && jobResponse.getBody() != null) {
-               return ResponseEntity.ok(jobResponse.getBody());
+          try {
+               ResponseEntity<Job> serviceResponse = service.getJobById(id);
+               if (serviceResponse.getStatusCode() == HttpStatus.OK) {
+                    return ok(serviceResponse.getBody());
+               } else {
+                    return status(HttpStatus.NOT_FOUND)
+                            .body(of("message", "Job not found or you don't have permission to view it"));
+               }
+          } catch (Exception e) {
+               logger.error("Error fetching job by ID", e);
+               return status(HttpStatus.INTERNAL_SERVER_ERROR)
+                       .body(of("message", "An error occurred while fetching the job"));
           }
-
-          Map<String, Object> errorResponse = Map.of(
-                  "status", NOT_FOUND.value(),
-                  "error", "Not Found",
-                  "message", "A job with ID " + id + " does not exist or you don't have permission to view it"
-          );
-
-          return new ResponseEntity<>(errorResponse, NOT_FOUND);
      }
 
-     /**
-      * @param title     optional search parameter
-      * @param level     optional search parameter
-      * @param minSalary optional search parameter
-      * @param maxSalary optional search parameter
-      * @param location  optional search parameter
-      * @return the jobs that match the provided parameters, or all matching jobs if none specified
-      */
+
      @GetMapping("/search")
      public ResponseEntity<List<Job>> searchJobs(
              @RequestParam(required = false) String title,
@@ -70,59 +64,200 @@ public class JobController {
              @RequestParam(required = false) Integer minSalary,
              @RequestParam(required = false) Integer maxSalary,
              @RequestParam(required = false) String location) {
-
-          List<Job> matchingJobs = service.searchJobs(title, level, minSalary, maxSalary, location);
-
-          return !matchingJobs.isEmpty() ? ok(matchingJobs) : noContent().build();
+          try {
+               List<Job> matchingJobs = service.searchJobs(title, level, minSalary, maxSalary, location);
+               return matchingJobs.isEmpty() ? noContent().build() : ok(matchingJobs);
+          } catch (Exception e) {
+               logger.error("Error searching jobs", e);
+               return status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+          }
      }
 
-     /**
-      * @return a ResponseEntity with the status-count pairs for the user
-      */
      @GetMapping("/status-counts")
      public ResponseEntity<Map<String, Integer>> getJobStatusCounts() {
-          Map<String, Integer> statusCounts = service.getJobStatusCounts();
-          return ResponseEntity.ok(statusCounts);
+          try {
+               Map<String, Integer> statusCounts = service.getJobStatusCounts();
+               return ok(statusCounts);
+          } catch (Exception e) {
+               logger.error("Error fetching job status counts", e);
+               return status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+          }
      }
 
-     /**
-      * @param job a job object with its properties specified
-      * @return a ResponseEntity indicating success or failure of the creation
-      */
      @PostMapping
      public ResponseEntity<String> createJob(@RequestBody Job job) {
+          if (!isValidJob(job)) {
+               return badRequest().body("Invalid job data");
+          }
           try {
                return service.createJob(job);
           } catch (Exception e) {
-               return ResponseEntity.internalServerError().body("Failed to create job: " + e.getMessage());
+               logger.error("Failed to create job", e);
+               return status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to create job");
           }
      }
 
-     /**
-      * @param id  the id of the job to be updated
-      * @param job the new details
-      * @return a ResponseEntity indicating success or failure of the update
-      */
      @PutMapping("/{id}")
-     public ResponseEntity<String> updateJob(@PathVariable UUID id,
-                                             @RequestBody Job job) {
-          if (job.id.equals(id)) {
+     public ResponseEntity<String> updateJob(@PathVariable UUID id, @RequestBody Job job) {
+          if (!isValidJob(job) || !job.getId().equals(id)) {
+               return badRequest().body("Invalid job data or ID mismatch");
+          }
+          try {
                return service.updateJobById(id, job);
-          } else {
-               return ResponseEntity.badRequest().body("The job ID in the path does not match the ID in the request body.");
+          } catch (Exception e) {
+               logger.error("Failed to update job with ID {}", id, e);
+               return status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to update job");
           }
      }
 
-     /**
-      * @param id of the job to be deleted
-      * @return a ResponseEntity indicating success or failure of the deletion of that job
-      */
      @DeleteMapping("/{id}")
      public ResponseEntity<String> deleteJob(@PathVariable UUID id) {
           try {
                return service.deleteJob(id);
           } catch (Exception e) {
-               return ResponseEntity.internalServerError().body("Failed to delete job: " + e.getMessage());
+               logger.error("Failed to delete job with ID {}", id, e);
+               return status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to delete job");
           }
+     }
+
+     private boolean isValidJob(Job job) {
+          return job != null &&
+                  job.getTitle() != null && !job.getTitle().trim().isEmpty() &&
+                  job.getLevel() != null && !job.getLevel().trim().isEmpty() &&
+                  job.getStatus() != null && !job.getStatus().trim().isEmpty() &&
+                  job.getMinSalary() >= 0 &&
+                  job.getMaxSalary() >= job.getMinSalary() &&
+                  job.getLocation() != null && !job.getLocation().trim().isEmpty();
+     }
+}
+*/
+package edu.uis.csc478.sp25.jobtracker.controller;
+
+import edu.uis.csc478.sp25.jobtracker.model.Job;
+import edu.uis.csc478.sp25.jobtracker.service.JobService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
+
+import static java.util.Map.of;
+import static org.springframework.http.ResponseEntity.*;
+
+@CrossOrigin
+@RestController
+@RequestMapping("/jobs")
+public class JobController {
+
+     private static final Logger logger = LoggerFactory.getLogger(JobController.class);
+     private final JobService service;
+
+     public JobController(JobService service) {
+          this.service = service;
+     }
+
+     @GetMapping
+     public ResponseEntity<List<Job>> getAllJobs() {
+          try {
+               List<Job> userJobs = service.getJobsForCurrentUser();
+               return userJobs.isEmpty() ? noContent().build() : ok(userJobs);
+          } catch (Exception e) {
+               logger.error("Error fetching jobs for user", e);
+               return status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+          }
+     }
+
+     @GetMapping("/{id}")
+     public ResponseEntity<Object> getJobById(@PathVariable UUID id) {
+          try {
+               ResponseEntity<Job> serviceResponse = service.getJobById(id);
+               if (serviceResponse.getStatusCode() == HttpStatus.OK) {
+                    return ok(serviceResponse.getBody());
+               } else {
+                    return status(HttpStatus.NOT_FOUND)
+                            .body(of("message", "Job not found or you don't have permission to view it"));
+               }
+          } catch (Exception e) {
+               logger.error("Error fetching job by ID", e);
+               return status(HttpStatus.INTERNAL_SERVER_ERROR)
+                       .body(of("message", "An error occurred while fetching the job"));
+          }
+     }
+
+     @GetMapping("/search")
+     public ResponseEntity<List<Job>> searchJobs(
+             @RequestParam(required = false) String title,
+             @RequestParam(required = false) String level,
+             @RequestParam(required = false) Integer minSalary,
+             @RequestParam(required = false) Integer maxSalary,
+             @RequestParam(required = false) String location) {
+          try {
+               List<Job> matchingJobs = service.searchJobs(title, level, minSalary, maxSalary, location);
+               return matchingJobs.isEmpty() ? noContent().build() : ok(matchingJobs);
+          } catch (Exception e) {
+               logger.error("Error searching jobs", e);
+               return status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+          }
+     }
+
+     @GetMapping("/status-counts")
+     public ResponseEntity<Map<String, Integer>> getJobStatusCounts() {
+          try {
+               Map<String, Integer> statusCounts = service.getJobStatusCounts();
+               return ok(statusCounts);
+          } catch (Exception e) {
+               logger.error("Error fetching job status counts", e);
+               return status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+          }
+     }
+
+     @PostMapping
+     public ResponseEntity<String> createJob(@RequestBody Job job) {
+          if (!isValidJob(job)) {
+               return badRequest().body("Invalid job data");
+          }
+          try {
+               return service.createJob(job);
+          } catch (Exception e) {
+               logger.error("Failed to create job", e);
+               return status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to create job");
+          }
+     }
+
+     @PutMapping("/{id}")
+     public ResponseEntity<String> updateJob(@PathVariable UUID id, @RequestBody Job job) {
+          if (!isValidJob(job) || !job.getId().equals(id)) {
+               return badRequest().body("Invalid job data or ID mismatch");
+          }
+          try {
+               return service.updateJob(id, job);
+          } catch (Exception e) {
+               logger.error("Failed to update job with ID {}", id, e);
+               return status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to update job");
+          }
+     }
+
+     @DeleteMapping("/{id}")
+     public ResponseEntity<String> deleteJob(@PathVariable UUID id) {
+          try {
+               return service.deleteJob(id);
+          } catch (Exception e) {
+               logger.error("Failed to delete job with ID {}", id, e);
+               return status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to delete job");
+          }
+     }
+
+     private boolean isValidJob(Job job) {
+          return job != null &&
+                  job.getTitle() != null && !job.getTitle().trim().isEmpty() &&
+                  job.getLevel() != null && !job.getLevel().trim().isEmpty() &&
+                  job.getStatus() != null && !job.getStatus().trim().isEmpty() &&
+                  job.getMinSalary() >= 0 &&
+                  job.getMaxSalary() >= job.getMinSalary() &&
+                  job.getLocation() != null && !job.getLocation().trim().isEmpty();
      }
 }

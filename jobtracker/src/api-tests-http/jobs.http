@@ -1,0 +1,25 @@
+@deddecco-jwt = eyJhbGciOiJIUzI1NiIsImtpZCI6IkpWeEJ2bWx5Tk5XcHpkdU0iLCJ0eXAiOiJKV1QifQ.eyJpc3MiOiJodHRwczovL25ldXVydWR2cW91emVmaHZ1Z3p0LnN1cGFiYXNlLmNvL2F1dGgvdjEiLCJzdWIiOiJkMjQzNjkxNC1mYzE1LTQ0Y2QtOTJlZi0yZWYxODc4NjdmZTQiLCJhdWQiOiJhdXRoZW50aWNhdGVkIiwiZXhwIjoxNzQyNTE2NzI5LCJpYXQiOjE3NDI1MTMxMjksImVtYWlsIjoic3BvbmdlYm9iQG1haWxpbmF0b3IuY29tIiwicGhvbmUiOiIiLCJhcHBfbWV0YWRhdGEiOnsicHJvdmlkZXIiOiJlbWFpbCIsInByb3ZpZGVycyI6WyJlbWFpbCJdfSwidXNlcl9tZXRhZGF0YSI6eyJlbWFpbF92ZXJpZmllZCI6dHJ1ZX0sInJvbGUiOiJhdXRoZW50aWNhdGVkIiwiYWFsIjoiYWFsMSIsImFtciI6W3sibWV0aG9kIjoicGFzc3dvcmQiLCJ0aW1lc3RhbXAiOjE3NDI1MTMxMjl9XSwic2Vzc2lvbl9pZCI6IjYyMjJkOTNhLWQyZjQtNDVkMi05ZWUxLWZiMzM3OWUzYmZkNSIsImlzX2Fub255bW91cyI6ZmFsc2V9.I1wXkdaYmEvLqlQgQ3pkm5cpoBukj4mFcAzfYcepiEk
+
+###
+GET http://localhost:8080/jobs
+Authorization: Bearer {{auth-token}}
+
+###
+# @name SpongeBob's first job
+POST http://localhost:8080/jobs
+Content-Type: application/json
+Authorization: Bearer {{auth-token}}
+
+{
+  "title": "Software Engineer I",
+  "level": "Entry Level",
+  "minSalary": 60000,
+  "maxSalary": 100000,
+  "location": "New York",
+  "status": "Applied",
+  "userId": "d2436914-fc15-44cd-92ef-2ef187867fe4"
+}
+
+### Test protected endpoint
+GET http://localhost:8080/jobs
+Authorization: Bearer {{auth-token}}

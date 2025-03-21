@@ -13,18 +13,23 @@ public class SecurityUtil {
       * @throws RuntimeException if no valid authentication or `user_id` claim is found
       */
      public static UUID getLoggedInUserId() {
-          // get the current authentication object from the security context.
           Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-          // check if authentication exists and if the principal is a JWT.
-          if (authentication != null && authentication.getPrincipal() instanceof Jwt jwt) {
-               // extract the "user_id" claim from the JWT.
-               String userId = jwt.getClaim("user_id");
-               // if "user_id" exists, convert it to a UUID and return it.
-               if (userId != null) {
-                    return UUID.fromString(userId);
-               }
+
+          if (authentication == null || !(authentication.getPrincipal() instanceof Jwt jwt)) {
+               throw new RuntimeException("No valid JWT authentication found");
           }
-          // throw an exception if no valid authentication or "user_id" claim is found.
-          throw new RuntimeException("No valid authentication found");
+
+          String userId = jwt.getClaim("sub");
+
+          if (userId == null) {
+               throw new RuntimeException("No user ID found in JWT claims");
+          }
+
+          try {
+               return UUID.fromString(userId);
+          } catch (IllegalArgumentException e) {
+               throw new RuntimeException("User ID in JWT is not a valid UUID", e);
+          }
      }
+
 }

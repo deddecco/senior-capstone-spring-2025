@@ -14,11 +14,16 @@ public class Job {
      public UUID id;
      public String title;
      public String level;
+
+     @Column("minsalary")
      public int minSalary;
+
+     @Column("maxsalary")
      public int maxSalary;
+
      public String location;
      public String status;
 
      @Column("user_id")
-     public UUID userId; // Use userId instead of user_id
+     public UUID userId;
 }

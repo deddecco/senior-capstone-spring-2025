@@ -1,0 +1,13 @@
+### Login to Supabase
+POST {{supabase-host}}/auth/v1/token?grant_type=password
+Content-Type: application/json
+apikey: {{supabase-api-key}}
+
+{
+  "email": "{{supabase-email}}",
+  "password": "{{supabase-password}}"
+}
+> {%
+    client.global.set("auth-token", response.body.access_token);
+%}
+
