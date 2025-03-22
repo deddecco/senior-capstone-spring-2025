@@ -4,21 +4,19 @@ import edu.uis.csc478.sp25.jobtracker.model.Job;
 import edu.uis.csc478.sp25.jobtracker.repository.JobRepository;
 import edu.uis.csc478.sp25.jobtracker.security.SecurityUtil;
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeansException;
 import org.springframework.dao.DataAccessException;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
 
+import static org.slf4j.LoggerFactory.getLogger;
 import static org.springframework.beans.BeanUtils.copyProperties;
-import static org.springframework.http.HttpStatus.*;
 
 @Service
 public class JobService {
 
-     private static final Logger logger = LoggerFactory.getLogger(JobService.class);
+     private static final Logger logger = getLogger(JobService.class);
      private final JobRepository repository;
 
      public JobService(JobRepository repository) {
@@ -35,6 +33,9 @@ public class JobService {
           }
      }
 
+     /*
+      * @return a list of jobs in the system belonging to the current user
+      */
      // Get all jobs for the currently logged-in user
      public List<Job> getJobsForCurrentUser() {
           try {
@@ -46,87 +47,148 @@ public class JobService {
           }
      }
 
-     // Get a specific job by ID
-     public ResponseEntity<Job> getJobById(UUID jobId) {
+     /**
+      * Get a specific job by ID for the current user
+      * @param jobId the ID of the job to retrieve
+      * @return the job if found
+      * @throws RuntimeException if the job is not found or doesn't belong to the user
+      */
+     public Job getJobById(UUID jobId) {
           try {
-               Optional<Job> job = repository.findById(jobId);
-               return job.map(ResponseEntity::ok)
-                       .orElse(new ResponseEntity<>(NOT_FOUND));
+               UUID userId = getLoggedInUserId();
+               Optional<Job> jobOptional = repository.findByIdAndUserId(jobId, userId);
+
+               if (jobOptional.isPresent()) {
+                    return jobOptional.get();
+               } else {
+                    throw new RuntimeException("Job not found or you don't have permission to access it.");
+               }
           } catch (DataAccessException e) {
                logger.error("Error fetching job by ID", e);
-               return new ResponseEntity<>(INTERNAL_SERVER_ERROR);
+               throw new RuntimeException("Error accessing database", e);
           }
      }
 
-     // Create a new job
-     public ResponseEntity<String> createJob(Job newJob) {
+     /**
+      * Create a new job for the current user
+      * @param newJob the job to create
+      * @return the created job
+      * @throws RuntimeException if the job data is invalid or if there's a database error
+      */
+     public Job createJob(Job newJob) {
           try {
                if (!isValidJob(newJob)) {
-                    return new ResponseEntity<>("Invalid job data", BAD_REQUEST);
+                    throw new RuntimeException("Invalid job data");
                }
-               UUID userId = getLoggedInUserId();
 
+               UUID userId = getLoggedInUserId();
                newJob.setUserId(userId);
-               repository.save(newJob);
-               return new ResponseEntity<>("Job created successfully.", CREATED);
+
+               // Add null check for ID (Option 2 as requested)
+               if (newJob.getId() == null) {
+                    newJob.setId(UUID.randomUUID());
+               }
+
+               return repository.save(newJob);
           } catch (DataAccessException e) {
                logger.error("Failed to create job due to a database error", e);
-               return new ResponseEntity<>("Failed to create job due to a database error.", INTERNAL_SERVER_ERROR);
+               throw new RuntimeException("Failed to create job due to a database error", e);
+          } catch (RuntimeException e) {
+               // Re-throw RuntimeExceptions we've created
+               throw e;
           } catch (Exception e) {
                logger.error("Unexpected error while creating job", e);
-               return new ResponseEntity<>("An unexpected error occurred.", INTERNAL_SERVER_ERROR);
+               throw new RuntimeException("An unexpected error occurred", e);
           }
      }
 
-     // Update a specific job by ID
-     public ResponseEntity<String> updateJob(UUID jobId, Job updatedJob) {
+     /*
+      * Update a specific job by ID for the current user
+      * @param jobId      the ID of the job to update
+      * @param updatedJob the job with updated values
+      * @return the updated job
+      * @throws RuntimeException if the job is not found or if there's a database error
+      */
+     public Job updateJob(UUID jobId, Job updatedJob) {
           try {
                UUID userId = getLoggedInUserId();
-               Optional<Job> existingJob = repository.findByIdAndUserId(jobId, userId);
-               return existingJob.map(job -> applyJobUpdates(job, updatedJob)).orElseGet(() -> new ResponseEntity<>("Job not found or you don't have permission to update it.", NOT_FOUND));
+               Optional<Job> existingJobOptional = repository.findByIdAndUserId(jobId, userId);
+
+               if (existingJobOptional.isPresent()) {
+                    Job existingJob = existingJobOptional.get();
+                    return applyJobUpdates(existingJob, updatedJob);
+               } else {
+                    throw new RuntimeException("Job not found or you don't have permission to update it.");
+               }
           } catch (DataAccessException e) {
                logger.error("Failed to update job with ID {}", jobId, e);
-               return new ResponseEntity<>("Failed to update job due to a database error.", INTERNAL_SERVER_ERROR);
+               throw new RuntimeException("Failed to update job due to a database error", e);
+          } catch (RuntimeException e) {
+               throw e;
           } catch (Exception e) {
                logger.error("Unexpected error while updating job with ID {}", jobId, e);
-               return new ResponseEntity<>("An unexpected error occurred.", INTERNAL_SERVER_ERROR);
+               throw new RuntimeException("An unexpected error occurred", e);
           }
      }
 
-     private ResponseEntity<String> applyJobUpdates(Job existingJob, Job updatedJob) {
+     /**
+      * Apply updates from the updated job to the existing job
+      * @param existingJob the job from the database
+      * @param updatedJob  the job with new values
+      * @return the updated job after saving
+      * @throws RuntimeException if there's an error applying updates or saving
+      */
+     private Job applyJobUpdates(Job existingJob,
+                                 Job updatedJob) {
           try {
                copyProperties(updatedJob, existingJob, "id", "userId");
-               repository.save(existingJob);
-               return new ResponseEntity<>("Job updated successfully.", OK);
+               return repository.save(existingJob);
           } catch (BeansException e) {
                logger.error("Error applying job updates", e);
-               return new ResponseEntity<>("Failed to update job properties.", INTERNAL_SERVER_ERROR);
+               throw new RuntimeException("Failed to update job properties", e);
           } catch (DataAccessException e) {
                logger.error("Error saving updated job", e);
-               return new ResponseEntity<>("Failed to save updated job.", INTERNAL_SERVER_ERROR);
+               throw new RuntimeException("Failed to save updated job", e);
           }
      }
 
-     // Delete a job by ID
-     public ResponseEntity<String> deleteJob(UUID jobId) {
+     /**
+      * Delete a job by ID for the current user
+      * @param jobId the ID of the job to delete
+      * @throws RuntimeException if the job is not found or if there's a database error
+      */
+     public void deleteJob(UUID jobId) {
           try {
                UUID userId = getLoggedInUserId();
                if (!repository.existsByIdAndUserId(jobId, userId)) {
-                    return new ResponseEntity<>("Job not found or you don't have permission to delete it.", NOT_FOUND);
+                    throw new RuntimeException("Job not found or you don't have permission to delete it.");
                }
                repository.deleteById(jobId);
-               return new ResponseEntity<>("Job deleted successfully.", OK);
           } catch (DataAccessException e) {
                logger.error("Failed to delete job with ID {}", jobId, e);
-               return new ResponseEntity<>("Failed to delete job due to a database error.", INTERNAL_SERVER_ERROR);
+               throw new RuntimeException("Failed to delete job due to a database error", e);
+          } catch (RuntimeException e) {
+               throw e;
           } catch (Exception e) {
                logger.error("Unexpected error while deleting job with ID {}", jobId, e);
-               return new ResponseEntity<>("An unexpected error occurred.", INTERNAL_SERVER_ERROR);
+               throw new RuntimeException("An unexpected error occurred", e);
           }
      }
 
+     /**
+      * @param title optional parameter
+      * @param level optional parameter
+      * @param minSalary optional parameter
+      * @param maxSalary optional parameter
+      * @param location optional parameter
+      * @return a list of jobs that match the optional parameters, or all jobs
+      */
      // Search jobs
-     public List<Job> searchJobs(String title, String level, Integer minSalary, Integer maxSalary, String location) {
+     public List<Job> searchJobs(String title,
+                                 String level,
+                                 Integer minSalary,
+                                 Integer maxSalary,
+                                 String location) {
           try {
                UUID userId = getLoggedInUserId();
                return repository.findByFilters(userId, title, level, minSalary, maxSalary, location);
@@ -136,6 +198,10 @@ public class JobService {
           }
      }
 
+     /**
+      * @return key-value pairs of job statuses and how many have each one
+      */
+     // fixme-- returns a list with no values when there should be values
      // Count jobs by status
      public Map<String, Integer> getJobStatusCounts() {
           try {
@@ -149,9 +215,11 @@ public class JobService {
                }
 
                for (Object[] result : results) {
-                    String status = (String) result[0];
-                    Integer count = ((Number) result[1]).intValue();
-                    statusCounts.put(status, count);
+                    if (result != null && result.length >= 2) {
+                         String status = (result[0] != null) ? result[0].toString() : "";
+                         Integer count = (result[1] instanceof Number) ? ((Number) result[1]).intValue() : 0;
+                         statusCounts.put(status, count);
+                    }
                }
 
                return statusCounts;
@@ -161,6 +229,10 @@ public class JobService {
           }
      }
 
+     /**
+      * @param job a job
+      * @return whether a job is valid, i.e., if it has all the required fields filled in or not
+      */
      private boolean isValidJob(Job job) {
           return job != null &&
                   job.getTitle() != null && !job.getTitle().trim().isEmpty() &&

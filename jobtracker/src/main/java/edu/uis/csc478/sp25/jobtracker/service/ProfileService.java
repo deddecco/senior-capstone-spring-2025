@@ -3,15 +3,12 @@ package edu.uis.csc478.sp25.jobtracker.service;
 import edu.uis.csc478.sp25.jobtracker.model.Profile;
 import edu.uis.csc478.sp25.jobtracker.repository.ProfileRepository;
 import edu.uis.csc478.sp25.jobtracker.security.SecurityUtil;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
 import java.util.UUID;
 
 import static org.springframework.beans.BeanUtils.copyProperties;
-import static org.springframework.http.HttpStatus.NOT_FOUND;
-import static org.springframework.http.HttpStatus.OK;
 
 @Service
 public class ProfileService {
@@ -27,75 +24,91 @@ public class ProfileService {
           return SecurityUtil.getLoggedInUserId();
      }
 
-     // Get the profile of the currently logged-in user
-     public ResponseEntity<Profile> getCurrentProfile() {
+     /*
+      * Get the profile of the currently logged-in user
+      * @return the profile entity
+      * @throws RuntimeException if the profile is not found
+      */
+     public Profile getCurrentProfile() {
           UUID loggedInUserId = getLoggedInUserId();
           Optional<Profile> profile = repository.findById(loggedInUserId);
 
           if (profile.isPresent()) {
-               return new ResponseEntity<>(profile.get(), OK);
+               return profile.get();
           } else {
-               return new ResponseEntity<>(NOT_FOUND);
+               throw new RuntimeException("Profile not found.");
           }
      }
 
-     // Update the profile of the currently logged-in user
-     public ResponseEntity<String> updateCurrentProfile(Profile updatedProfile) {
+     /*
+      * Update the profile of the currently logged-in user
+      * @param updatedProfile the profile with new values to be applied
+      * @return the updated Profile entity
+      * @throws RuntimeException if the profile is not found
+      */
+     public Profile updateCurrentProfile(Profile updatedProfile) {
           UUID loggedInUserId = getLoggedInUserId();
-          Optional<Profile> existingProfile = repository.findById(loggedInUserId);
+          Optional<Profile> existingProfileOptional = repository.findById(loggedInUserId);
 
-          if (existingProfile.isPresent()) {
-               return applyProfileUpdates(existingProfile.get(), updatedProfile);
+          if (existingProfileOptional.isPresent()) {
+               Profile existingProfile = existingProfileOptional.get();
+               return applyProfileUpdates(existingProfile, updatedProfile);
           } else {
-               return new ResponseEntity<>("Profile not found.", NOT_FOUND);
+               throw new RuntimeException("Profile not found.");
           }
      }
 
-     // Get a specific profile by ID (Admin)
-     public ResponseEntity<Profile> getProfileById(UUID profileId) {
+     /*
+      * Get a specific profile by ID (Admin)
+      * @param profileId the ID of the profile to retrieve
+      * @return the profile entity
+      * @throws RuntimeException if the profile is not found
+      */
+     public Profile getProfileById(UUID profileId) {
           Optional<Profile> profile = repository.findById(profileId);
 
           if (profile.isPresent()) {
-               return new ResponseEntity<>(profile.get(), OK);
+               return profile.get();
           } else {
-               return new ResponseEntity<>(NOT_FOUND);
+               throw new RuntimeException("Profile not found.");
           }
      }
 
-     // Update a specific profile by ID (Admin)
-     public ResponseEntity<String> updateProfileById(UUID profileId, Profile updatedProfile) {
-          Optional<Profile> existingProfile = repository.findById(profileId);
+     /*
+      * Update a specific profile by ID (Admin)
+      * @param profileId      the ID of the profile to update
+      * @param updatedProfile the profile with new values to be applied
+      * @return the updated Profile entity
+      * @throws RuntimeException if the profile is not found
+      */
+     public Profile updateProfileById(UUID profileId, Profile updatedProfile) {
+          Optional<Profile> existingProfileOptional = repository.findById(profileId);
 
-          if (existingProfile.isPresent()) {
-               return applyProfileUpdates(existingProfile.get(), updatedProfile);
+          if (existingProfileOptional.isPresent()) {
+               Profile existingProfile = existingProfileOptional.get();
+               return applyProfileUpdates(existingProfile, updatedProfile);
           } else {
-               return new ResponseEntity<>("Profile not found.", NOT_FOUND);
+               throw new RuntimeException("Profile not found.");
           }
      }
 
-     // Create a new profile (Admin only)
-     /*public ResponseEntity<String> createProfile(Profile newProfile) {
-          if (existsByEmail(newProfile.getEmail())) {
-               return new ResponseEntity<>("Email already exists.", CONFLICT);
-          }
-
-          UUID loggedInUserId = getLoggedInUserId();
-          newProfile.setUser_id(loggedInUserId);
-          repository.save(newProfile);
-
-          return new ResponseEntity<>("Profile created successfully.", CREATED);
-     }*/
-
+     /*
+      * Create a new profile for a user
+      * @param userId  the ID of the user to associate with this profile
+      * @param profile the profile data to create
+      * @return the created Profile entity
+      * @throws RuntimeException if a profile already exists for this user
+      */
      public Profile createProfile(UUID userId, Profile profile) {
-          // Check if profile exists first
+          // Check if a profile already exists for this user ID
           if (repository.existsById(userId)) {
-               throw new RuntimeException("Profile already exists for this user");
+               throw new RuntimeException("Profile already exists for this user.");
           }
 
-          // Set the user ID from the JWT
+          // Set the user ID in the profile object
           profile.setUser_id(userId);
 
-          // Use the custom insert method
+          // Use custom insert method to save the new profile in database
           repository.insertProfile(
                   profile.getUser_id(),
                   profile.getName(),
@@ -105,20 +118,19 @@ public class ProfileService {
                   profile.getLocation()
           );
 
-          // Return the created profile
+          // Return the created Profile object
           return profile;
      }
-
-     // Check if a profile with the same email exists
-     public boolean existsByEmail(String email) {
-          return repository.existsByEmail(email);
-     }
-
-     // Utility method to copy properties from the updated profile to the existing one
-     private ResponseEntity<String> applyProfileUpdates(Profile existingProfile, Profile updatedProfile) {
-          // Exclude 'id' to prevent overwriting
+     /**
+      * Utility method to copy properties from an updated profile to an existing one.
+      *
+      * @param existingProfile The current persisted entity from DB.
+      * @param updatedProfile  The new data to be applied.
+      * @return The saved and updated entity.
+      */
+     private Profile applyProfileUpdates(Profile existingProfile, Profile updatedProfile) {
+          // Exclude 'id' to prevent overwriting it accidentally.
           copyProperties(updatedProfile, existingProfile, "id");
-          repository.save(existingProfile);
-          return new ResponseEntity<>("Profile updated successfully.", OK);
+          return repository.save(existingProfile);
      }
 }

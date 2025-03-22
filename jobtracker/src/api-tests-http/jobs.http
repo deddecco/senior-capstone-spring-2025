@@ -20,6 +20,78 @@ Authorization: Bearer {{auth-token}}
   "userId": "d2436914-fc15-44cd-92ef-2ef187867fe4"
 }
 
+###
+# @name SpongeBob's second job
+POST http://localhost:8080/jobs
+Content-Type: application/json
+Authorization: Bearer {{auth-token}}
+
+{
+  "title": "Reliability Engineer I",
+  "level": "Entry Level",
+  "minSalary": 55000,
+  "maxSalary": 875000,
+  "location": "Philadelphia",
+  "status": "A",
+  "userId": "d2436914-fc15-44cd-92ef-2ef187867fe4"
+}
+
+###
+# @name SpongeBob's third job
+POST http://localhost:8080/jobs
+Content-Type: application/json
+Authorization: Bearer {{auth-token}}
+
+{
+  "title": "Technical Manager",
+  "level": "Mid-level",
+  "minSalary": 89700,
+  "maxSalary": 102300,
+  "location": "Hartford",
+  "status": "Rejected",
+  "userId": "d2436914-fc15-44cd-92ef-2ef187867fe4"
+}
+
+
+###
+# @name updating Spongebob 3.0
+PUT http://localhost:8080/jobs/14322826-dc61-465e-a72e-3558e7d46443
+Content-Type: application/json
+Authorization: Bearer {{auth-token}}
+
+{
+  "title": "Technical Manager",
+  "level": "Mid-level",
+  "minSalary": 95300,
+  "maxSalary": 95300,
+  "location": "New Haven",
+  "status": "Hired",
+  "user_id": "d2436914-fc15-44cd-92ef-2ef187867fe4"
+}
+
+###
+PUT http://localhost:8080/jobs/c9c16bb7-e72f-4c0e-a3bb-606af3e15f52
+Content-Type: application/json
+Authorization: Bearer {{auth-token}}
+
+{
+  "title": "Reliability Engineer I",
+  "level": "Entry Level",
+  "minSalary": 56000,
+  "maxSalary": 875000,
+  "location": "Philadelphia",
+  "status": "Applied",
+  "userId": "d2436914-fc15-44cd-92ef-2ef187867fe4"
+}
+
+###
+#@name delete SpongeBob 2.0
+DELETE http://localhost:8080/jobs/e5839ae3-343b-4e20-b708-9a9ec76048b0
+Content-Type: application/json
+Authorization: Bearer {{auth-token}}
+
+
+
 ### Test protected endpoint
 GET http://localhost:8080/jobs
 Authorization: Bearer {{auth-token}}

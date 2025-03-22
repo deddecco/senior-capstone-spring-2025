@@ -3,3 +3,6 @@ GET https://examples.http-client.intellij.net/get
     ?generated-in=IntelliJ IDEA
 
 ###
+### Test protected endpoint
+GET http://localhost:8080/interviews
+Authorization: Bearer {{auth-token}}

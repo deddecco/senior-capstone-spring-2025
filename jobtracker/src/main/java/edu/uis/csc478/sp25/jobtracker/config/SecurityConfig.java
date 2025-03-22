@@ -15,7 +15,11 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
 import java.util.Arrays;
+import java.util.List;
 
+import static java.util.Arrays.asList;
+import static java.util.List.*;
+import static org.springframework.http.HttpMethod.*;
 import static org.springframework.security.oauth2.jwt.NimbusJwtDecoder.withSecretKey;
 
 @Configuration
@@ -41,7 +45,7 @@ public class SecurityConfig {
                   .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                   .authorizeHttpRequests(authorize -> authorize
                           // Allow OPTIONS requests without authentication
-                          .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
+                          .requestMatchers(OPTIONS, "/**").permitAll()
 
                           //  all incoming requests must be authenticated
                           .anyRequest().authenticated()
@@ -57,11 +61,12 @@ public class SecurityConfig {
      @Bean
      public CorsConfigurationSource corsConfigurationSource() {
           CorsConfiguration configuration = new CorsConfiguration();
-          configuration.setAllowedOrigins(Arrays.asList("*"));
-          configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
-          configuration.setAllowedHeaders(Arrays.asList("authorization", "content-type", "x-auth-token"));
-          configuration.setExposedHeaders(Arrays.asList("x-auth-token"));
-          configuration.setAllowCredentials(false);  // Set to false to allow wildcard origins
+          configuration.setAllowedOrigins(of("*"));
+          configuration.setAllowedMethods(asList("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
+          configuration.setAllowedHeaders(asList("authorization", "content-type", "x-auth-token"));
+          configuration.setExposedHeaders(of("x-auth-token"));
+          // Set to false to allow wildcard origins
+          configuration.setAllowCredentials(false);
           UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
           source.registerCorsConfiguration("/**", configuration);
           return source;
@@ -69,7 +74,6 @@ public class SecurityConfig {
 
      /**
       * creates a JwtDecoder to validate incoming JWTs using the secret key
-      *
       * @return a JwtDecoder configured with the secret key
       */
      @Bean

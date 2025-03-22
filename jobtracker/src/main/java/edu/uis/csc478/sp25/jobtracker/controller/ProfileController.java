@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.Map;
 import java.util.UUID;
 
+import static java.util.Map.*;
 import static org.springframework.http.HttpStatus.*;
 import static org.springframework.http.ResponseEntity.ok;
 import static org.springframework.http.ResponseEntity.status;
@@ -27,78 +28,116 @@ public class ProfileController {
           this.service = service;
      }
 
-     // Get Current Profile
+     /**
+      * Get the profile of the currently logged-in user.
+      * @return ResponseEntity containing the profile or an error message.
+      */
      @GetMapping("/current")
-     public ResponseEntity<Profile> getCurrentProfile() {
+     public ResponseEntity<Object> getCurrentProfile() {
           try {
-               return service.getCurrentProfile();
-          } catch (Exception e) {
+               Profile profile = service.getCurrentProfile();
+               return ok(profile);
+          } catch (RuntimeException e) {
                logger.error("Error getting current profile", e);
-               return status(INTERNAL_SERVER_ERROR).build();
+               if (e.getMessage().contains("not found")) {
+                    return status(NOT_FOUND).body(of("message", "Profile not found"));
+               }
+               return status(INTERNAL_SERVER_ERROR).body(of("message",
+                       "An error occurred while fetching the profile"));
           }
      }
 
      /**
-      * @param profile a profile to be updated
-      * @return a ResponseEntity with the success or failure of the update
+      * Update the profile of the currently logged-in user.
+      * @param profile Profile object containing updated values.
+      * @return ResponseEntity indicating success or failure.
       */
      @PutMapping("/current")
-     public ResponseEntity<String> updateCurrentProfile(@RequestBody Profile profile) {
+     public ResponseEntity<Object> updateCurrentProfile(@RequestBody Profile profile) {
           try {
-               service.updateCurrentProfile(profile);
-               return ok("Profile updated successfully!");
-          } catch (Exception e) {
+               Profile updatedProfile = service.updateCurrentProfile(profile);
+               return ok(updatedProfile);
+          } catch (RuntimeException e) {
                logger.error("Failed to update current profile", e);
-               return status(INTERNAL_SERVER_ERROR).body("Failed to update profile");
+               if (e.getMessage().contains("not found")) {
+                    return status(NOT_FOUND).body(of("message", "Profile not found"));
+               }
+               return status(INTERNAL_SERVER_ERROR).body(of("message",
+                       "An error occurred while updating the profile"));
           }
      }
 
-     // Get Profile By ID (Admin)
+     /**
+      * Get a specific profile by ID (Admin).
+      * @param profileId UUID of the profile to fetch.
+      * @return ResponseEntity containing the profile or an error message.
+      */
+     // fixme--- check if asking for own profile, else not let in
      @GetMapping("/{profileId}")
      public ResponseEntity<Object> getProfileById(@PathVariable UUID profileId) {
-          ResponseEntity<Profile> profileResponse = service.getProfileById(profileId);
-          if (profileResponse.getBody() != null) {
-               return ok(profileResponse.getBody());
+          try {
+               Profile profile = service.getProfileById(profileId);
+               return ok(profile);
+          } catch (RuntimeException e) {
+               logger.error("Error fetching profile by ID {}", profileId, e);
+               if (e.getMessage().contains("not found")) {
+                    return status(NOT_FOUND).body(of("message",
+                            "A profile with ID " + profileId + " does not exist"));
+               }
+               return status(INTERNAL_SERVER_ERROR).body(of("message",
+                       "An error occurred while fetching the profile"));
           }
-          Map<String, Object> errorResponse = Map.of(
-                  "status", NOT_FOUND.value(),
-                  "error", "Not Found",
-                  "message", "A profile with ID " + profileId + " does not exist"
-          );
-          return status(NOT_FOUND).body(errorResponse);
      }
 
      /**
-      * @param profileId the id of a profile to be updated
-      * @param profile   the new details
-      * @return a ResponseEntity with the success or failure of the update operation
+      * Update a specific profile by ID (Admin).
+      * @param profileId UUID of the profile to update.
+      * @param profile   Profile object containing updated values.
+      * @return ResponseEntity containing the updated profile or an error message.
       */
+     // fixme-- investigate why duplicating spongebob on put
      @PutMapping("/{profileId}")
-     public ResponseEntity<String> updateProfileById(@PathVariable UUID profileId,
+     public ResponseEntity<Object> updateProfileById(@PathVariable UUID profileId,
                                                      @RequestBody Profile profile) {
           try {
-               return service.updateProfileById(profileId, profile);
-          } catch (Exception e) {
+               Profile updatedProfile = service.updateProfileById(profileId, profile);
+               return ok(updatedProfile);
+          } catch (RuntimeException e) {
                logger.error("Failed to update profile with ID {}", profileId, e);
-               return status(INTERNAL_SERVER_ERROR).body("Failed to update profile");
+               if (e.getMessage().contains("not found")) {
+                    return status(NOT_FOUND).body(of("message", "Profile not found"));
+               }
+               return status(INTERNAL_SERVER_ERROR).body(of("message",
+                       "An error occurred while updating the profile"));
           }
      }
 
      /**
-      * @param profile a new profile
-      * @return a ResponseEntity indicating success or failure of the create operation
+      * Create a new profile for the logged-in user.
+      * @param profile Profile object containing new values.
+      * @return ResponseEntity indicating success or failure.
       */
      @PostMapping
-     public ResponseEntity createProfile(@RequestBody Profile profile) {
+     public ResponseEntity<Object> createProfile(@RequestBody Profile profile) {
           try {
-               Profile created = service.createProfile(getLoggedInUserId(), profile);
-               return new ResponseEntity<>(OK);
-          } catch (Exception e) {
+               UUID userId = getLoggedInUserId();
+               Profile createdProfile = service.createProfile(userId, profile);
+               return status(CREATED).body(createdProfile);
+          } catch (RuntimeException e) {
                logger.error("Failed to create profile", e);
-               return status(INTERNAL_SERVER_ERROR).body("Failed to create profile");
+               if (e.getMessage().contains("already exists")) {
+                    return status(CONFLICT).body(of("message",
+                            "A profile already exists for this user"));
+               }
+               return status(INTERNAL_SERVER_ERROR).body(of("message",
+                       "An error occurred while creating the profile"));
           }
      }
 
+     /**
+      * Helper method to get the logged-in user's ID from SecurityUtil.
+      * @return UUID of the logged-in user.
+      */
      private UUID getLoggedInUserId() {
           try {
                return SecurityUtil.getLoggedInUserId();
