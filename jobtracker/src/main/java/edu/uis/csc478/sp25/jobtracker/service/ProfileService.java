@@ -130,7 +130,7 @@ public class ProfileService {
       */
      private Profile applyProfileUpdates(Profile existingProfile, Profile updatedProfile) {
           // Exclude 'id' to prevent overwriting it accidentally.
-          copyProperties(updatedProfile, existingProfile, "id");
+          copyProperties(updatedProfile, existingProfile, "id", "user_id");
           return repository.save(existingProfile);
      }
 }
