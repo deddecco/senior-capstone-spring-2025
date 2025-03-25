@@ -32,7 +32,7 @@ Authorization: Bearer {{auth-token}}
   "minSalary": 55000,
   "maxSalary": 875000,
   "location": "Philadelphia",
-  "status": "A",
+  "status": "Applied",
   "userId": "d2436914-fc15-44cd-92ef-2ef187867fe4"
 }
 
@@ -55,15 +55,15 @@ Authorization: Bearer {{auth-token}}
 
 ###
 # @name updating Spongebob 3.0
-PUT http://localhost:8080/jobs/14322826-dc61-465e-a72e-3558e7d46443
+PUT http://localhost:8080/jobs/ece5ddb7-0cae-453f-bc7a-a00e5e7e35f7
 Content-Type: application/json
 Authorization: Bearer {{auth-token}}
 
 {
   "title": "Technical Manager",
   "level": "Mid-level",
-  "minSalary": 95300,
-  "maxSalary": 95300,
+  "minSalary": 95124,
+  "maxSalary": 95124,
   "location": "New Haven",
   "status": "Hired",
   "user_id": "d2436914-fc15-44cd-92ef-2ef187867fe4"
@@ -90,6 +90,10 @@ DELETE http://localhost:8080/jobs/e5839ae3-343b-4e20-b708-9a9ec76048b0
 Content-Type: application/json
 Authorization: Bearer {{auth-token}}
 
+
+### test status counter
+GET http://localhost:8080/jobs/status-counts
+Authorization: Bearer {{auth-token}}
 
 
 ### Test protected endpoint

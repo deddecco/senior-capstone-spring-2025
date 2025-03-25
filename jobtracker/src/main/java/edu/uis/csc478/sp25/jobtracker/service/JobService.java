@@ -4,12 +4,12 @@ import edu.uis.csc478.sp25.jobtracker.model.Job;
 import edu.uis.csc478.sp25.jobtracker.repository.JobRepository;
 import edu.uis.csc478.sp25.jobtracker.security.SecurityUtil;
 import org.slf4j.Logger;
-import org.springframework.beans.BeansException;
 import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
 
+import static java.util.UUID.randomUUID;
 import static org.slf4j.LoggerFactory.getLogger;
 import static org.springframework.beans.BeanUtils.copyProperties;
 
@@ -49,6 +49,7 @@ public class JobService {
 
      /**
       * Get a specific job by ID for the current user
+      *
       * @param jobId the ID of the job to retrieve
       * @return the job if found
       * @throws RuntimeException if the job is not found or doesn't belong to the user
@@ -71,6 +72,7 @@ public class JobService {
 
      /**
       * Create a new job for the current user
+      *
       * @param newJob the job to create
       * @return the created job
       * @throws RuntimeException if the job data is invalid or if there's a database error
@@ -78,7 +80,7 @@ public class JobService {
      public Job createJob(Job newJob) {
           try {
                if (!isValidJob(newJob)) {
-                    throw new RuntimeException("Invalid job data");
+                    throw new IllegalArgumentException("Invalid job data");
                }
 
                UUID userId = getLoggedInUserId();
@@ -86,15 +88,16 @@ public class JobService {
 
                // Add null check for ID (Option 2 as requested)
                if (newJob.getId() == null) {
-                    newJob.setId(UUID.randomUUID());
+                    newJob.setId(randomUUID());
                }
 
-               return repository.save(newJob);
+               repository.insertJob(newJob);
+               return newJob;
           } catch (DataAccessException e) {
                logger.error("Failed to create job due to a database error", e);
                throw new RuntimeException("Failed to create job due to a database error", e);
-          } catch (RuntimeException e) {
-               // Re-throw RuntimeExceptions we've created
+          } catch (IllegalArgumentException e) {
+               logger.warn("Invalid job data provided", e);
                throw e;
           } catch (Exception e) {
                logger.error("Unexpected error while creating job", e);
@@ -112,48 +115,54 @@ public class JobService {
      public Job updateJob(UUID jobId, Job updatedJob) {
           try {
                UUID userId = getLoggedInUserId();
-               Optional<Job> existingJobOptional = repository.findByIdAndUserId(jobId, userId);
+               Optional<Job> jobOptional = repository.findByIdAndUserId(jobId, userId);
+               Job existingJob;
 
-               if (existingJobOptional.isPresent()) {
-                    Job existingJob = existingJobOptional.get();
-                    return applyJobUpdates(existingJob, updatedJob);
+               if (jobOptional.isPresent()) {
+                    existingJob = jobOptional.get();
                } else {
                     throw new RuntimeException("Job not found or you don't have permission to update it.");
                }
+
+               Job updatedJobWithChanges = applyJobUpdates(existingJob, updatedJob);
+
+               if (!isValidJob(updatedJobWithChanges)) {
+                    throw new IllegalArgumentException("Invalid job data");
+               }
+
+               return updatedJobWithChanges;
           } catch (DataAccessException e) {
-               logger.error("Failed to update job with ID {}", jobId, e);
+               logger.error("Failed to update job with ID " + jobId, e);
                throw new RuntimeException("Failed to update job due to a database error", e);
+          } catch (IllegalArgumentException e) {
+               logger.warn("Invalid job data provided for update", e);
+               throw e;
           } catch (RuntimeException e) {
+               logger.warn("Error updating job with ID " + jobId + ": " + e.getMessage());
                throw e;
           } catch (Exception e) {
-               logger.error("Unexpected error while updating job with ID {}", jobId, e);
+               logger.error("Unexpected error while updating job with ID " + jobId, e);
                throw new RuntimeException("An unexpected error occurred", e);
           }
      }
 
      /**
       * Apply updates from the updated job to the existing job
+      *
       * @param existingJob the job from the database
       * @param updatedJob  the job with new values
       * @return the updated job after saving
       * @throws RuntimeException if there's an error applying updates or saving
       */
-     private Job applyJobUpdates(Job existingJob,
-                                 Job updatedJob) {
-          try {
-               copyProperties(updatedJob, existingJob, "id", "userId");
-               return repository.save(existingJob);
-          } catch (BeansException e) {
-               logger.error("Error applying job updates", e);
-               throw new RuntimeException("Failed to update job properties", e);
-          } catch (DataAccessException e) {
-               logger.error("Error saving updated job", e);
-               throw new RuntimeException("Failed to save updated job", e);
-          }
+     private Job applyJobUpdates(Job existingJob, Job updatedJob) {
+          // Exclude 'id' and 'userId' to prevent overwriting them accidentally.
+          copyProperties(updatedJob, existingJob, "id", "userId");
+          return repository.save(existingJob);
      }
 
      /**
       * Delete a job by ID for the current user
+      *
       * @param jobId the ID of the job to delete
       * @throws RuntimeException if the job is not found or if there's a database error
       */
@@ -176,11 +185,11 @@ public class JobService {
      }
 
      /**
-      * @param title optional parameter
-      * @param level optional parameter
+      * @param title     optional parameter
+      * @param level     optional parameter
       * @param minSalary optional parameter
       * @param maxSalary optional parameter
-      * @param location optional parameter
+      * @param location  optional parameter
       * @return a list of jobs that match the optional parameters, or all jobs
       */
      // Search jobs

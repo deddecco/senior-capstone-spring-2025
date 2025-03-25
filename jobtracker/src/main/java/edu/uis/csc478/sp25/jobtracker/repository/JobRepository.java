@@ -1,6 +1,7 @@
 package edu.uis.csc478.sp25.jobtracker.repository;
 
 import edu.uis.csc478.sp25.jobtracker.model.Job;
+import org.springframework.data.jdbc.repository.query.Modifying;
 import org.springframework.data.jdbc.repository.query.Query;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.query.Param;
@@ -87,4 +88,16 @@ public interface JobRepository extends CrudRepository<Job, UUID> {
      List<Object[]> countJobsByStatus(@Param("userId") UUID userId);
 
      List<Job> findByUserId(UUID userId);
+
+     @Modifying
+     @Query("INSERT INTO job (id, user_id, title, level, minsalary, maxsalary, location, status) " +
+             "VALUES (:#{#job.id}, :#{#job.userId}, :#{#job.title}, :#{#job.level}, :#{#job.minSalary}, " +
+             ":#{#job.maxSalary}, :#{#job.location}, :#{#job.status})")
+     void insertJob(@Param("job") Job job);
+
+     @Modifying
+     @Query("UPDATE job SET title = :#{#job.title}, level = :#{#job.level}, minsalary = :#{#job.minSalary}, " +
+             "maxsalary = :#{#job.maxSalary}, location = :#{#job.location}, status = :#{#job.status} " +
+             "WHERE id = :#{#job.id} AND user_id = :#{#job.userId}")
+     int updateJob(@Param("job") Job job);
 }
