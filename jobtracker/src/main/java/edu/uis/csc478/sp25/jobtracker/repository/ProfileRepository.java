@@ -14,7 +14,7 @@ public interface ProfileRepository extends CrudRepository<Profile, UUID> {
      boolean existsByEmail(String email);
 
      @Modifying
-     @Query(value = "INSERT INTO profile (user_id, name, email, title, bio, location) " +
+     @Query(value = "INSERT INTO profile (id, name, email, title, bio, location) " +
              "VALUES (:userId, :name, :email, :title, :bio, :location)")
      void insertProfile(
              @Param("userId") UUID userId,

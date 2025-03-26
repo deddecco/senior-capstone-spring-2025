@@ -106,11 +106,11 @@ public class ProfileService {
           }
 
           // Set the user ID in the profile object
-          profile.setUser_id(userId);
+          profile.setId(userId);
 
           // Use custom insert method to save the new profile in database
           repository.insertProfile(
-                  profile.getUser_id(),
+                  profile.getId(),
                   profile.getName(),
                   profile.getEmail(),
                   profile.getTitle(),
@@ -130,7 +130,7 @@ public class ProfileService {
       */
      private Profile applyProfileUpdates(Profile existingProfile, Profile updatedProfile) {
           // Exclude 'id' to prevent overwriting it accidentally.
-          copyProperties(updatedProfile, existingProfile, "id", "user_id");
+          copyProperties(updatedProfile, existingProfile, "id");
           return repository.save(existingProfile);
      }
 }
