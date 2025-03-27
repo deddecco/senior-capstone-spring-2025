@@ -6,7 +6,16 @@ spring:
       resourceserver:
         jwt:
           jwk-set-uri: https://neuurudvqouzefhvugzt.supabase.co/auth/v1/jwks
+  datasource:
+    url: jdbc:postgresql://aws-0-us-west-1.pooler.supabase.com:6543/postgres
+    username: postgres.neuurudvqouzefhvugzt
+    password: ${DB_PASSWORD}
+    driver-class-name: org.postgresql.Driver
+    hikari:
+      connection-timeout: 60000
+      maximum-pool-size: 5
 logging:
   level:
     edu.uis.csc478.sp25.jobtracker: DEBUG
     org.springframework.security: DEBUG
+    com.zaxxer.hikari: DEBUG
