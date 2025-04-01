@@ -132,16 +132,16 @@ public class JobService {
 
                return updatedJobWithChanges;
           } catch (DataAccessException e) {
-               logger.error("Failed to update job with ID " + jobId, e);
+               logger.error("Failed to update job with ID {}", jobId, e);
                throw new RuntimeException("Failed to update job due to a database error", e);
           } catch (IllegalArgumentException e) {
                logger.warn("Invalid job data provided for update", e);
                throw e;
           } catch (RuntimeException e) {
-               logger.warn("Error updating job with ID " + jobId + ": " + e.getMessage());
+               logger.warn("Error updating job with ID {}: {}", jobId, e.getMessage());
                throw e;
           } catch (Exception e) {
-               logger.error("Unexpected error while updating job with ID " + jobId, e);
+               logger.error("Unexpected error while updating job with ID {}", jobId, e);
                throw new RuntimeException("An unexpected error occurred", e);
           }
      }

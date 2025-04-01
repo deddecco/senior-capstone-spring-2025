@@ -68,7 +68,6 @@ public class ProfileController {
      }
 
      /**
-      * Get a specific profile by ID (Admin).
       * @param profileId UUID of the profile to fetch.
       * @return ResponseEntity containing the profile or an error message.
       */
@@ -76,13 +75,23 @@ public class ProfileController {
      @GetMapping("/{profileId}")
      public ResponseEntity<Object> getProfileById(@PathVariable UUID profileId) {
           try {
+               UUID loggedInUserId = SecurityUtil.getLoggedInUserId();
+               if (!profileId.equals(loggedInUserId)) {
+                    return status(FORBIDDEN).body(of("message",
+                            "You do not have permission to access this profile"));
+               }
+
                Profile profile = service.getProfileById(profileId);
                return ok(profile);
+          } catch (IllegalStateException e) {
+               logger.error("Error getting logged-in user ID", e);
+               return status(INTERNAL_SERVER_ERROR).body(of("message", "An error occurred while authenticating the user"));
           } catch (RuntimeException e) {
                logger.error("Error fetching profile by ID {}", profileId, e);
                if (e.getMessage().contains("not found")) {
                     return status(NOT_FOUND).body(of("message",
-                            "A profile with ID " + profileId + " does not exist"));
+                            "A profile with ID " + profileId +
+                                    " does not exist"));
                }
                return status(INTERNAL_SERVER_ERROR).body(of("message",
                        "An error occurred while fetching the profile"));
@@ -95,7 +104,6 @@ public class ProfileController {
       * @param profile   Profile object containing updated values.
       * @return ResponseEntity containing the updated profile or an error message.
       */
-     // fixme-- investigate why duplicating spongebob on put
      @PutMapping("/{profileId}")
      public ResponseEntity<Object> updateProfileById(@PathVariable UUID profileId,
                                                      @RequestBody Profile profile) {

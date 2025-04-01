@@ -1,8 +1,64 @@
+@supabase-api-key = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5ldXVydWR2cW91emVmaHZ1Z3p0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDAwNzI2MTEsImV4cCI6MjA1NTY0ODYxMX0.5LcQWLhCQn8vsuL6wmeQ3RUvM6fG6lOljlidxPlzebc
+
+
 ### GET request to example server
 GET https://examples.http-client.intellij.net/get
     ?generated-in=IntelliJ IDEA
 
 ###
 ### Test protected endpoint
-GET http://localhost:8080/interviews
+GET https://neuurudvqouzefhvugzt.supabase.co/rest/v1/interview
 Authorization: Bearer {{auth-token}}
+apikey: {{supabase-api-key}}
+
+
+###
+# @name Andre's first interview
+POST https://neuurudvqouzefhvugzt.supabase.co/rest/v1/interview
+Content-Type: application/json
+Authorization: Bearer {{auth-token}}
+apikey: {{supabase-api-key}}
+
+{
+  "user_id": "7129f9e8-06f5-4879-a7c2-4ddfab12e0f5",
+  "format": "in-person",
+  "round": "technical screen",
+  "date": "April 1, 2025",
+  "time": "10:30 AM"
+}
+###
+# @name Andre's second interview
+POST https://neuurudvqouzefhvugzt.supabase.co/rest/v1/interview
+Content-Type: application/json
+Authorization: Bearer {{auth-token}}
+apikey: {{supabase-api-key}}
+
+{
+  "user_id": "7129f9e8-06f5-4879-a7c2-4ddfab12e0f5",
+  "format": "virtual",
+  "round": "HR phone screen",
+  "date": "April 1, 2025",
+  "time": "12:30 PM"
+}
+
+###
+# @name update Andre's first interview
+PUT https://neuurudvqouzefhvugzt.supabase.co/rest/v1/interview?id=eq.94d3a8b2-032e-4162-82ce-ff1d45b97df0
+Content-Type: application/json
+Authorization: Bearer {{auth-token}}
+apikey: {{supabase-api-key}}
+
+{
+  "id": "94d3a8b2-032e-4162-82ce-ff1d45b97df0",
+  "user_id": "7129f9e8-06f5-4879-a7c2-4ddfab12e0f5",
+  "format": "in-person",
+  "round": "second round screen",
+  "date": "April 7, 2025",
+  "time": "3:00 PM"
+}
+
+###
+DELETE https://neuurudvqouzefhvugzt.supabase.co/rest/v1/interview?id=eq.10be1351-0bc8-449c-aacd-4612d78e6185
+Authorization: Bearer {{auth-token}}
+apikey: {{supabase-api-key}}
+Content-Type: application/json

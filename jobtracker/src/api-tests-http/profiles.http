@@ -1,5 +1,7 @@
 @basic-password = 90b799ea-c60b-48fc-8436-7ef1b4cd4e34
 @deddecco-jwt = eyJhbGciOiJIUzI1NiIsImtpZCI6IkpWeEJ2bWx5Tk5XcHpkdU0iLCJ0eXAiOiJKV1QifQ.eyJpc3MiOiJodHRwczovL25ldXVydWR2cW91emVmaHZ1Z3p0LnN1cGFiYXNlLmNvL2F1dGgvdjEiLCJzdWIiOiJkMjQzNjkxNC1mYzE1LTQ0Y2QtOTJlZi0yZWYxODc4NjdmZTQiLCJhdWQiOiJhdXRoZW50aWNhdGVkIiwiZXhwIjoxNzQyNDQxMDA4LCJpYXQiOjE3NDI0Mzc0MDgsImVtYWlsIjoic3BvbmdlYm9iQG1haWxpbmF0b3IuY29tIiwicGhvbmUiOiIiLCJhcHBfbWV0YWRhdGEiOnsicHJvdmlkZXIiOiJlbWFpbCIsInByb3ZpZGVycyI6WyJlbWFpbCJdfSwidXNlcl9tZXRhZGF0YSI6eyJlbWFpbF92ZXJpZmllZCI6dHJ1ZX0sInJvbGUiOiJhdXRoZW50aWNhdGVkIiwiYWFsIjoiYWFsMSIsImFtciI6W3sibWV0aG9kIjoicGFzc3dvcmQiLCJ0aW1lc3RhbXAiOjE3NDI0Mzc0MDh9XSwic2Vzc2lvbl9pZCI6ImU1MDk0MmQwLTc4NGYtNGM5Mi1hYzEwLTM5OGQxYzJhNTJkNSIsImlzX2Fub255bW91cyI6ZmFsc2V9.pDYDN6KvQ8guQmiwgZEE6x_casAi_pk0uraQ-0W_7BU
+@supabase-api-key = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5ldXVydWR2cW91emVmaHZ1Z3p0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDAwNzI2MTEsImV4cCI6MjA1NTY0ODYxMX0.5LcQWLhCQn8vsuL6wmeQ3RUvM6fG6lOljlidxPlzebc
+
 
 ###
 
@@ -14,8 +16,9 @@ GET http://localhost:8080/profiles/d2436914-fc15-44cd-92ef-2ef187867fe4
 Authorization: Bearer {{auth-token}}
 
 ###
-GET http://localhost:8080/profiles/current
+GET https://neuurudvqouzefhvugzt.supabase.co/rest/v1/profile
 Authorization: Bearer {{auth-token}}
+apikey: {{supabase-api-key}}
 
 ## fails on purpose
 ###
@@ -39,14 +42,16 @@ Content-Type: application/json
 
 ###
 # @name Spongebob's profile (submit only only once!)
-POST http://localhost:8080/profiles
+POST https://neuurudvqouzefhvugzt.supabase.co/rest/v1/profile
 Authorization: Bearer {{auth-token}}
 Content-Type: application/json
+apikey: {{supabase-api-key}}
 
 {
+  "id": "d367799e-96d5-455b-8caf-d51c34a658d0",
   "name": "SpongeBob SquarePants",
   "email": "spongebob@mailinator.com",
-  "currentTitle": "Lead Software Engineer",
+  "title": "Lead Software Engineer",
   "bio": "Ocean Specialist",
   "location": "Hawaii"
 }
@@ -98,6 +103,23 @@ Content-Type: application/json
   "bio": "I don't believe in bios; they just take up space",
   "location": "Palo Alto"
 }
+
+
+###
+PUT https://neuurudvqouzefhvugzt.supabase.co/rest/v1/profile?id=eq.7129f9e8-06f5-4879-a7c2-4ddfab12e0f5
+Authorization: Bearer {{auth-token}}
+apikey: {{supabase-api-key}}
+Content-Type: application/json
+
+{
+  "id": "7129f9e8-06f5-4879-a7c2-4ddfab12e0f5",
+  "name": "Andre da Silva",
+  "email": "andre.p.dasilva.1@gmail.com",
+  "title": "Junior Software Engineer",
+  "bio": "Junior java dev",
+  "location": "Atlanta"
+}
+
 
 
 

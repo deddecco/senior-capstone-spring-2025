@@ -1,73 +1,99 @@
 @deddecco-jwt = eyJhbGciOiJIUzI1NiIsImtpZCI6IkpWeEJ2bWx5Tk5XcHpkdU0iLCJ0eXAiOiJKV1QifQ.eyJpc3MiOiJodHRwczovL25ldXVydWR2cW91emVmaHZ1Z3p0LnN1cGFiYXNlLmNvL2F1dGgvdjEiLCJzdWIiOiJkMjQzNjkxNC1mYzE1LTQ0Y2QtOTJlZi0yZWYxODc4NjdmZTQiLCJhdWQiOiJhdXRoZW50aWNhdGVkIiwiZXhwIjoxNzQyNTE2NzI5LCJpYXQiOjE3NDI1MTMxMjksImVtYWlsIjoic3BvbmdlYm9iQG1haWxpbmF0b3IuY29tIiwicGhvbmUiOiIiLCJhcHBfbWV0YWRhdGEiOnsicHJvdmlkZXIiOiJlbWFpbCIsInByb3ZpZGVycyI6WyJlbWFpbCJdfSwidXNlcl9tZXRhZGF0YSI6eyJlbWFpbF92ZXJpZmllZCI6dHJ1ZX0sInJvbGUiOiJhdXRoZW50aWNhdGVkIiwiYWFsIjoiYWFsMSIsImFtciI6W3sibWV0aG9kIjoicGFzc3dvcmQiLCJ0aW1lc3RhbXAiOjE3NDI1MTMxMjl9XSwic2Vzc2lvbl9pZCI6IjYyMjJkOTNhLWQyZjQtNDVkMi05ZWUxLWZiMzM3OWUzYmZkNSIsImlzX2Fub255bW91cyI6ZmFsc2V9.I1wXkdaYmEvLqlQgQ3pkm5cpoBukj4mFcAzfYcepiEk
+@supabase-api-key = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5ldXVydWR2cW91emVmaHZ1Z3p0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDAwNzI2MTEsImV4cCI6MjA1NTY0ODYxMX0.5LcQWLhCQn8vsuL6wmeQ3RUvM6fG6lOljlidxPlzebc
 
 ###
-GET http://localhost:8080/jobs
+GET https://neuurudvqouzefhvugzt.supabase.co/rest/v1/job
 Authorization: Bearer {{auth-token}}
+apikey: {{supabase-api-key}}
 
 ###
-# @name SpongeBob's first job
-POST http://localhost:8080/jobs
+# @name Andre's first job
+POST https://neuurudvqouzefhvugzt.supabase.co/rest/v1/job
 Content-Type: application/json
 Authorization: Bearer {{auth-token}}
+apikey: {{supabase-api-key}}
 
 {
   "title": "Software Engineer I",
   "level": "Entry Level",
-  "minSalary": 60000,
-  "maxSalary": 100000,
+  "minsalary": 60000,
+  "maxsalary": 100000,
   "location": "New York",
   "status": "Applied",
-  "userId": "d2436914-fc15-44cd-92ef-2ef187867fe4"
+  "user_id": "7129f9e8-06f5-4879-a7c2-4ddfab12e0f5"
 }
 
 ###
-# @name SpongeBob's second job
-POST http://localhost:8080/jobs
+# @name Andre's second job
+POST https://neuurudvqouzefhvugzt.supabase.co/rest/v1/job
 Content-Type: application/json
 Authorization: Bearer {{auth-token}}
+apikey: {{supabase-api-key}}
 
 {
   "title": "Reliability Engineer I",
   "level": "Entry Level",
-  "minSalary": 55000,
-  "maxSalary": 875000,
+  "minsalary": 55000,
+  "maxsalary": 87500,
   "location": "Philadelphia",
   "status": "Applied",
-  "userId": "d2436914-fc15-44cd-92ef-2ef187867fe4"
+  "user_id": "7129f9e8-06f5-4879-a7c2-4ddfab12e0f5"
 }
 
 ###
-# @name SpongeBob's third job
-POST http://localhost:8080/jobs
+# @name Andre's third job
+POST https://neuurudvqouzefhvugzt.supabase.co/rest/v1/job
 Content-Type: application/json
 Authorization: Bearer {{auth-token}}
+apikey: {{supabase-api-key}}
 
 {
   "title": "Technical Manager",
   "level": "Mid-level",
-  "minSalary": 89700,
-  "maxSalary": 102300,
+  "minsalary": 89700,
+  "maxsalary": 102300,
   "location": "Hartford",
   "status": "Rejected",
-  "userId": "d2436914-fc15-44cd-92ef-2ef187867fe4"
+  "user_id": "7129f9e8-06f5-4879-a7c2-4ddfab12e0f5"
 }
 
 
 ###
-# @name updating Spongebob 3.0
-PUT http://localhost:8080/jobs/ece5ddb7-0cae-453f-bc7a-a00e5e7e35f7
-Content-Type: application/json
+# @name updating Andre 3.0
+PUT https://neuurudvqouzefhvugzt.supabase.co/rest/v1/job?id=eq.6d974ffc-ec97-4cf6-8e04-b1ecd81767d4
 Authorization: Bearer {{auth-token}}
+apikey: {{supabase-api-key}}
+Content-Type: application/json
 
 {
-  "title": "Technical Manager",
-  "level": "Mid-level",
-  "minSalary": 95124,
-  "maxSalary": 95124,
-  "location": "New Haven",
-  "status": "Hired",
-  "user_id": "d2436914-fc15-44cd-92ef-2ef187867fe4"
+  "id": "6d974ffc-ec97-4cf6-8e04-b1ecd81767d4",
+  "title": "Reliability Engineer I",
+  "level": "Entry Level",
+  "minsalary": 56000,
+  "maxsalary": 875000,
+  "location": "Philadelphia",
+  "status": "Applied",
+  "user_id": "7129f9e8-06f5-4879-a7c2-4ddfab12e0f5"
 }
+
+###
+# @name updating Andre 2.0
+PUT https://neuurudvqouzefhvugzt.supabase.co/rest/v1/job?id=eq.6d974ffc-ec97-4cf6-8e04-b1ecd81767d4
+Authorization: Bearer {{auth-token}}
+apikey: {{supabase-api-key}}
+Content-Type: application/json
+
+{
+  "id": "6d974ffc-ec97-4cf6-8e04-b1ecd81767d4",
+  "title": "Reliability Engineer I",
+  "level": "Entry Level",
+  "minsalary": 56000,
+  "maxsalary": 75000,
+  "location": "Lancaster",
+  "status": "Offer",
+  "user_id": "7129f9e8-06f5-4879-a7c2-4ddfab12e0f5"
+}
+
 
 ###
 PUT http://localhost:8080/jobs/c9c16bb7-e72f-4c0e-a3bb-606af3e15f52
@@ -81,7 +107,7 @@ Authorization: Bearer {{auth-token}}
   "maxSalary": 875000,
   "location": "Philadelphia",
   "status": "Applied",
-  "userId": "d2436914-fc15-44cd-92ef-2ef187867fe4"
+  "userId": "7129f9e8-06f5-4879-a7c2-4ddfab12e0f5"
 }
 
 ###
@@ -99,3 +125,8 @@ Authorization: Bearer {{auth-token}}
 ### Test protected endpoint
 GET http://localhost:8080/jobs
 Authorization: Bearer {{auth-token}}
+
+###
+GET https://neuurudvqouzefhvugzt.supabase.co/rest/v1/job
+Authorization: Bearer {{auth-token}}
+apikey: {{supabase-api-key}}
