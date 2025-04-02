@@ -2,13 +2,24 @@
 @supabase-api-key = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5ldXVydWR2cW91emVmaHZ1Z3p0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDAwNzI2MTEsImV4cCI6MjA1NTY0ODYxMX0.5LcQWLhCQn8vsuL6wmeQ3RUvM6fG6lOljlidxPlzebc
 
 ###
-GET https://neuurudvqouzefhvugzt.supabase.co/rest/v1/job
+GET http://localhost:8080/jobs
 Authorization: Bearer {{auth-token}}
 apikey: {{supabase-api-key}}
 
 ###
+GET http://localhost:8080/jobs/search/?status=Rejected
+Authorization: Bearer {{auth-token}}
+apikey: {{supabase-api-key}}
+
+###
+GET http://localhost:8080/jobs/status-counts
+Authorization: Bearer {{auth-token}}
+apikey: {{supabase-api-key}}
+
+
+###
 # @name Andre's first job
-POST https://neuurudvqouzefhvugzt.supabase.co/rest/v1/job
+POST http://localhost:8080/jobs
 Content-Type: application/json
 Authorization: Bearer {{auth-token}}
 apikey: {{supabase-api-key}}
@@ -16,8 +27,8 @@ apikey: {{supabase-api-key}}
 {
   "title": "Software Engineer I",
   "level": "Entry Level",
-  "minsalary": 60000,
-  "maxsalary": 100000,
+  "minSalary": 60000,
+  "maxSalary": 100000,
   "location": "New York",
   "status": "Applied",
   "user_id": "7129f9e8-06f5-4879-a7c2-4ddfab12e0f5"
@@ -25,16 +36,16 @@ apikey: {{supabase-api-key}}
 
 ###
 # @name Andre's second job
-POST https://neuurudvqouzefhvugzt.supabase.co/rest/v1/job
+POST http://localhost:8080/jobs
 Content-Type: application/json
 Authorization: Bearer {{auth-token}}
 apikey: {{supabase-api-key}}
 
 {
-  "title": "Reliability Engineer I",
-  "level": "Entry Level",
-  "minsalary": 55000,
-  "maxsalary": 87500,
+  "title": "Reliability Engineer II",
+  "level": "Mid-Level",
+  "minSalary": 66550,
+  "maxSalary": 87500,
   "location": "Philadelphia",
   "status": "Applied",
   "user_id": "7129f9e8-06f5-4879-a7c2-4ddfab12e0f5"
@@ -42,7 +53,7 @@ apikey: {{supabase-api-key}}
 
 ###
 # @name Andre's third job
-POST https://neuurudvqouzefhvugzt.supabase.co/rest/v1/job
+POST http://localhost:8080/jobs
 Content-Type: application/json
 Authorization: Bearer {{auth-token}}
 apikey: {{supabase-api-key}}
@@ -50,8 +61,8 @@ apikey: {{supabase-api-key}}
 {
   "title": "Technical Manager",
   "level": "Mid-level",
-  "minsalary": 89700,
-  "maxsalary": 102300,
+  "minSalary": 89700,
+  "maxSalary": 102300,
   "location": "Hartford",
   "status": "Rejected",
   "user_id": "7129f9e8-06f5-4879-a7c2-4ddfab12e0f5"
@@ -60,25 +71,25 @@ apikey: {{supabase-api-key}}
 
 ###
 # @name updating Andre 3.0
-PUT https://neuurudvqouzefhvugzt.supabase.co/rest/v1/job?id=eq.6d974ffc-ec97-4cf6-8e04-b1ecd81767d4
+PUT http://localhost:8080/jobs
 Authorization: Bearer {{auth-token}}
 apikey: {{supabase-api-key}}
 Content-Type: application/json
 
 {
-  "id": "6d974ffc-ec97-4cf6-8e04-b1ecd81767d4",
+  "id": "9cd61496-6913-4a9c-a946-5934ee4ac7b8",
   "title": "Reliability Engineer I",
   "level": "Entry Level",
   "minsalary": 56000,
   "maxsalary": 875000,
   "location": "Philadelphia",
   "status": "Applied",
-  "user_id": "7129f9e8-06f5-4879-a7c2-4ddfab12e0f5"
+  "user_id": "3ed484ad-7bac-4906-b56c-994b325865f2"
 }
 
 ###
 # @name updating Andre 2.0
-PUT https://neuurudvqouzefhvugzt.supabase.co/rest/v1/job?id=eq.6d974ffc-ec97-4cf6-8e04-b1ecd81767d4
+PUT http://localhost:8080/jobs
 Authorization: Bearer {{auth-token}}
 apikey: {{supabase-api-key}}
 Content-Type: application/json
@@ -91,30 +102,32 @@ Content-Type: application/json
   "maxsalary": 75000,
   "location": "Lancaster",
   "status": "Offer",
-  "user_id": "7129f9e8-06f5-4879-a7c2-4ddfab12e0f5"
+  "user_id": "3ed484ad-7bac-4906-b56c-994b325865f2"
 }
 
 
 ###
-PUT http://localhost:8080/jobs/c9c16bb7-e72f-4c0e-a3bb-606af3e15f52
+PUT http://localhost:8080/jobs/36ee1574-f02f-4f86-9e8e-b1ed6832cbee
 Content-Type: application/json
 Authorization: Bearer {{auth-token}}
 
 {
+  "id": "36ee1574-f02f-4f86-9e8e-b1ed6832cbee",
   "title": "Reliability Engineer I",
   "level": "Entry Level",
   "minSalary": 56000,
   "maxSalary": 875000,
   "location": "Philadelphia",
   "status": "Applied",
-  "userId": "7129f9e8-06f5-4879-a7c2-4ddfab12e0f5"
+  "userId": "3ed484ad-7bac-4906-b56c-994b325865f2"
 }
 
 ###
-#@name delete SpongeBob 2.0
-DELETE http://localhost:8080/jobs/e5839ae3-343b-4e20-b708-9a9ec76048b0
+#@name delete Andre's job
+DELETE http://localhost:8080/jobs/3701b54d-c50a-42d7-8d33-5ea3fbac1116
 Content-Type: application/json
 Authorization: Bearer {{auth-token}}
+apikey: {{supabase-api-key}}
 
 
 ### test status counter

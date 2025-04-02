@@ -39,12 +39,19 @@ public class InterviewService {
 
      public Interview createInterview(Interview interview) {
           UUID userId = getLoggedInUserId();
-          if (existsByUUID(interview.id)) {
+
+          // Check if an interview with the same ID already exists for this user
+          if (repository.existsByIdAndUserId(interview.getId(), userId)) {
                throw new RuntimeException("Interview already exists.");
           }
-          interview.user_id = userId;
+
+          // Set the logged-in user's ID
+          interview.setUser_id(userId);
+
+          // Save the interview
           return repository.save(interview);
      }
+
 
      public Interview updateInterviewById(UUID id, Interview interview) {
           UUID userId = getLoggedInUserId();

@@ -14,8 +14,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
+import static java.util.Map.*;
 import static java.util.Map.of;
 import static org.springframework.http.HttpStatus.*;
+import static org.springframework.http.ResponseEntity.*;
 
 @CrossOrigin
 @RestController
@@ -36,7 +38,7 @@ public class InterviewController {
      @GetMapping
      public ResponseEntity<List<Interview>> getAllInterviews() {
           List<Interview> interviews = service.getAllInterviewsForUser();
-          return interviews.isEmpty() ? ResponseEntity.noContent().build() : ResponseEntity.ok(interviews);
+          return interviews.isEmpty() ? noContent().build() : ok(interviews);
      }
 
      /**
@@ -49,7 +51,7 @@ public class InterviewController {
      public ResponseEntity<Object> getInterviewById(@PathVariable UUID id) {
           try {
                Interview interview = service.getInterviewById(id);
-               return ResponseEntity.ok(interview);
+               return ok(interview);
           } catch (RuntimeException e) {
                logger.error("Error fetching interview by ID {}", id, e);
                Map<String, Object> errorResponse = new HashMap<>();
@@ -78,7 +80,7 @@ public class InterviewController {
              @RequestParam(required = false) LocalDate date,
              @RequestParam(required = false) LocalTime time) {
           List<Interview> matchingInterviews = service.searchInterviews(format, round, date, time);
-          return matchingInterviews.isEmpty() ? ResponseEntity.noContent().build() : ResponseEntity.ok(matchingInterviews);
+          return matchingInterviews.isEmpty() ? noContent().build() : ok(matchingInterviews);
      }
 
      /**
@@ -90,14 +92,23 @@ public class InterviewController {
      @PostMapping
      public ResponseEntity<Object> createInterview(@RequestBody Interview interview) {
           try {
-               Interview createdInterview = service.createInterview(interview);
-               return ResponseEntity.status(CREATED).body(createdInterview);
-          } catch (RuntimeException e) {
-               logger.error("Failed to create interview", e);
-               if (e.getMessage().contains("already exists")) {
-                    return ResponseEntity.status(CONFLICT).body(of("message", "Interview already exists"));
+               // Validate input
+               if (interview.getDate() == null || interview.getTime() == null) {
+                    return badRequest().body(of("message", "Date and Time are required."));
                }
-               return ResponseEntity.status(INTERNAL_SERVER_ERROR).body(of("message", "Failed to create interview: " + e.getMessage()));
+
+               // Create interview
+               Interview createdInterview = service.createInterview(interview);
+               return status(CREATED).body(createdInterview);
+          } catch (RuntimeException e) {
+               logger.error("Failed to create interview: {}", e.getMessage(), e);
+
+               if (e.getMessage().contains("already exists")) {
+                    return status(CONFLICT).body(of("message",
+                            "Interview already exists."));
+               }
+               return status(INTERNAL_SERVER_ERROR)
+                       .body(of("message", "Failed to create interview: " + e.getMessage()));
           }
      }
 
@@ -111,18 +122,18 @@ public class InterviewController {
      @PutMapping("/{id}")
      public ResponseEntity<Object> updateInterview(@PathVariable UUID id, @RequestBody Interview interview) {
           if (interview.id == null || !interview.id.equals(id)) {
-               return ResponseEntity.badRequest().body(of("message", "The interview ID in the path does not match the ID in the request body"));
+               return badRequest().body(of("message", "The interview ID in the path does not match the ID in the request body"));
           }
 
           try {
                Interview updatedInterview = service.updateInterviewById(id, interview);
-               return ResponseEntity.ok(updatedInterview);
+               return ok(updatedInterview);
           } catch (RuntimeException e) {
                logger.error("Failed to update interview with ID {}", id, e);
                if (e.getMessage().contains("not found") || e.getMessage().contains("permission")) {
-                    return ResponseEntity.status(NOT_FOUND).body(of("message", e.getMessage()));
+                    return status(NOT_FOUND).body(of("message", e.getMessage()));
                }
-               return ResponseEntity.status(INTERNAL_SERVER_ERROR).body(of("message", "Failed to update interview: " + e.getMessage()));
+               return status(INTERNAL_SERVER_ERROR).body(of("message", "Failed to update interview: " + e.getMessage()));
           }
      }
 
@@ -136,13 +147,13 @@ public class InterviewController {
      public ResponseEntity<Object> deleteInterview(@PathVariable UUID id) {
           try {
                service.deleteInterviewById(id);
-               return ResponseEntity.ok(of("message", "Interview deleted successfully"));
+               return ok(of("message", "Interview deleted successfully"));
           } catch (RuntimeException e) {
                logger.error("Failed to delete interview with ID {}", id, e);
                if (e.getMessage().contains("not found") || e.getMessage().contains("permission")) {
-                    return ResponseEntity.status(NOT_FOUND).body(of("message", e.getMessage()));
+                    return status(NOT_FOUND).body(of("message", e.getMessage()));
                }
-               return ResponseEntity.status(INTERNAL_SERVER_ERROR).body(of("message", "Failed to delete interview: " + e.getMessage()));
+               return status(INTERNAL_SERVER_ERROR).body(of("message", "Failed to delete interview: " + e.getMessage()));
           }
      }
 }

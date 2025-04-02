@@ -18,6 +18,6 @@ public class Interview {
      public UUID user_id;
      public String format;
      public String round;
-     public Date date;
-     public Time time;
+     public String date;
+     public String time;
 }

@@ -42,7 +42,7 @@ Content-Type: application/json
 
 ###
 # @name Spongebob's profile (submit only only once!)
-POST https://neuurudvqouzefhvugzt.supabase.co/rest/v1/profile
+POST http://localhost:8080/profiles
 Authorization: Bearer {{auth-token}}
 Content-Type: application/json
 apikey: {{supabase-api-key}}

@@ -7,14 +7,14 @@ GET https://examples.http-client.intellij.net/get
 
 ###
 ### Test protected endpoint
-GET https://neuurudvqouzefhvugzt.supabase.co/rest/v1/interview
+GET http://localhost:8080/interviews
 Authorization: Bearer {{auth-token}}
 apikey: {{supabase-api-key}}
 
 
 ###
 # @name Andre's first interview
-POST https://neuurudvqouzefhvugzt.supabase.co/rest/v1/interview
+POST http://localhost:8080/interviews
 Content-Type: application/json
 Authorization: Bearer {{auth-token}}
 apikey: {{supabase-api-key}}
@@ -24,11 +24,12 @@ apikey: {{supabase-api-key}}
   "format": "in-person",
   "round": "technical screen",
   "date": "April 1, 2025",
-  "time": "10:30 AM"
+  "time": "11:30 AM"
 }
+
 ###
 # @name Andre's second interview
-POST https://neuurudvqouzefhvugzt.supabase.co/rest/v1/interview
+POST http://localhost:8080/interviews
 Content-Type: application/json
 Authorization: Bearer {{auth-token}}
 apikey: {{supabase-api-key}}
