@@ -15,34 +15,26 @@ import java.util.UUID;
  */
 public interface JobRepository extends CrudRepository<Job, UUID> {
 
-     /**
-      * Finds jobs based on the provided filters. All parameters are optional.
-      *
-      * @param userId    User ID to filter by.
-      * @param title     Job title to search for.
-      * @param level     Job level to filter by.
-      * @param minSalary Minimum salary to filter by.
-      * @param maxSalary Maximum salary to filter by.
-      * @param location  Job location to search for.
-      * @return List of jobs matching the filters.
-      */
      @Query("""
-             SELECT * FROM job 
-             WHERE (:userId IS NULL OR user_id = :userId)
-             AND (:title IS NULL OR LOWER(title) LIKE LOWER(CONCAT('%', :title, '%')))
-             AND (:level IS NULL OR LOWER(level) = LOWER(:level))
-             AND (:minSalary IS NULL OR minSalary >= :minSalary)
-             AND (:maxSalary IS NULL OR maxSalary <= :maxSalary)
-             AND (:location IS NULL OR LOWER(location) LIKE LOWER(CONCAT('%', :location, '%')))
+              SELECT j FROM Job j 
+              WHERE j.user_id = :userId
+                AND (:title IS NULL OR LOWER(j.title) LIKE LOWER(CONCAT('%', :title, '%')))
+                AND (:level IS NULL OR LOWER(j.level) = LOWER(:level))
+                AND (:minSalary IS NULL OR j.minSalary >= :minSalary)
+                AND (:maxSalary IS NULL OR j.maxSalary <= :maxSalary)
+                AND (:location IS NULL OR LOWER(j.location) LIKE LOWER(CONCAT('%', :location, '%')))
+                AND (:status IS NULL OR LOWER(j.status) = LOWER(:status))
              """)
-     List<Job> findByFilters(
-             @Param("userId") UUID userId,
+     List<Job> findJobsByFilters(
+             @Param("user_id") UUID userId,
              @Param("title") String title,
              @Param("level") String level,
-             @Param("minSalary") Integer minSalary,
-             @Param("maxSalary") Integer maxSalary,
-             @Param("location") String location
+             @Param("minsalary") Integer minSalary,
+             @Param("maxsalary") Integer maxSalary,
+             @Param("location") String location,
+             @Param("status") String status // Add status parameter
      );
+
 
      /**
       * Retrieves all jobs associated with the given user ID.
@@ -80,12 +72,12 @@ public interface JobRepository extends CrudRepository<Job, UUID> {
       * @return List of arrays containing the job status and its count.
       */
      @Query("""
-             SELECT status, COUNT(*) as count
-             FROM job
-             WHERE user_id = :userId
-             GROUP BY status
+                 SELECT j.status, COUNT(j)
+                 FROM Job j
+                 WHERE j.user_id = :userId
+                 GROUP BY j.status
              """)
-     List<Object[]> countJobsByStatus(@Param("userId") UUID userId);
+     List<Object[]> countJobsByStatus(@Param("user_id") UUID userId);
 
      List<Job> findByUserId(UUID userId);
 

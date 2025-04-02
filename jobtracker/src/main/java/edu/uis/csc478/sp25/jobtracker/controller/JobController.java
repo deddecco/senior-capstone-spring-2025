@@ -57,34 +57,63 @@ public class JobController {
      }
 
 
-     // todo test
+     // fixme: nothing shows up in search HTTP request
+     // fixme: 404
+     // Search jobs based on optional filters
      @GetMapping("/search")
      public ResponseEntity<List<Job>> searchJobs(
              @RequestParam(required = false) String title,
              @RequestParam(required = false) String level,
              @RequestParam(required = false) Integer minSalary,
              @RequestParam(required = false) Integer maxSalary,
-             @RequestParam(required = false) String location) {
+             @RequestParam(required = false) String location,
+             @RequestParam(required = false) String status) {
           try {
-               List<Job> matchingJobs = service.searchJobs(title, level, minSalary, maxSalary, location);
-               return matchingJobs.isEmpty() ? noContent().build() : ok(matchingJobs);
+               logger.info("Received search request with filters: title={}, level={}, minSalary={}, maxSalary={}, location={}, status={}",
+                       title, level, minSalary, maxSalary, location, status);
+
+               // Normalize input parameters
+               String normalizedTitle = (title != null) ? title.trim() : null;
+               String normalizedLevel = (level != null) ? level.trim() : null;
+               String normalizedLocation = (location != null) ? location.trim() : null;
+               String normalizedStatus = (status != null) ? status.trim() : null;
+
+               // Fetch matching jobs from the service layer
+               List<Job> matchingJobs = service.searchJobs(normalizedTitle, normalizedLevel, minSalary, maxSalary, normalizedLocation, normalizedStatus);
+
+               // Return appropriate response based on results
+               return matchingJobs.isEmpty()
+                       ? ResponseEntity.noContent().build()
+                       : ResponseEntity.ok(matchingJobs);
           } catch (Exception e) {
                logger.error("Error searching jobs", e);
-               return status(INTERNAL_SERVER_ERROR).build();
+               return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
           }
      }
 
-     // fixme: shows OK response but with nothing in list when SpongeBob has jobs
+     // fixme: should show job-status pairs but shows nothing
+     // fixme 404
      @GetMapping("/status-counts")
      public ResponseEntity<Map<String, Integer>> getJobStatusCounts() {
           try {
+               // Fetch status counts from the service layer
                Map<String, Integer> statusCounts = service.getJobStatusCounts();
-               return ok(statusCounts);
+
+               // If statusCounts is empty, return 204 No Content
+               if (statusCounts == null || statusCounts.isEmpty()) {
+                    logger.warn("No job status counts found for the current user");
+                    return ResponseEntity.noContent().build();
+               }
+
+               // Return the status counts
+               return ResponseEntity.ok(statusCounts);
           } catch (RuntimeException e) {
                logger.error("Error fetching job status counts", e);
-               return status(HttpStatus.INTERNAL_SERVER_ERROR).body(of());
+               return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                       .body(of()); // Return an empty map on error
           }
      }
+
 
      @PostMapping
      public ResponseEntity<Object> createJob(@RequestBody Job job) {

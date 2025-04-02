@@ -193,48 +193,56 @@ public class JobService {
       * @return a list of jobs that match the optional parameters, or all jobs
       */
      // Search jobs
-     public List<Job> searchJobs(String title,
-                                 String level,
-                                 Integer minSalary,
-                                 Integer maxSalary,
-                                 String location) {
+     public List<Job> searchJobs(String title, String level, Integer minSalary, Integer maxSalary, String location, String status) {
           try {
-               UUID userId = getLoggedInUserId();
-               return repository.findByFilters(userId, title, level, minSalary, maxSalary, location);
-          } catch (DataAccessException e) {
-               logger.error("Error searching jobs", e);
-               return Collections.emptyList();
+               UUID userId = getLoggedInUserId(); // Get logged-in user's ID
+
+               // Delegate to repository with filters
+               return repository.findJobsByFilters(userId, title, level, minSalary, maxSalary, location, status);
+          } catch (Exception e) {
+               logger.error("Error searching jobs for user", e);
+               throw new RuntimeException("Failed to search jobs", e);
           }
      }
 
      /**
-      * @return key-value pairs of job statuses and how many have each one
+      * @return key-value pairs of job statuses and how many jobs have each status for the logged-in user
       */
-     // fixme-- returns a list with no values when there should be values
-     // Count jobs by status
      public Map<String, Integer> getJobStatusCounts() {
           try {
                UUID userId = getLoggedInUserId();
-               List<Object[]> results = repository.countJobsByStatus(userId);
-               Map<String, Integer> statusCounts = new HashMap<>();
+               logger.info("Fetching job status counts for user ID: {}", userId);
 
+               // Fetch raw results from the repository
+               List<Object[]> results = repository.countJobsByStatus(userId);
+
+               // Initialize the map with default statuses and zero counts
+               Map<String, Integer> statusCounts = new HashMap<>();
                String[] statuses = {"Saved", "Applied", "Screening", "Interview", "Rejected", "Offer", "Hired"};
                for (String status : statuses) {
                     statusCounts.put(status, 0);
                }
 
+               // Process the results and update the map
                for (Object[] result : results) {
                     if (result != null && result.length >= 2) {
                          String status = (result[0] != null) ? result[0].toString() : "";
                          Integer count = (result[1] instanceof Number) ? ((Number) result[1]).intValue() : 0;
-                         statusCounts.put(status, count);
+
+                         // Only update if the status is valid
+                         if (statusCounts.containsKey(status)) {
+                              statusCounts.put(status, count);
+                         } else {
+                              logger.warn("Unexpected status '{}' found in database, ignoring it.", status);
+                         }
                     }
                }
 
+               logger.info("Job status counts: {}", statusCounts);
                return statusCounts;
           } catch (DataAccessException e) {
                logger.error("Error fetching job status counts", e);
-               return Collections.emptyMap();
+               return Collections.emptyMap(); // Return an empty map on database error
           }
      }
 

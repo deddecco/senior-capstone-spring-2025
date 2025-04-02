@@ -1,11 +1,13 @@
 @basic-password = 90b799ea-c60b-48fc-8436-7ef1b4cd4e34
 @deddecco-jwt = eyJhbGciOiJIUzI1NiIsImtpZCI6IkpWeEJ2bWx5Tk5XcHpkdU0iLCJ0eXAiOiJKV1QifQ.eyJpc3MiOiJodHRwczovL25ldXVydWR2cW91emVmaHZ1Z3p0LnN1cGFiYXNlLmNvL2F1dGgvdjEiLCJzdWIiOiJkMjQzNjkxNC1mYzE1LTQ0Y2QtOTJlZi0yZWYxODc4NjdmZTQiLCJhdWQiOiJhdXRoZW50aWNhdGVkIiwiZXhwIjoxNzQyNDQxMDA4LCJpYXQiOjE3NDI0Mzc0MDgsImVtYWlsIjoic3BvbmdlYm9iQG1haWxpbmF0b3IuY29tIiwicGhvbmUiOiIiLCJhcHBfbWV0YWRhdGEiOnsicHJvdmlkZXIiOiJlbWFpbCIsInByb3ZpZGVycyI6WyJlbWFpbCJdfSwidXNlcl9tZXRhZGF0YSI6eyJlbWFpbF92ZXJpZmllZCI6dHJ1ZX0sInJvbGUiOiJhdXRoZW50aWNhdGVkIiwiYWFsIjoiYWFsMSIsImFtciI6W3sibWV0aG9kIjoicGFzc3dvcmQiLCJ0aW1lc3RhbXAiOjE3NDI0Mzc0MDh9XSwic2Vzc2lvbl9pZCI6ImU1MDk0MmQwLTc4NGYtNGM5Mi1hYzEwLTM5OGQxYzJhNTJkNSIsImlzX2Fub255bW91cyI6ZmFsc2V9.pDYDN6KvQ8guQmiwgZEE6x_casAi_pk0uraQ-0W_7BU
+@supabase-api-key = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5ldXVydWR2cW91emVmaHZ1Z3p0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDAwNzI2MTEsImV4cCI6MjA1NTY0ODYxMX0.5LcQWLhCQn8vsuL6wmeQ3RUvM6fG6lOljlidxPlzebc
 
 ###
 
 ###
-GET http://localhost:8080/profiles/
-Authorization: Basic user {{basic-password}}
+GET http://localhost:8080/profiles/current
+Authorization: Bearer {{auth-token}}
+apikey: {{supabase-api-key}}
 
 
 ## works
@@ -22,18 +24,18 @@ Authorization: Bearer {{auth-token}}
 GET http://localhost:8080/profile/view
 Authorization: Bearer {{deddecco-jwt}}
 
-## fails on purpose-- already exists
 ###
-POST http://localhost:8080/profiles
-Authorization: Bearer {{deddecco-jwt2}}
+PUT http://localhost:8080/profiles/3ed484ad-7bac-4906-b56c-994b325865f2
+Authorization: Bearer {{auth-token}}
+apikey: {{supabase-api-key}}
 Content-Type: application/json
 
 {
-  "name": "Ben Wilson",
-  "email": "ben.wilson@example.com",
-  "currentTitle": "Lead Software Engineer",
-  "bio": "This is Ben's bio.",
-  "location": "Los Angeles"
+  "name": "Andre da Silva",
+  "email": "andre.p.dasilva.1@gmail.com",
+  "title": "Software Engineer II",
+  "bio": "This is Andre's bio",
+  "location": "Atlanta"
 }
 
 
