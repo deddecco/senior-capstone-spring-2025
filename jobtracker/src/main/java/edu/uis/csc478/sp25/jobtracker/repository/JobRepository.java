@@ -16,23 +16,23 @@ import java.util.UUID;
 public interface JobRepository extends CrudRepository<Job, UUID> {
 
      @Query("""
-              SELECT j FROM Job j 
-              WHERE j.user_id = :userId
-                AND (:title IS NULL OR LOWER(j.title) LIKE LOWER(CONCAT('%', :title, '%')))
-                AND (:level IS NULL OR LOWER(j.level) = LOWER(:level))
-                AND (:minSalary IS NULL OR j.minSalary >= :minSalary)
-                AND (:maxSalary IS NULL OR j.maxSalary <= :maxSalary)
-                AND (:location IS NULL OR LOWER(j.location) LIKE LOWER(CONCAT('%', :location, '%')))
-                AND (:status IS NULL OR LOWER(j.status) = LOWER(:status))
+                 SELECT * FROM job 
+                 WHERE user_id = :userId
+                 AND (:minSalary IS NULL OR minsalary >= :minSalary)
+                 AND (:maxSalary IS NULL OR maxsalary <= :maxSalary)
+                 AND (:title IS NULL OR LOWER(title) LIKE LOWER(CONCAT('%', :title, '%')))
+                 AND (:level IS NULL OR LOWER(level) = LOWER(:level))
+                 AND (:location IS NULL OR LOWER(location) LIKE LOWER(CONCAT('%', :location, '%')))
+                 AND (:status IS NULL OR LOWER(status) = LOWER(:status))
              """)
      List<Job> findJobsByFilters(
-             @Param("user_id") UUID userId,
+             @Param("userId") UUID userId,
              @Param("title") String title,
              @Param("level") String level,
-             @Param("minsalary") Integer minSalary,
-             @Param("maxsalary") Integer maxSalary,
+             @Param("minSalary") Integer minSalary,  // Match SQL placeholder
+             @Param("maxSalary") Integer maxSalary,
              @Param("location") String location,
-             @Param("status") String status // Add status parameter
+             @Param("status") String status
      );
 
 

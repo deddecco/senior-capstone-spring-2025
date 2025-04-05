@@ -56,11 +56,8 @@ public class JobController {
           }
      }
 
-
-     // fixme: nothing shows up in search HTTP request
-     // fixme: 404
      // Search jobs based on optional filters
-     @GetMapping("/search")
+     @GetMapping({"/search", "/search/"})
      public ResponseEntity<List<Job>> searchJobs(
              @RequestParam(required = false) String title,
              @RequestParam(required = false) String level,
@@ -83,16 +80,14 @@ public class JobController {
 
                // Return appropriate response based on results
                return matchingJobs.isEmpty()
-                       ? ResponseEntity.noContent().build()
-                       : ResponseEntity.ok(matchingJobs);
+                       ? noContent().build()
+                       : ok(matchingJobs);
           } catch (Exception e) {
                logger.error("Error searching jobs", e);
-               return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+               return status(INTERNAL_SERVER_ERROR).build();
           }
      }
 
-     // fixme: should show job-status pairs but shows nothing
-     // fixme 404
      @GetMapping("/status-counts")
      public ResponseEntity<Map<String, Integer>> getJobStatusCounts() {
           try {
@@ -102,14 +97,14 @@ public class JobController {
                // If statusCounts is empty, return 204 No Content
                if (statusCounts == null || statusCounts.isEmpty()) {
                     logger.warn("No job status counts found for the current user");
-                    return ResponseEntity.noContent().build();
+                    return noContent().build();
                }
 
                // Return the status counts
-               return ResponseEntity.ok(statusCounts);
+               return ok(statusCounts);
           } catch (RuntimeException e) {
                logger.error("Error fetching job status counts", e);
-               return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+               return status(INTERNAL_SERVER_ERROR)
                        .body(of()); // Return an empty map on error
           }
      }
@@ -149,7 +144,7 @@ public class JobController {
                return badRequest().body(of("message", e.getMessage()));
           } catch (RuntimeException e) {
                logger.error("Error updating job with ID {}", id, e);
-               return status(HttpStatus.INTERNAL_SERVER_ERROR)
+               return status(INTERNAL_SERVER_ERROR)
                        .body(of("message", "An unexpected error occurred while updating the job"));
           }
      }
