@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.*;
 
+import static java.util.Collections.*;
 import static java.util.UUID.randomUUID;
 import static org.slf4j.LoggerFactory.getLogger;
 import static org.springframework.beans.BeanUtils.copyProperties;
@@ -198,7 +199,13 @@ public class JobService {
                UUID userId = getLoggedInUserId(); // Get logged-in user's ID
 
                // Delegate to repository with filters
-               return repository.findJobsByFilters(userId, title, level, minSalary, maxSalary, location, status);
+               return repository.findJobsByFilters(userId,
+                       title,
+                       level,
+                       minSalary,
+                       maxSalary,
+                       location,
+                       status);
           } catch (Exception e) {
                logger.error("Error searching jobs for user", e);
                throw new RuntimeException("Failed to search jobs", e);
@@ -208,41 +215,45 @@ public class JobService {
      /**
       * @return key-value pairs of job statuses and how many jobs have each status for the logged-in user
       */
+     // this was broken but now works thanks to Nate's fix on 4/4-4/5
      public Map<String, Integer> getJobStatusCounts() {
           try {
+               // Get the logged-in user's ID
                UUID userId = getLoggedInUserId();
                logger.info("Fetching job status counts for user ID: {}", userId);
 
-               // Fetch raw results from the repository
-               List<Object[]> results = repository.countJobsByStatus(userId);
+               // Fetch all jobs associated with the user
+               List<Job> allUserJobs = repository.findByUserId(userId);
+               logger.info("User has {} total jobs", allUserJobs.size());
 
-               // Initialize the map with default statuses and zero counts
+               // If no jobs exist, return an empty map
+               if (allUserJobs.isEmpty()) {
+                    return emptyMap();
+               }
+
+               // Initialize a map with default statuses and counts set to 0
                Map<String, Integer> statusCounts = new HashMap<>();
                String[] statuses = {"Saved", "Applied", "Screening", "Interview", "Rejected", "Offer", "Hired"};
                for (String status : statuses) {
                     statusCounts.put(status, 0);
                }
 
-               // Process the results and update the map
-               for (Object[] result : results) {
-                    if (result != null && result.length >= 2) {
-                         String status = (result[0] != null) ? result[0].toString() : "";
-                         Integer count = (result[1] instanceof Number) ? ((Number) result[1]).intValue() : 0;
-
-                         // Only update if the status is valid
-                         if (statusCounts.containsKey(status)) {
-                              statusCounts.put(status, count);
-                         } else {
-                              logger.warn("Unexpected status '{}' found in database, ignoring it.", status);
-                         }
+               // Count jobs by their statuses
+               for (Job job : allUserJobs) {
+                    String status = job.getStatus();
+                    if (status != null && !status.isEmpty()) {
+                         statusCounts.put(status,
+                                 statusCounts.getOrDefault(status, 0) + 1);
                     }
                }
 
                logger.info("Job status counts: {}", statusCounts);
                return statusCounts;
-          } catch (DataAccessException e) {
+
+          } catch (Exception e) {
+               // Log the error and rethrow it as a runtime exception
                logger.error("Error fetching job status counts", e);
-               return Collections.emptyMap(); // Return an empty map on database error
+               throw new RuntimeException("Failed to get job status counts", e);
           }
      }
 
