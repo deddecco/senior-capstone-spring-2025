@@ -7,7 +7,17 @@ Authorization: Bearer {{auth-token}}
 apikey: {{supabase-api-key}}
 
 ###
+GET http://localhost:8080/jobs/6d45dedd-4c75-40ed-af30-2251b2d37ffa1
+Authorization: Bearer {{auth-token}}
+apikey: {{supabase-api-key}}
+
+###
 GET http://localhost:8080/jobs/search/?status=Rejected
+Authorization: Bearer {{auth-token}}
+apikey: {{supabase-api-key}}
+
+###
+GET http://localhost:8080/jobs/search
 Authorization: Bearer {{auth-token}}
 apikey: {{supabase-api-key}}
 
@@ -59,13 +69,13 @@ Authorization: Bearer {{auth-token}}
 apikey: {{supabase-api-key}}
 
 {
-  "title": "Technical Manager",
-  "level": "Mid-level",
-  "minSalary": 89700,
-  "maxSalary": 102300,
-  "location": "Hartford",
-  "status": "Rejected",
-  "user_id": "7129f9e8-06f5-4879-a7c2-4ddfab12e0f5"
+  "title": "Scrum Master",
+  "level": "Senior",
+  "minSalary": 150000,
+  "maxSalary": 150000,
+  "location": "Hoboken",
+  "status": "Hired",
+  "user_id": "3ed484ad-7bac-4906-b56c-994b325865f2"
 }
 
 
@@ -107,37 +117,39 @@ Content-Type: application/json
 
 
 ###
-PUT http://localhost:8080/jobs/36ee1574-f02f-4f86-9e8e-b1ed6832cbee
+PUT http://localhost:8080/jobs/e8623894-0834-46fd-94ec-a176b80c13b7
 Content-Type: application/json
 Authorization: Bearer {{auth-token}}
 
 {
-  "id": "36ee1574-f02f-4f86-9e8e-b1ed6832cbee",
-  "title": "Reliability Engineer I",
+  "id": "e8623894-0834-46fd-94ec-a176b80c13b7",
+  "title": "Software Engineer III",
   "level": "Entry Level",
-  "minSalary": 56000,
-  "maxSalary": 875000,
-  "location": "Philadelphia",
-  "status": "Applied",
+  "minsalary": 99800,
+  "maxsalary": 123700,
+  "location": "New York",
+  "status": "Hired",
   "userId": "3ed484ad-7bac-4906-b56c-994b325865f2"
 }
 
 ###
 #@name delete Andre's job
-DELETE http://localhost:8080/jobs/3701b54d-c50a-42d7-8d33-5ea3fbac1116
+DELETE http://localhost:8080/jobs/pepperonipizza
 Content-Type: application/json
 Authorization: Bearer {{auth-token}}
 apikey: {{supabase-api-key}}
 
 
 ### test status counter
-GET http://localhost:8080/jobs/status-counts
+GET http://localhost:8080/jobs/search/?status=Applied&location=New%20York
 Authorization: Bearer {{auth-token}}
+apikey:  {{supabase-api-key}}
 
 
 ### Test protected endpoint
 GET http://localhost:8080/jobs
 Authorization: Bearer {{auth-token}}
+apikey: {{supabase-api-key}}
 
 ###
 GET https://neuurudvqouzefhvugzt.supabase.co/rest/v1/job

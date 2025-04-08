@@ -137,6 +137,7 @@ public class InterviewController {
           }
      }
 
+     // fixme: failed to delete, bad SQL grammar
      /**
       * Delete an existing interview.
       *

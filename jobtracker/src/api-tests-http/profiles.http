@@ -8,12 +8,13 @@
 ###
 GET http://localhost:8080/profiles/
 Authorization: Basic user {{basic-password}}
-
+apikey: {{supabase-api-key}}
 
 ## works
 ###
-GET http://localhost:8080/profiles/d2436914-fc15-44cd-92ef-2ef187867fe4
+GET http://localhost:8080/profiles/current
 Authorization: Bearer {{auth-token}}
+apikey: {{supabase-api-key}}
 
 ###
 GET https://neuurudvqouzefhvugzt.supabase.co/rest/v1/profile
@@ -48,12 +49,12 @@ Content-Type: application/json
 apikey: {{supabase-api-key}}
 
 {
-  "id": "d367799e-96d5-455b-8caf-d51c34a658d0",
-  "name": "SpongeBob SquarePants",
-  "email": "spongebob@mailinator.com",
-  "title": "Lead Software Engineer",
-  "bio": "Ocean Specialist",
-  "location": "Hawaii"
+  "id": "3ed484ad-7bac-4906-b56c-994b325865f2",
+  "name": "Andre da Silva",
+  "email": "andre.p.dasilva.1@gmail.com",
+  "title": "Junior Software Engineer",
+  "bio": "This is my bio",
+  "location": "Marietta"
 }
 
 
@@ -64,11 +65,12 @@ Authorization: Bearer {{auth-token}}
 Content-Type: application/json
 
 {
-  "name": "SpongeBob SquarePants",
-  "email": "spongebob@mailinator.com",
-  "title": "Software Engineer",
-  "bio": "Ocean Specialist",
-  "location": "Hawaii"
+  "id": "3ed484ad-7bac-4906-b56c-994b325865f2",
+  "name": "Andre da Silva",
+  "email": "andre.p.dasilva.1@gmail.com",
+  "title": "Junior Software Engineer",
+  "bio": "This is my bio",
+  "location": "Marietta"
 }
 
 

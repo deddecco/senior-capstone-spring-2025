@@ -13,6 +13,12 @@ apikey: {{supabase-api-key}}
 
 
 ###
+GET http://localhost:8080/interviews/27f57d9c-9ce4-46ec-95a0-95ad53a763fe1
+Authorization: Bearer {{auth-token}}
+apikey: {{supabase-api-key}}
+
+
+###
 # @name Andre's first interview
 POST http://localhost:8080/interviews
 Content-Type: application/json
@@ -59,7 +65,7 @@ apikey: {{supabase-api-key}}
 }
 
 ###
-DELETE https://neuurudvqouzefhvugzt.supabase.co/rest/v1/interview?id=eq.10be1351-0bc8-449c-aacd-4612d78e6185
+DELETE http://localhost:8080/interviews/27f57d9c-9ce4-46ec-95a0-95ad53a763fe
 Authorization: Bearer {{auth-token}}
 apikey: {{supabase-api-key}}
 Content-Type: application/json
