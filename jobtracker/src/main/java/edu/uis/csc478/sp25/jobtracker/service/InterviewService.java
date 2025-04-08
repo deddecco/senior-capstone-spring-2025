@@ -2,7 +2,6 @@ package edu.uis.csc478.sp25.jobtracker.service;
 
 import edu.uis.csc478.sp25.jobtracker.model.Interview;
 import edu.uis.csc478.sp25.jobtracker.repository.InterviewRepository;
-import edu.uis.csc478.sp25.jobtracker.security.SecurityUtil;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -10,7 +9,7 @@ import java.time.LocalTime;
 import java.util.List;
 import java.util.UUID;
 
-import static edu.uis.csc478.sp25.jobtracker.security.SecurityUtil.*;
+import static edu.uis.csc478.sp25.jobtracker.security.SecurityUtil.getLoggedInUserId;
 
 @Service
 public class InterviewService {
@@ -67,11 +66,12 @@ public class InterviewService {
 
      public void deleteInterviewById(UUID id) {
           UUID userId = getLoggedInUserId();
-          if (!repository.existsByIdAndUserId(id, userId)) {
+          int deletedRows = repository.deleteByIdAndUserId(id, userId);
+          if (deletedRows == 0) {
                throw new RuntimeException("Interview not found or you don't have permission to delete it.");
           }
-          repository.deleteById(id);
      }
+
 
      public boolean existsByUUID(UUID id) {
           return repository.existsById(id);

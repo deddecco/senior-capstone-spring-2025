@@ -1,6 +1,7 @@
 package edu.uis.csc478.sp25.jobtracker.repository;
 
 import edu.uis.csc478.sp25.jobtracker.model.Interview;
+import org.springframework.data.jdbc.repository.query.Modifying;
 import org.springframework.data.jdbc.repository.query.Query;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.query.Param;
@@ -39,4 +40,9 @@ public interface InterviewRepository extends CrudRepository<Interview, UUID> {
 
      @Query("SELECT EXISTS(SELECT 1 FROM interview WHERE id = :id AND user_id = :userId)")
      boolean existsByIdAndUserId(@Param("id") UUID id, @Param("userId") UUID userId);
+
+     @Modifying
+     @Query("DELETE FROM interview WHERE id = :id AND user_id = :userId")
+     int deleteByIdAndUserId(@Param("id") UUID id, @Param("userId") UUID userId);
+
 }

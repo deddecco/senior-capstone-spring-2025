@@ -4,6 +4,7 @@ import edu.uis.csc478.sp25.jobtracker.model.Interview;
 import edu.uis.csc478.sp25.jobtracker.service.InterviewService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -14,7 +15,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
-import static java.util.Map.*;
 import static java.util.Map.of;
 import static org.springframework.http.HttpStatus.*;
 import static org.springframework.http.ResponseEntity.*;
@@ -137,7 +137,6 @@ public class InterviewController {
           }
      }
 
-     // fixme: failed to delete, bad SQL grammar
      /**
       * Delete an existing interview.
       *
@@ -148,7 +147,7 @@ public class InterviewController {
      public ResponseEntity<Object> deleteInterview(@PathVariable UUID id) {
           try {
                service.deleteInterviewById(id);
-               return ok(of("message", "Interview deleted successfully"));
+               return noContent().build();
           } catch (RuntimeException e) {
                logger.error("Failed to delete interview with ID {}", id, e);
                if (e.getMessage().contains("not found") || e.getMessage().contains("permission")) {
@@ -157,4 +156,5 @@ public class InterviewController {
                return status(INTERNAL_SERVER_ERROR).body(of("message", "Failed to delete interview: " + e.getMessage()));
           }
      }
+
 }
