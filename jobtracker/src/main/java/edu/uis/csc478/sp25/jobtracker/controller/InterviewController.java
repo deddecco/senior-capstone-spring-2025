@@ -3,19 +3,16 @@ package edu.uis.csc478.sp25.jobtracker.controller;
 import edu.uis.csc478.sp25.jobtracker.model.Interview;
 import edu.uis.csc478.sp25.jobtracker.service.InterviewService;
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.LocalDate;
-import java.time.LocalTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
 import static java.util.Map.of;
+import static org.slf4j.LoggerFactory.getLogger;
 import static org.springframework.http.HttpStatus.*;
 import static org.springframework.http.ResponseEntity.*;
 
@@ -24,7 +21,7 @@ import static org.springframework.http.ResponseEntity.*;
 @RequestMapping("/interviews")
 public class InterviewController {
 
-     private static final Logger logger = LoggerFactory.getLogger(InterviewController.class);
+     private static final Logger logger = getLogger(InterviewController.class);
      private final InterviewService service;
 
      public InterviewController(InterviewService service) {
@@ -72,16 +69,41 @@ public class InterviewController {
       * @return all the interviews that match all the parameters given in the query,
       * or all the user's interviews if none of the parameters are specified
       */
-     /// todo test
-     @GetMapping("/search")
+     @GetMapping({"/search", "/search/"})
      public ResponseEntity<List<Interview>> searchInterviews(
              @RequestParam(required = false) String format,
              @RequestParam(required = false) String round,
-             @RequestParam(required = false) LocalDate date,
-             @RequestParam(required = false) LocalTime time) {
-          List<Interview> matchingInterviews = service.searchInterviews(format, round, date, time);
-          return matchingInterviews.isEmpty() ? noContent().build() : ok(matchingInterviews);
+             @RequestParam(required = false) String date,
+             @RequestParam(required = false) String time) {
+          try {
+               logger.info("Received search request with filters: format={}, round={}, date={}, time={}",
+                       format, round, date, time);
+
+               // Normalize string parameters
+               String normalizedFormat = (format != null) ? format.trim() : null;
+               String normalizedRound = (round != null) ? round.trim() : null;
+               String normalizedDate = (date != null) ? date.trim() : null;
+               String normalizedTime = (time != null) ? time.trim() : null;
+
+
+               // Fetch matching interviews from service layer
+               List<Interview> matchingInterviews = service.searchInterviews(
+                       normalizedFormat,
+                       normalizedRound,
+                       normalizedDate,
+                       normalizedTime
+               );
+
+               // Return appropriate response based on results
+               return matchingInterviews.isEmpty()
+                       ? noContent().build()
+                       : ok(matchingInterviews);
+          } catch (Exception e) {
+               logger.error("Error searching interviews", e);
+               return status(INTERNAL_SERVER_ERROR).build();
+          }
      }
+
 
      /**
       * Create a new interview.

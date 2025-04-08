@@ -2,19 +2,20 @@ package edu.uis.csc478.sp25.jobtracker.service;
 
 import edu.uis.csc478.sp25.jobtracker.model.Interview;
 import edu.uis.csc478.sp25.jobtracker.repository.InterviewRepository;
+import org.slf4j.Logger;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDate;
-import java.time.LocalTime;
 import java.util.List;
 import java.util.UUID;
 
 import static edu.uis.csc478.sp25.jobtracker.security.SecurityUtil.getLoggedInUserId;
+import static org.slf4j.LoggerFactory.getLogger;
 
 @Service
 public class InterviewService {
 
      private final InterviewRepository repository;
+     private static final Logger logger = getLogger(InterviewService.class);
 
      public InterviewService(InterviewRepository repository) {
           this.repository = repository;
@@ -31,10 +32,21 @@ public class InterviewService {
                   .orElseThrow(() -> new RuntimeException("Interview not found or you don't have permission to access it."));
      }
 
-     public List<Interview> searchInterviews(String format, String round, LocalDate date, LocalTime time) {
-          UUID userId = getLoggedInUserId();
-          return repository.findByFiltersAndUserId(userId, format, round, date, time);
+     public List<Interview> searchInterviews(String format, String round, String date, String time) {
+          try {
+               // Get logged-in user's ID
+               UUID userId = getLoggedInUserId();
+               return repository.findByFiltersAndUserId(userId,
+                       format,
+                       round,
+                       date,
+                       time);
+          } catch (Exception e) {
+               logger.error("Error searching interviews for user", e);
+               throw new RuntimeException("Failed to search interviews", e);
+          }
      }
+
 
      public Interview createInterview(Interview interview) {
           UUID userId = getLoggedInUserId();

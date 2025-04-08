@@ -50,22 +50,28 @@ apikey: {{supabase-api-key}}
 
 ###
 # @name update Andre's first interview
-PUT https://neuurudvqouzefhvugzt.supabase.co/rest/v1/interview?id=eq.94d3a8b2-032e-4162-82ce-ff1d45b97df0
+PUT http://localhost:8080/interviews/d1802dae-4891-49e7-a9b2-918e3b9842ce
 Content-Type: application/json
 Authorization: Bearer {{auth-token}}
 apikey: {{supabase-api-key}}
 
 {
-  "id": "94d3a8b2-032e-4162-82ce-ff1d45b97df0",
-  "user_id": "7129f9e8-06f5-4879-a7c2-4ddfab12e0f5",
+  "id": "d1802dae-4891-49e7-a9b2-918e3b9842ce",
+  "user_id": "3ed484ad-7bac-4906-b56c-994b325865f2",
   "format": "in-person",
-  "round": "second round screen",
-  "date": "April 7, 2025",
-  "time": "3:00 PM"
+  "round": "final chat",
+  "date": "April 10, 2025",
+  "time": "10:00 AM"
 }
 
 ###
-DELETE http://localhost:8080/interviews/27f57d9c-9ce4-46ec-95a0-95ad53a763fe
+DELETE http://localhost:8080/interviews/d2647fbf-deaa-41c3-9885-446fe97cfb1a1
 Authorization: Bearer {{auth-token}}
 apikey: {{supabase-api-key}}
 Content-Type: application/json
+
+
+###
+GET http://localhost:8080/interviews/search/
+Authorization: Bearer {{auth-token}}
+apikey:  {{supabase-api-key}}
