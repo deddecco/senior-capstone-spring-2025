@@ -20,8 +20,6 @@ const Sidebar = () => {
     { icon: Home, label: 'Dashboard', path: '/dashboard' },
     { icon: Briefcase, label: 'Job Listings', path: '/dashboard/job-listings' },
     { icon: Bookmark, label: 'Saved Jobs', path: '/dashboard/saved-jobs' },
-    { icon: Users, label: 'Network', path: '/dashboard/network' },
-    { icon: BookOpen, label: 'Learning Hub', path: '/dashboard/learning-hub' },
     { icon: Settings, label: 'Settings', path: '/dashboard/settings' },
   ];
 
