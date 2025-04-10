@@ -50,6 +50,45 @@ export const api = {
     return response.json();
   },
 
+  searchJobs: async (searchParams) => {
+    // get auth token from supabase
+    const headers = await getAuthHeader();
+
+    // format the parameters correctly for the url
+    const queryString = searchParams instanceof URLSearchParams
+        ? searchParams.toString()
+        : new URLSearchParams(searchParams).toString();
+
+    // debug log showing what we're sending
+    console.log('API call to:', `${API_URL}/jobs/search?${queryString}`);
+
+    // actually call our backend search endpoint
+    const response = await fetch(`${API_URL}/jobs/search?${queryString}`, {
+      headers: {
+        ...headers,
+        'Content-Type': 'application/json'
+      }
+    });
+
+    // log what we got back
+    console.log('Response status:', response.status);
+
+    // backend returns 204 when no matches found
+    if (response.status === 204) {
+      console.log('Received 204 No Content - returning empty array');
+      return [];
+    }
+
+    // throw error if something went wrong
+    if (!response.ok) {
+      console.error(`Error response: ${response.status} ${response.statusText}`);
+      throw new Error(`Search failed with status: ${response.status}`);
+    }
+
+    // parse json and return the job listings
+    return response.json();
+  },
+
   createJob: async (jobData) => {
     const headers = await getAuthHeader();
     const response = await fetch(`${API_URL}/jobs`, {
@@ -158,4 +197,4 @@ export const api = {
     }
     return response.json();
   }
-}; 
+};
