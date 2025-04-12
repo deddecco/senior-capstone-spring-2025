@@ -7,12 +7,12 @@ Authorization: Bearer {{auth-token}}
 apikey: {{supabase-api-key}}
 
 ###
-GET http://localhost:8080/jobs/6d45dedd-4c75-40ed-af30-2251b2d37ffa1
+GET http://localhost:8080/jobs/9892282a-4932-47d5-9e6e-2633d9f7a11f
 Authorization: Bearer {{auth-token}}
 apikey: {{supabase-api-key}}
 
 ###
-GET http://localhost:8080/jobs/search/?status=Rejected
+GET http://localhost:8080/jobs/search/?status=Applied
 Authorization: Bearer {{auth-token}}
 apikey: {{supabase-api-key}}
 
@@ -40,8 +40,7 @@ apikey: {{supabase-api-key}}
   "minSalary": 60000,
   "maxSalary": 100000,
   "location": "New York",
-  "status": "Applied",
-  "user_id": "7129f9e8-06f5-4879-a7c2-4ddfab12e0f5"
+  "status": "Applied"
 }
 
 ###
@@ -147,7 +146,7 @@ apikey:  {{supabase-api-key}}
 
 
 ### Test protected endpoint
-GET http://localhost:8080/jobs
+GET http://localhost:8080/jobs/search/?title=Software%20Engineer%20I
 Authorization: Bearer {{auth-token}}
 apikey: {{supabase-api-key}}
 
