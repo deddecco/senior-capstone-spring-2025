@@ -26,6 +26,9 @@ public class Profile {
      @Column(value = "location")
      public String location;
 
+     @Column(value = "phonenumber")
+     public String phoneNumber;
+
      public UUID getId() {
           return id;
      }
@@ -74,4 +77,11 @@ public class Profile {
           this.location = location;
      }
 
+     public String getPhoneNumber() {
+          return phoneNumber;
+     }
+
+     public void setPhoneNumber(String phoneNumber) {
+          this.phoneNumber = phoneNumber;
+     }
 }

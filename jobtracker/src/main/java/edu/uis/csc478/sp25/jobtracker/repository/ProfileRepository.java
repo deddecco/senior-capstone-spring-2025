@@ -14,14 +14,15 @@ public interface ProfileRepository extends CrudRepository<Profile, UUID> {
      boolean existsByEmail(String email);
 
      @Modifying
-     @Query(value = "INSERT INTO profile (user_id, name, email, title, bio, location) " +
-             "VALUES (:userId, :name, :email, :title, :bio, :location)")
+     @Query(value = "INSERT INTO profile (user_id, name, email, title, bio, location, phonenumber) " +
+             "VALUES (:userId, :name, :email, :title, :bio, :location, :phoneNumber)")
      void insertProfile(
              @Param("userId") UUID userId,
              @Param("name") String name,
              @Param("email") String email,
              @Param("title") String title,
              @Param("bio") String bio,
-             @Param("location") String location
+             @Param("location") String location,
+             @Param("phoneNumber") String phoneNumber
      );
 }

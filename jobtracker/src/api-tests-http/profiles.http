@@ -68,9 +68,10 @@ Content-Type: application/json
   "id": "3ed484ad-7bac-4906-b56c-994b325865f2",
   "name": "Andre da Silva",
   "email": "andre.p.dasilva.1@gmail.com",
-  "title": "Junior Software Engineer",
-  "bio": "This is my bio",
-  "location": "Marietta"
+  "title": "Software Engineer I",
+  "bio": "This is my biography",
+  "location": "Marietta",
+  "phoneNumber": "4049924658"
 }
 
 

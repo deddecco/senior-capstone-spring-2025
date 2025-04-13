@@ -115,7 +115,8 @@ public class ProfileService {
                   profile.getEmail(),
                   profile.getTitle(),
                   profile.getBio(),
-                  profile.getLocation()
+                  profile.getLocation(),
+                  profile.getPhoneNumber() // Add phone number here
           );
 
           // Return the created Profile object
