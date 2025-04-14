@@ -23,6 +23,6 @@ public interface ProfileRepository extends CrudRepository<Profile, UUID> {
              @Param("title") String title,
              @Param("bio") String bio,
              @Param("location") String location,
-             @Param("phoneNumber") String phoneNumber
+             @Param("phonenumber") String phoneNumber
      );
 }

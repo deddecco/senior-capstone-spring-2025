@@ -5,10 +5,6 @@
 
 ###
 
-###
-GET http://localhost:8080/profiles/
-Authorization: Basic user {{basic-password}}
-apikey: {{supabase-api-key}}
 
 ## works
 ###
