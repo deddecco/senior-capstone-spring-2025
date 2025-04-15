@@ -24,17 +24,18 @@ public interface JobRepository extends CrudRepository<Job, UUID> {
                  AND (:level IS NULL OR LOWER(level) = LOWER(:level))
                  AND (:location IS NULL OR LOWER(location) LIKE LOWER(CONCAT('%', :location, '%')))
                  AND (:status IS NULL OR LOWER(status) = LOWER(:status))
+                 AND (:company IS NULL OR LOWER(company) LIKE LOWER(CONCAT('%', :company, '%')))
              """)
      List<Job> findJobsByFilters(
              @Param("userId") UUID userId,
              @Param("title") String title,
              @Param("level") String level,
-             @Param("minSalary") Integer minSalary,  // Match SQL placeholder
+             @Param("minSalary") Integer minSalary,
              @Param("maxSalary") Integer maxSalary,
              @Param("location") String location,
-             @Param("status") String status
+             @Param("status") String status,
+             @Param("company") String company
      );
-
 
      /**
       * Retrieves all jobs associated with the given user ID.
@@ -82,14 +83,17 @@ public interface JobRepository extends CrudRepository<Job, UUID> {
      List<Job> findByUserId(UUID userId);
 
      @Modifying
-     @Query("INSERT INTO job (id, user_id, title, level, minsalary, maxsalary, location, status) " +
+     @Query("INSERT INTO job (id, user_id, title, level, minsalary, maxsalary, location, status, company) " +
              "VALUES (:#{#job.id}, :#{#job.userId}, :#{#job.title}, :#{#job.level}, :#{#job.minSalary}, " +
-             ":#{#job.maxSalary}, :#{#job.location}, :#{#job.status})")
+             ":#{#job.maxSalary}, :#{#job.location}, :#{#job.status}, :#{#job.company})")
      void insertJob(@Param("job") Job job);
 
      @Modifying
      @Query("UPDATE job SET title = :#{#job.title}, level = :#{#job.level}, minsalary = :#{#job.minSalary}, " +
-             "maxsalary = :#{#job.maxSalary}, location = :#{#job.location}, status = :#{#job.status} " +
+             "maxsalary = :#{#job.maxSalary}, location = :#{#job.location}, status = :#{#job.status}, company = :#{#job.company} " +
              "WHERE id = :#{#job.id} AND user_id = :#{#job.userId}")
      int updateJob(@Param("job") Job job);
+
+     @Query("SELECT * FROM job WHERE user_id = :userId AND status = 'Saved'")
+     List<Job> findByUserIdAndStatus(@Param("userId") UUID userId);
 }

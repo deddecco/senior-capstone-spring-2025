@@ -66,6 +66,7 @@ public class InterviewController {
       * @param round  optional parameter for the search
       * @param date   optional parameter for the search
       * @param time   optional parameter for the search
+      * @param company optional parameter for the search
       * @return all the interviews that match all the parameters given in the query,
       * or all the user's interviews if none of the parameters are specified
       */
@@ -74,27 +75,27 @@ public class InterviewController {
              @RequestParam(required = false) String format,
              @RequestParam(required = false) String round,
              @RequestParam(required = false) String date,
-             @RequestParam(required = false) String time) {
+             @RequestParam(required = false) String time,
+             @RequestParam(required = false) String company) {
           try {
-               logger.info("Received search request with filters: format={}, round={}, date={}, time={}",
-                       format, round, date, time);
+               logger.info("Received search request with filters: format={}, round={}, date={}, time={}, company={}",
+                       format, round, date, time, company);
 
-               // Normalize string parameters
+               // Normalize parameters
                String normalizedFormat = (format != null) ? format.trim() : null;
                String normalizedRound = (round != null) ? round.trim() : null;
                String normalizedDate = (date != null) ? date.trim() : null;
                String normalizedTime = (time != null) ? time.trim() : null;
+               String normalizedCompany = (company != null) ? company.trim() : null;
 
-
-               // Fetch matching interviews from service layer
                List<Interview> matchingInterviews = service.searchInterviews(
                        normalizedFormat,
                        normalizedRound,
                        normalizedDate,
-                       normalizedTime
+                       normalizedTime,
+                       normalizedCompany
                );
 
-               // Return appropriate response based on results
                return matchingInterviews.isEmpty()
                        ? noContent().build()
                        : ok(matchingInterviews);
@@ -114,7 +115,6 @@ public class InterviewController {
      @PostMapping
      public ResponseEntity<Object> createInterview(@RequestBody Interview interview) {
           try {
-               // Validate input
                if (interview.getDate() == null || interview.getTime() == null) {
                     return badRequest().body(of("message", "Date and Time are required."));
                }
@@ -126,8 +126,7 @@ public class InterviewController {
                logger.error("Failed to create interview: {}", e.getMessage(), e);
 
                if (e.getMessage().contains("already exists")) {
-                    return status(CONFLICT).body(of("message",
-                            "Interview already exists."));
+                    return status(CONFLICT).body(of("message", "Interview already exists."));
                }
                return status(INTERNAL_SERVER_ERROR)
                        .body(of("message", "Failed to create interview: " + e.getMessage()));
@@ -142,9 +141,11 @@ public class InterviewController {
       * @return either that the interview was updated, or an error explaining why not
       */
      @PutMapping("/{id}")
-     public ResponseEntity<Object> updateInterview(@PathVariable UUID id, @RequestBody Interview interview) {
+     public ResponseEntity<Object> updateInterview(@PathVariable UUID id,
+                                                   @RequestBody Interview interview) {
           if (interview.id == null || !interview.id.equals(id)) {
-               return badRequest().body(of("message", "The interview ID in the path does not match the ID in the request body"));
+               return badRequest().body(of("message",
+                       "The interview ID in the path does not match the ID in the request body"));
           }
 
           try {
@@ -155,7 +156,8 @@ public class InterviewController {
                if (e.getMessage().contains("not found") || e.getMessage().contains("permission")) {
                     return status(NOT_FOUND).body(of("message", e.getMessage()));
                }
-               return status(INTERNAL_SERVER_ERROR).body(of("message", "Failed to update interview: " + e.getMessage()));
+               return status(INTERNAL_SERVER_ERROR)
+                       .body(of("message", "Failed to update interview: " + e.getMessage()));
           }
      }
 
@@ -175,8 +177,8 @@ public class InterviewController {
                if (e.getMessage().contains("not found") || e.getMessage().contains("permission")) {
                     return status(NOT_FOUND).body(of("message", e.getMessage()));
                }
-               return status(INTERNAL_SERVER_ERROR).body(of("message", "Failed to delete interview: " + e.getMessage()));
+               return status(INTERNAL_SERVER_ERROR)
+                       .body(of("message", "Failed to delete interview: " + e.getMessage()));
           }
      }
-
 }

@@ -32,21 +32,24 @@ public class InterviewService {
                   .orElseThrow(() -> new RuntimeException("Interview not found or you don't have permission to access it."));
      }
 
-     public List<Interview> searchInterviews(String format, String round, String date, String time) {
+     /**
+      * Search interviews for the current user, with optional filters.*/
+     public List<Interview> searchInterviews(String format, String round, String date, String time, String company) {
           try {
-               // Get logged-in user's ID
                UUID userId = getLoggedInUserId();
-               return repository.findByFiltersAndUserId(userId,
+               return repository.findByFiltersAndUserId(
+                       userId,
                        format,
                        round,
                        date,
-                       time);
+                       time,
+                       company
+               );
           } catch (Exception e) {
                logger.error("Error searching interviews for user", e);
                throw new RuntimeException("Failed to search interviews", e);
           }
      }
-
 
      public Interview createInterview(Interview interview) {
           UUID userId = getLoggedInUserId();
@@ -62,7 +65,6 @@ public class InterviewService {
           // Save the interview
           return repository.save(interview);
      }
-
 
      public Interview updateInterviewById(UUID id, Interview interview) {
           UUID userId = getLoggedInUserId();
@@ -83,7 +85,6 @@ public class InterviewService {
                throw new RuntimeException("Interview not found or you don't have permission to delete it.");
           }
      }
-
 
      public boolean existsByUUID(UUID id) {
           return repository.existsById(id);

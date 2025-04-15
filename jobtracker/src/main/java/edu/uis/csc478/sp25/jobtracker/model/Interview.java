@@ -1,12 +1,9 @@
 package edu.uis.csc478.sp25.jobtracker.model;
 
-
 import lombok.Builder;
 import lombok.Data;
 import org.springframework.data.annotation.Id;
 
-import java.sql.Date;
-import java.sql.Time;
 import java.util.UUID;
 
 @Data
@@ -20,4 +17,5 @@ public class Interview {
      public String round;
      public String date;
      public String time;
+     public String company;
 }

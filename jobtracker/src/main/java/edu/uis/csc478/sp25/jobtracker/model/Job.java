@@ -23,6 +23,7 @@ public class Job {
 
      public String location;
      public String status;
+     public String company;
 
      @Column("user_id")
      public UUID userId;

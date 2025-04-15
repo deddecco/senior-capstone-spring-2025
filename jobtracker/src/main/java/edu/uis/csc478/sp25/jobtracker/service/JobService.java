@@ -9,7 +9,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.*;
 
-import static java.util.Collections.*;
+import static java.util.Collections.emptyMap;
 import static java.util.UUID.randomUUID;
 import static org.slf4j.LoggerFactory.getLogger;
 import static org.springframework.beans.BeanUtils.copyProperties;
@@ -191,21 +191,34 @@ public class JobService {
       * @param minSalary optional parameter
       * @param maxSalary optional parameter
       * @param location  optional parameter
+      * @param status optional parameter
+      * @param company optional parameter
       * @return a list of jobs that match the optional parameters, or all jobs
       */
      // Search jobs
-     public List<Job> searchJobs(String title, String level, Integer minSalary, Integer maxSalary, String location, String status) {
+     public List<Job> searchJobs(
+             String title,
+             String level,
+             Integer minSalary,
+             Integer maxSalary,
+             String location,
+             String status,
+             String company
+     ) {
           try {
                UUID userId = getLoggedInUserId(); // Get logged-in user's ID
 
-               // Delegate to repository with filters
-               return repository.findJobsByFilters(userId,
+               // Delegate to repository with filters, now including company
+               return repository.findJobsByFilters(
+                       userId,
                        title,
                        level,
                        minSalary,
                        maxSalary,
                        location,
-                       status);
+                       status,
+                       company
+               );
           } catch (Exception e) {
                logger.error("Error searching jobs for user", e);
                throw new RuntimeException("Failed to search jobs", e);
@@ -269,5 +282,29 @@ public class JobService {
                   job.getMinSalary() >= 0 &&
                   job.getMaxSalary() >= job.getMinSalary() &&
                   job.getLocation() != null && !job.getLocation().trim().isEmpty();
+     }
+
+     public Job saveJobToCollection(UUID jobId) {
+          Job job = getJobById(jobId);
+          if (!job.getStatus().equals("Saved")) {
+               job.setStatus("Saved");
+               return repository.save(job);
+          }
+          // Already saved
+          return job;
+     }
+
+     public List<Job> getSavedJobs() {
+          UUID userId = getLoggedInUserId();
+          return repository.findByUserIdAndStatus(userId);
+     }
+
+     public Job unsaveJob(UUID jobId) {
+          Job job = getJobById(jobId);
+          if ("Saved".equals(job.getStatus())) {
+               job.setStatus("");
+               return repository.save(job);
+          }
+          return job;
      }
 }

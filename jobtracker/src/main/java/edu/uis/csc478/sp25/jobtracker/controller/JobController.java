@@ -4,7 +4,6 @@ import edu.uis.csc478.sp25.jobtracker.model.Job;
 import edu.uis.csc478.sp25.jobtracker.service.JobService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -64,19 +63,23 @@ public class JobController {
              @RequestParam(required = false) Integer minSalary,
              @RequestParam(required = false) Integer maxSalary,
              @RequestParam(required = false) String location,
-             @RequestParam(required = false) String status) {
+             @RequestParam(required = false) String status,
+             @RequestParam(required = false) String company) {
           try {
-               logger.info("Received search request with filters: title={}, level={}, minSalary={}, maxSalary={}, location={}, status={}",
-                       title, level, minSalary, maxSalary, location, status);
+               logger.info("Received search request with filters: title={}, level={}, minSalary={}, maxSalary={}, location={}, status={}, company={}",
+                       title, level, minSalary, maxSalary, location, status, company);
 
                // Normalize input parameters
                String normalizedTitle = (title != null) ? title.trim() : null;
                String normalizedLevel = (level != null) ? level.trim() : null;
                String normalizedLocation = (location != null) ? location.trim() : null;
                String normalizedStatus = (status != null) ? status.trim() : null;
+               String normalizedCompany = (company != null) ? company.trim() : null;
 
                // Fetch matching jobs from the service layer
-               List<Job> matchingJobs = service.searchJobs(normalizedTitle, normalizedLevel, minSalary, maxSalary, normalizedLocation, normalizedStatus);
+               List<Job> matchingJobs = service.searchJobs(
+                       normalizedTitle, normalizedLevel, minSalary, maxSalary,
+                       normalizedLocation, normalizedStatus, normalizedCompany);
 
                // Return appropriate response based on results
                return matchingJobs.isEmpty()
@@ -87,6 +90,7 @@ public class JobController {
                return status(INTERNAL_SERVER_ERROR).build();
           }
      }
+
 
      @GetMapping("/status-counts")
      public ResponseEntity<Map<String, Integer>> getJobStatusCounts() {
@@ -162,6 +166,39 @@ public class JobController {
                }
                return status(INTERNAL_SERVER_ERROR).body(of("message",
                        "Failed to delete job"));
+          }
+     }
+
+     @PostMapping("/{id}/save")
+     public ResponseEntity<Job> saveJob(@PathVariable UUID id) {
+          try {
+               Job savedJob = service.saveJobToCollection(id);
+               return ok(savedJob);
+          } catch (RuntimeException e) {
+               logger.error("Error saving job {}", id, e);
+               return status(INTERNAL_SERVER_ERROR).build();
+          }
+     }
+
+     @GetMapping("/saved")
+     public ResponseEntity<List<Job>> getSavedJobs() {
+          try {
+               List<Job> savedJobs = service.getSavedJobs();
+               return savedJobs.isEmpty() ? noContent().build() : ok(savedJobs);
+          } catch (Exception e) {
+               logger.error("Error fetching saved jobs", e);
+               return status(INTERNAL_SERVER_ERROR).build();
+          }
+     }
+
+     @PostMapping("/{id}/unsave")
+     public ResponseEntity<Job> unsaveJob(@PathVariable UUID id) {
+          try {
+               Job unsavedJob = service.unsaveJob(id);
+               return ok(unsavedJob);
+          } catch (RuntimeException e) {
+               logger.error("Error unsaving job {}", id, e);
+               return status(INTERNAL_SERVER_ERROR).build();
           }
      }
 }

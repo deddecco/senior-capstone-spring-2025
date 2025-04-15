@@ -12,11 +12,6 @@ GET http://localhost:8080/profiles/current
 Authorization: Bearer {{auth-token}}
 apikey: {{supabase-api-key}}
 
-###
-GET https://neuurudvqouzefhvugzt.supabase.co/rest/v1/profile
-Authorization: Bearer {{auth-token}}
-apikey: {{supabase-api-key}}
-
 ## fails on purpose
 ###
 GET http://localhost:8080/profile/view
