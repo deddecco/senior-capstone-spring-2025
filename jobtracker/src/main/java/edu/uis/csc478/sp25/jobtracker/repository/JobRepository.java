@@ -74,11 +74,11 @@ public interface JobRepository extends CrudRepository<Job, UUID> {
       */
      @Query("""
                  SELECT j.status, COUNT(j)
-                 FROM Job j
+                 FROM job j
                  WHERE j.user_id = :userId
                  GROUP BY j.status
              """)
-     List<Object[]> countJobsByStatus(@Param("user_id") UUID userId);
+     List<Object[]> countJobsByStatus(@Param("userId") UUID userId);
 
      List<Job> findByUserId(UUID userId);
 
@@ -96,4 +96,8 @@ public interface JobRepository extends CrudRepository<Job, UUID> {
 
      @Query("SELECT * FROM job WHERE user_id = :userId AND status = 'Saved'")
      List<Job> findByUserIdAndStatus(@Param("userId") UUID userId);
+
+     // fetch jobs ordered by last_modified descending
+     @Query("SELECT * FROM job WHERE user_id = :userId ORDER BY last_modified DESC")
+     List<Job> findAllByUserIdOrderByLastModifiedDesc(@Param("userId") UUID userId);
 }

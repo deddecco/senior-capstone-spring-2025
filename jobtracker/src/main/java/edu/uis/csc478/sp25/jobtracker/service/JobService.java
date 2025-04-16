@@ -37,11 +37,12 @@ public class JobService {
      /*
       * @return a list of jobs in the system belonging to the current user
       */
-     // Get all jobs for the currently logged-in user
+     // Get all jobs for the currently logged-in user, sorted by last_modified descending
      public List<Job> getJobsForCurrentUser() {
           try {
                UUID userId = getLoggedInUserId();
-               return repository.findByUserId(userId);
+               // Changed to return jobs sorted by last_modified descending
+               return repository.findAllByUserIdOrderByLastModifiedDesc(userId);
           } catch (DataAccessException e) {
                logger.error("Error fetching jobs for user", e);
                throw e;

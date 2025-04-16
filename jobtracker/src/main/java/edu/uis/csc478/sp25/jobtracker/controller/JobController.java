@@ -13,6 +13,7 @@ import java.util.UUID;
 
 import static edu.uis.csc478.sp25.jobtracker.security.SecurityUtil.getLoggedInUserId;
 import static java.util.Map.of;
+import static org.slf4j.LoggerFactory.*;
 import static org.springframework.http.HttpStatus.*;
 import static org.springframework.http.ResponseEntity.*;
 
@@ -21,7 +22,7 @@ import static org.springframework.http.ResponseEntity.*;
 @RequestMapping("/jobs")
 public class JobController {
 
-     private static final Logger logger = LoggerFactory.getLogger(JobController.class);
+     private static final Logger logger = getLogger(JobController.class);
      private final JobService service;
 
      public JobController(JobService service) {
@@ -66,8 +67,20 @@ public class JobController {
              @RequestParam(required = false) String status,
              @RequestParam(required = false) String company) {
           try {
-               logger.info("Received search request with filters: title={}, level={}, minSalary={}, maxSalary={}, location={}, status={}, company={}",
-                       title, level, minSalary, maxSalary, location, status, company);
+               logger.info("Received search request with filters: title={}, " +
+                               "level={}, " +
+                               "minSalary={}, " +
+                               "maxSalary={}, " +
+                               "location={}, " +
+                               "status={}, " +
+                               "company={}",
+                       title,
+                       level,
+                       minSalary,
+                       maxSalary,
+                       location,
+                       status,
+                       company);
 
                // Normalize input parameters
                String normalizedTitle = (title != null) ? title.trim() : null;
@@ -91,7 +104,6 @@ public class JobController {
           }
      }
 
-
      @GetMapping("/status-counts")
      public ResponseEntity<Map<String, Integer>> getJobStatusCounts() {
           try {
@@ -109,10 +121,9 @@ public class JobController {
           } catch (RuntimeException e) {
                logger.error("Error fetching job status counts", e);
                return status(INTERNAL_SERVER_ERROR)
-                       .body(of()); // Return an empty map on error
+                       .body(of());
           }
      }
-
 
      @PostMapping
      public ResponseEntity<Object> createJob(@RequestBody Job job) {

@@ -5,6 +5,7 @@ import lombok.Data;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.relational.core.mapping.Column;
 
+import java.time.OffsetDateTime;
 import java.util.UUID;
 
 @Data
@@ -27,4 +28,7 @@ public class Job {
 
      @Column("user_id")
      public UUID userId;
+
+     @Column("last_modified")
+     private OffsetDateTime lastModified;
 }
