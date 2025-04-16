@@ -166,14 +166,6 @@ const Dashboard = () => {
       <div className="flex items-center justify-between">
         <h1 className="text-3xl font-bold">Dashboard</h1>
         <div className="flex gap-3">
-          <button className="inline-flex items-center gap-2 rounded-md bg-gray-900 px-4 py-2 text-sm font-medium text-white hover:bg-gray-800">
-            <span className="h-4 w-4" />
-            Career Advisor
-          </button>
-          <button className="inline-flex items-center gap-2 rounded-md bg-gray-900 px-4 py-2 text-sm font-medium text-white hover:bg-gray-800">
-            <BarChart className="h-4 w-4" />
-            View Analytics
-          </button>
         </div>
       </div>
 
