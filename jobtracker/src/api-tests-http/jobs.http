@@ -35,12 +35,12 @@ Authorization: Bearer {{auth-token}}
 apikey: {{supabase-api-key}}
 
 {
-  "title": "Software Engineer I",
-  "level": "Entry Level",
-  "minSalary": 60000,
+  "title": "Software Engineer III",
+  "level": "Mid-level",
+  "minSalary": 90000,
   "maxSalary": 100000,
-  "location": "New York",
-  "status": "Applied"
+  "location": "Richmond",
+  "status": "Hired"
 }
 
 ###

@@ -88,13 +88,19 @@ public class JobService {
                UUID userId = getLoggedInUserId();
                newJob.setUserId(userId);
 
-               // Add null check for ID (Option 2 as requested)
+               // Add null check for ID
                if (newJob.getId() == null) {
                     newJob.setId(randomUUID());
                }
 
                repository.insertJob(newJob);
-               return newJob;
+
+               Optional<Job> optionalJob = repository.findById(newJob.getId());
+               if (optionalJob.isPresent()) {
+                    return optionalJob.get();
+               } else {
+                    throw new RuntimeException("Job not found after creation");
+               }
           } catch (DataAccessException e) {
                logger.error("Failed to create job due to a database error", e);
                throw new RuntimeException("Failed to create job due to a database error", e);
