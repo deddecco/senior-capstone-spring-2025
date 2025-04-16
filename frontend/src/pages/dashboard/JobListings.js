@@ -7,6 +7,7 @@ const JobListings = () => {
     const [jobListings, setJobListings] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
+    const [updateMessage, setUpdateMessage] = useState('');
 
     // State for search and filters
     const [searchQuery, setSearchQuery] = useState('');
@@ -31,6 +32,10 @@ const JobListings = () => {
         type: 'Full-time',
         status: 'Applied'
     });
+
+    // state for Edit Job modal
+    const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+    const [editingJob, setEditingJob] = useState(null);
 
     // Fetch jobs on component mount
     useEffect(() => {
@@ -325,6 +330,79 @@ const JobListings = () => {
         }
     };
 
+    // functions for editing jobs
+    const handleEditJob = (job) => {
+        setEditingJob({...job});
+        setIsEditModalOpen(true);
+    };
+
+    const handleEditInputChange = (e) => {
+        const {name, value} = e.target;
+        setEditingJob(prev => ({...prev, [name]: value}));
+    };
+
+    const handleEditSubmit = async (e) => {
+        e.preventDefault(); // this is crucial - prevents default form submission
+
+        try {
+            // format the job data for the API with correct field names
+            const jobData = {
+                id: editingJob.id,
+                title: editingJob.title,
+                level: editingJob.level,
+                minSalary: parseInt(editingJob.minSalary) || 0,
+                maxSalary: parseInt(editingJob.maxSalary) || 0,
+                location: editingJob.location,
+                status: editingJob.status,
+                company: editingJob.company,
+                userId: editingJob.userId || editingJob.user_id
+            };
+
+            console.log('Submitting job update:', jobData);
+
+            // call the API to update the job
+            await api.updateJob(editingJob.id, jobData);
+
+            // on success - update UI
+            fetchJobs();
+            setUpdateMessage('Job updated successfully!');
+
+            // close the modal and reset form regardless of how it was submitted
+            setIsEditModalOpen(false);
+            setEditingJob(null);
+
+        } catch (err) {
+            console.error('Error updating job:', err);
+            setError('Failed to update job: ' + (err.message || 'Unknown error'));
+            // don't close the modal on error so user can try again
+        }
+    };
+
+    //func to delete job
+    const handleDeleteJob = async (jobId) => {
+        // Show confirmation dialog
+        if (window.confirm('Are you sure you want to delete this job? This action cannot be undone.')) {
+            try {
+                // call API to delete the job
+                await api.deleteJob(jobId);
+
+                // show success message
+                setUpdateMessage('Job deleted successfully!');
+
+                // clear message after 3 seconds
+                setTimeout(() => {
+                    setUpdateMessage('');
+                }, 3000);
+
+                // refresh the job listings
+                fetchJobs();
+            } catch (err) {
+                console.error('Error deleting job:', err);
+                setError('Failed to delete job: ' + (err.message || 'Unknown error'));
+            }
+        }
+    };
+
     return (
         <div className="space-y-6">
             <div className="flex items-center justify-between">
@@ -337,6 +415,13 @@ const JobListings = () => {
                     Add Job
                 </button>
             </div>
+
+            {/* success Message */}
+            {updateMessage && (
+                <div className="rounded-md bg-green-50 p-4 text-green-700">
+                    {updateMessage}
+                </div>
+            )}
 
             {/* Search Form */}
             <form onSubmit={handleSearchSubmit} className="flex flex-col gap-4 md:flex-row">
@@ -513,31 +598,37 @@ const JobListings = () => {
                                             <h3 className="font-medium text-lg">{job.title}</h3>
                                             <p className="text-gray-600">{job.company} • {job.location}</p>
                                             <div className="mt-2 flex flex-wrap gap-2">
-                        <span
-                            className="inline-flex items-center rounded-full bg-blue-100 px-2.5 py-0.5 text-xs font-medium text-blue-800">
-                          {job.type || job.level}
-                        </span>
+                                                <span
+                                                    className="inline-flex items-center rounded-full bg-blue-100 px-2.5 py-0.5 text-xs font-medium text-blue-800">
+                                                  {job.type || job.level}
+                                                </span>
                                                 <span
                                                     className="inline-flex items-center rounded-full bg-green-100 px-2.5 py-0.5 text-xs font-medium text-green-800">
-                          {job.salary || `$${job.minSalary || 0} - $${job.maxSalary || 0}`}
-                        </span>
+                                                  {job.salary || `$${job.minSalary || 0} - $${job.maxSalary || 0}`}
+                                                </span>
                                                 <span
                                                     className="inline-flex items-center rounded-full bg-gray-100 px-2.5 py-0.5 text-xs font-medium text-gray-800">
-                          {job.posted || 'Recently added'}
-                        </span>
+                                                  {job.posted || 'Recently added'}
+                                                </span>
                                                 {job.status && (
                                                     <span
                                                         className="inline-flex items-center rounded-full bg-purple-100 px-2.5 py-0.5 text-xs font-medium text-purple-800">
-                            {job.status}
-                          </span>
+                                                    {job.status}
+                                                  </span>
                                                 )}
                                             </div>
                                         </div>
                                     </div>
                                     <div className="flex gap-2">
                                         <button
+                                            onClick={() => handleEditJob(job)}
                                             className="rounded-md bg-blue-600 px-3 py-1.5 text-sm font-medium text-white hover:bg-blue-700">
-                                            Apply
+                                            Edit
+                                        </button>
+                                        <button
+                                            onClick={() => handleDeleteJob(job.id)}
+                                            className="rounded-md bg-red-600 px-3 py-1.5 text-sm font-medium text-white hover:bg-red-700">
+                                            Delete
                                         </button>
                                         <button
                                             className="rounded-md border border-gray-300 px-3 py-1.5 text-sm font-medium hover:bg-gray-50">
@@ -690,6 +781,151 @@ const JobListings = () => {
                                     className="rounded-md bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700"
                                 >
                                     Add Job
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            )}
+
+            {/* edit Job Modal */}
+            {isEditModalOpen && editingJob && (
+                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+                    <div className="bg-white rounded-lg p-6 w-full max-w-md">
+                        <div className="flex justify-between items-center mb-4">
+                            <h2 className="text-xl font-bold">Edit Job</h2>
+                            <button
+                                onClick={() => setIsEditModalOpen(false)}
+                                className="text-gray-500 hover:text-gray-700"
+                            >
+                                <X className="h-5 w-5"/>
+                            </button>
+                        </div>
+
+                        <form onSubmit={handleEditSubmit}>
+                            <div className="space-y-4">
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                                        Job Title
+                                    </label>
+                                    <input
+                                        type="text"
+                                        name="title"
+                                        value={editingJob.title}
+                                        onChange={handleEditInputChange}
+                                        required
+                                        className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                    />
+                                </div>
+
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                                        Company Name
+                                    </label>
+                                    <input
+                                        type="text"
+                                        name="company"
+                                        value={editingJob.company}
+                                        onChange={handleEditInputChange}
+                                        required
+                                        className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                    />
+                                </div>
+
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                                        Location
+                                    </label>
+                                    <input
+                                        type="text"
+                                        name="location"
+                                        value={editingJob.location}
+                                        onChange={handleEditInputChange}
+                                        required
+                                        className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                    />
+                                </div>
+
+                                <div className="grid grid-cols-2 gap-4">
+                                    <div>
+                                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                                            Min Salary
+                                        </label>
+                                        <input
+                                            type="number"
+                                            name="minSalary"
+                                            value={editingJob.minSalary}
+                                            onChange={handleEditInputChange}
+                                            required
+                                            className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                        />
+                                    </div>
+
+                                    <div>
+                                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                                            Max Salary
+                                        </label>
+                                        <input
+                                            type="number"
+                                            name="maxSalary"
+                                            value={editingJob.maxSalary}
+                                            onChange={handleEditInputChange}
+                                            required
+                                            className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                        />
+                                    </div>
+                                </div>
+
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                                        Job Type
+                                    </label>
+                                    <select
+                                        name="level"
+                                        value={editingJob.level}
+                                        onChange={handleEditInputChange}
+                                        className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                    >
+                                        <option value="Full-time">Full-time</option>
+                                        <option value="Part-time">Part-time</option>
+                                        <option value="Contract">Contract</option>
+                                        <option value="Internship">Internship</option>
+                                    </select>
+                                </div>
+
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                                        Status
+                                    </label>
+                                    <select
+                                        name="status"
+                                        value={editingJob.status}
+                                        onChange={handleEditInputChange}
+                                        className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                    >
+                                        <option value="Saved">Saved</option>
+                                        <option value="Applied">Applied</option>
+                                        <option value="Interview">Interview</option>
+                                        <option value="Offer">Offer</option>
+                                        <option value="Rejected">Rejected</option>
+                                        <option value="Accepted">Accepted</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div className="mt-6 flex justify-end gap-3">
+                                <button
+                                    type="button"
+                                    onClick={() => setIsEditModalOpen(false)}
+                                    className="rounded-md border border-gray-300 px-4 py-2 text-sm font-medium hover:bg-gray-50"
+                                >
+                                    Cancel
+                                </button>
+                                <button
+                                    type="submit"
+                                    className="rounded-md bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700"
+                                >
+                                    Save Changes
                                 </button>
                             </div>
                         </form>

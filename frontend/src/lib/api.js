@@ -107,18 +107,32 @@ export const api = {
 
     updateJob: async (jobId, jobData) => {
         const headers = await getAuthHeader();
-        const response = await fetch(`${API_URL}/jobs/${jobId}`, {
-            method: 'PUT',
-            headers: {
-                ...headers,
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(jobData)
-        });
-        if (!response.ok) {
-            throw new Error('Failed to update job');
+
+        // log what we're sending for debugging
+        console.log('Updating job:', jobId, 'with data:', jobData);
+
+        try {
+            const response = await fetch(`${API_URL}/jobs/${jobId}`, {
+                method: 'PUT',
+                headers: {
+                    ...headers,
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(jobData)
+            });
+
+            if (!response.ok) {
+                // try to get detailed error message
+                const errorText = await response.text();
+                console.error('Update failed:', response.status, errorText);
+                throw new Error(`Failed to update job: ${response.status} ${errorText}`);
+            }
+
+            return response.json();
+        } catch (error) {
+            console.error('Job update API error:', error);
+            throw error;
         }
-        return response.json();
     },
 
     deleteJob: async (jobId) => {
