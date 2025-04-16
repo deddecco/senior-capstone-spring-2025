@@ -165,8 +165,6 @@ const Dashboard = () => {
       
       <div className="flex items-center justify-between">
         <h1 className="text-3xl font-bold">Dashboard</h1>
-        <div className="flex gap-3">
-        </div>
       </div>
 
       {/* Stats Cards */}
