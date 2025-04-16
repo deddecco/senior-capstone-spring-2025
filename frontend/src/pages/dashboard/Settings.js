@@ -7,7 +7,7 @@ const Settings = () => {
   const [userData, setUserData] = useState({
     name: '',
     email: '',
-    phone: '',
+    phoneNumber: '',
     location: '',
     bio: '',
   });
@@ -53,7 +53,7 @@ const Settings = () => {
     const updatedData = {
       name: formData.get('name'),
       email: formData.get('email'),
-      phone: formData.get('phone'),
+      phoneNumber: formData.get('phoneNumber'),
       location: formData.get('location'),
       bio: formData.get('bio'),
     };
@@ -144,8 +144,8 @@ const Settings = () => {
                               </label>
                               <input
                                   type="tel"
-                                  name="phone"
-                                  defaultValue={userData.phone}
+                                  name="phoneNumber"
+                                  defaultValue={userData.phoneNumber}
                                   className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
                               />
                             </div>
