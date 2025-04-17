@@ -16,6 +16,10 @@ import static org.slf4j.LoggerFactory.getLogger;
 import static org.springframework.http.HttpStatus.*;
 import static org.springframework.http.ResponseEntity.*;
 
+/**
+ * REST controller for managing Interview resources.
+ * Handles CRUD operations and search for interviews.
+ */
 @CrossOrigin
 @RestController
 @RequestMapping("/interviews")
@@ -24,25 +28,30 @@ public class InterviewController {
      private static final Logger logger = getLogger(InterviewController.class);
      private final InterviewService service;
 
+     /**
+      * Constructs a new InterviewController with the given InterviewService.
+      * @param service the InterviewService used for business logic
+      */
      public InterviewController(InterviewService service) {
           this.service = service;
      }
 
      /**
-      * Get all interviews for the currently logged-in user.
-      * @return a response entity with either an OK code and a list of all interviews associated with a user, or noContent if there are none
+      * Retrieves all interviews for the currently logged-in user.
+      * @return 200 OK with the list of interviews, or 204 No Content if none found
       */
      @GetMapping
      public ResponseEntity<List<Interview>> getAllInterviews() {
           List<Interview> interviews = service.getAllInterviewsForUser();
+          // If the list is empty, return 204 No Content;
+          // else, return 200 OK with the list.
           return interviews.isEmpty() ? noContent().build() : ok(interviews);
      }
 
      /**
-      * Get a specific interview by ID.
-      *
-      * @param id the ID of the interview to retrieve
-      * @return that interview to be displayed by the frontend
+      * Retrieves a specific interview by its ID for the current user.
+      * @param id the UUID of the interview
+      * @return 200 OK with the interview, 404 if not found or no permission, or 500 on error
       */
      @GetMapping("/{id}")
      public ResponseEntity<Object> getInterviewById(@PathVariable UUID id) {
@@ -51,6 +60,7 @@ public class InterviewController {
                return ok(interview);
           } catch (RuntimeException e) {
                logger.error("Error fetching interview by ID {}", id, e);
+               // Build a detailed error response for the frontend
                Map<String, Object> errorResponse = new HashMap<>();
                errorResponse.put("status", NOT_FOUND.value());
                errorResponse.put("error", "Not Found");
@@ -60,15 +70,13 @@ public class InterviewController {
      }
 
      /**
-      * Search interviews based on optional parameters.
-      *
-      * @param format optional parameter for the search
-      * @param round  optional parameter for the search
-      * @param date   optional parameter for the search
-      * @param time   optional parameter for the search
-      * @param company optional parameter for the search
-      * @return all the interviews that match all the parameters given in the query,
-      * or all the user's interviews if none of the parameters are specified
+      * Searches interviews for the current user based on optional filters.
+      * @param format  optional interview format filter (e.g., "phone", "onsite")
+      * @param round   optional interview round filter (e.g., "first", "final")
+      * @param date    optional interview date filter (as a string)
+      * @param time    optional interview time filter (as a string)
+      * @param company optional company filter
+      * @return 200 OK with matching interviews, 204 No Content if none, or 500 on error
       */
      @GetMapping({"/search", "/search/"})
      public ResponseEntity<List<Interview>> searchInterviews(
@@ -79,15 +87,20 @@ public class InterviewController {
              @RequestParam(required = false) String company) {
           try {
                logger.info("Received search request with filters: format={}, round={}, date={}, time={}, company={}",
-                       format, round, date, time, company);
+                       format,
+                       round,
+                       date,
+                       time,
+                       company);
 
-               // Normalize parameters
+               // Ternary operators: If the parameter is not null, trim it; else, leave it null.
                String normalizedFormat = (format != null) ? format.trim() : null;
                String normalizedRound = (round != null) ? round.trim() : null;
                String normalizedDate = (date != null) ? date.trim() : null;
                String normalizedTime = (time != null) ? time.trim() : null;
                String normalizedCompany = (company != null) ? company.trim() : null;
 
+               // Call the service layer to perform the search with normalized parameters
                List<Interview> matchingInterviews = service.searchInterviews(
                        normalizedFormat,
                        normalizedRound,
@@ -96,6 +109,7 @@ public class InterviewController {
                        normalizedCompany
                );
 
+               // Ternary operator: If no interviews match, return 204 No Content; else, return 200 OK with interviews.
                return matchingInterviews.isEmpty()
                        ? noContent().build()
                        : ok(matchingInterviews);
@@ -107,24 +121,25 @@ public class InterviewController {
 
 
      /**
-      * Create a new interview.
-      *
-      * @param interview an interview object containing its information
-      * @return either that an interview was created, or an error explaining why not
+      * Creates a new interview for the current user.
+      * @param interview the Interview object containing its information
+      * @return 201 Created with the new interview, 400 if required fields are missing, 409 if duplicate, or 500 on error
       */
      @PostMapping
      public ResponseEntity<Object> createInterview(@RequestBody Interview interview) {
           try {
+               // Validate required fields before proceeding
                if (interview.getDate() == null || interview.getTime() == null) {
                     return badRequest().body(of("message", "Date and Time are required."));
                }
 
-               // Create interview
+               // Create the interview using the service layer
                Interview createdInterview = service.createInterview(interview);
                return status(CREATED).body(createdInterview);
           } catch (RuntimeException e) {
                logger.error("Failed to create interview: {}", e.getMessage(), e);
 
+               // If the exception message contains "already exists", return 409 Conflict; else, 500 Internal Server Error.
                if (e.getMessage().contains("already exists")) {
                     return status(CONFLICT).body(of("message", "Interview already exists."));
                }
@@ -134,15 +149,15 @@ public class InterviewController {
      }
 
      /**
-      * Update an existing interview.
-      *
-      * @param id        the ID of the interview to update
-      * @param interview replacement values for the fields of that interview-- do not change IDs
-      * @return either that the interview was updated, or an error explaining why not
+      * Updates an existing interview for the current user.
+      * @param id        the UUID of the interview to update
+      * @param interview the Interview object with updated information (IDs must match)
+      * @return 200 OK with the updated interview, 400 if IDs mismatch, 404 if not found/no permission, or 500 on error
       */
      @PutMapping("/{id}")
      public ResponseEntity<Object> updateInterview(@PathVariable UUID id,
                                                    @RequestBody Interview interview) {
+          // Validate that the interview ID in the path matches the ID in the body
           if (interview.id == null || !interview.id.equals(id)) {
                return badRequest().body(of("message",
                        "The interview ID in the path does not match the ID in the request body"));
@@ -153,6 +168,7 @@ public class InterviewController {
                return ok(updatedInterview);
           } catch (RuntimeException e) {
                logger.error("Failed to update interview with ID {}", id, e);
+               // If the exception message contains "not found" or "permission", return 404 Not Found; else, 500 Internal Server Error.
                if (e.getMessage().contains("not found") || e.getMessage().contains("permission")) {
                     return status(NOT_FOUND).body(of("message", e.getMessage()));
                }
@@ -162,18 +178,19 @@ public class InterviewController {
      }
 
      /**
-      * Delete an existing interview.
-      *
-      * @param id the ID of the interview to delete
-      * @return either that the interview was deleted, or an error explaining why not
+      * Deletes an existing interview for the current user.
+      * @param id the UUID of the interview to delete
+      * @return 204 No Content if deleted, 404 if not found/no permission, or 500 on error
       */
      @DeleteMapping("/{id}")
      public ResponseEntity<Object> deleteInterview(@PathVariable UUID id) {
           try {
                service.deleteInterviewById(id);
+               // No content is returned on successful deletion
                return noContent().build();
           } catch (RuntimeException e) {
                logger.error("Failed to delete interview with ID {}", id, e);
+               // If the exception message contains "not found" or "permission", return 404 Not Found; else, 500 Internal Server Error.
                if (e.getMessage().contains("not found") || e.getMessage().contains("permission")) {
                     return status(NOT_FOUND).body(of("message", e.getMessage()));
                }

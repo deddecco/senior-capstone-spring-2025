@@ -31,4 +31,7 @@ public class Job {
 
      @Column("last_modified")
      private OffsetDateTime lastModified;
+
+     @Column("favorite")
+     private boolean favorite;
 }
