@@ -243,7 +243,7 @@ public class JobController {
       * @param id the UUID of the job to favorite
       * @return 200 OK with the updated job, or 500 on error
       */
-     @PutMapping("/{id}/favorite")
+     @PutMapping({"/{id}/favorite", "/{id}/favorite/"})
      public ResponseEntity<Job> favoriteJob(@PathVariable UUID id) {
           try {
                Job favoritedJob = service.favoriteJob(id);
@@ -276,7 +276,7 @@ public class JobController {
       * @param id the UUID of the job to unfavorite
       * @return 200 OK with the updated job, or 500 on error
       */
-     @PutMapping("/{id}/unfavorite")
+     @PutMapping({"/{id}/unfavorite", "/{id}/unfavorite/"})
      public ResponseEntity<Job> unfavoriteJob(@PathVariable UUID id) {
           try {
                Job unfavoritedJob = service.unfavoriteJob(id);

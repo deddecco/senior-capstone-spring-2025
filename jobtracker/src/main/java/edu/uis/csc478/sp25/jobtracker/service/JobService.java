@@ -220,7 +220,6 @@ public class JobService {
 
      /**
       * Searches jobs for the current user based on optional filters.
-      * <p>
       * Any parameter may be null, in which case it is ignored in the search.
       * @param title     optional job title filter
       * @param level     optional job level filter
@@ -265,7 +264,6 @@ public class JobService {
 
      /**
       * Retrieves a map of job statuses and their counts for the logged-in user.
-      * <p>
       * Returns an empty map if the user has no jobs.
       * @return map of status to count
       * @throws RuntimeException if a database or unexpected error occurs
@@ -311,7 +309,6 @@ public class JobService {
 
      /**
       * Validates whether a job object has all required fields filled in and logical values.
-      * <p>
       * Used before creating or updating jobs.
       * @param job the Job object to validate
       * @return true if the job is valid, false otherwise
@@ -328,7 +325,6 @@ public class JobService {
 
      /**
       * Marks a job as favorite for the current user.
-      * <p>
       * Only updates if the job is not already favorited.
       * @param jobId the UUID of the job to favorite
       * @return the updated Job object
@@ -356,7 +352,6 @@ public class JobService {
 
      /**
       * Unmarks a job as favorite for the current user.
-      * <p>
       * Only updates if the job is currently favorited.
       * @param jobId the UUID of the job to unfavorite
       * @return the updated Job object
