@@ -9,7 +9,7 @@ import SignUpConfirmation from './pages/SignUpConfirmation';
 import DashboardLayout from './components/dashboard/DashboardLayout';
 import Dashboard from './pages/dashboard/Dashboard';
 import JobListings from './pages/dashboard/JobListings';
-import SavedJobs from './pages/dashboard/SavedJobs';
+import FavoriteJobs from './pages/dashboard/FavoriteJobs';
 import Settings from './pages/dashboard/Settings';
 import './App.css';
 
@@ -28,7 +28,7 @@ function App() {
           <Route path="/dashboard" element={<DashboardLayout />}>
             <Route index element={<Dashboard />} />
             <Route path="job-listings" element={<JobListings />} />
-            <Route path="saved-jobs" element={<SavedJobs />} />
+            <Route path="saved-jobs" element={<FavoriteJobs />} />
             <Route path="settings" element={<Settings />} />
           </Route>
         </Routes>

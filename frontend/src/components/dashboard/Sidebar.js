@@ -19,7 +19,7 @@ const Sidebar = () => {
   const navItems = [
     { icon: Home, label: 'Dashboard', path: '/dashboard' },
     { icon: Briefcase, label: 'Job Listings', path: '/dashboard/job-listings' },
-    { icon: Bookmark, label: 'Saved Jobs', path: '/dashboard/saved-jobs' },
+    { icon: Bookmark, label: 'Favorite Jobs', path: '/dashboard/favorite-jobs' },
     { icon: Settings, label: 'Settings', path: '/dashboard/settings' },
   ];
 
