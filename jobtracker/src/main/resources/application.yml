@@ -19,3 +19,5 @@ logging:
     edu.uis.csc478.sp25.jobtracker: DEBUG
     org.springframework.security: DEBUG
     com.zaxxer.hikari: DEBUG
+    org.springframework.jdbc: DEBUG
+    org.springframework.transaction: DEBUG
