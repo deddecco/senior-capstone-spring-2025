@@ -202,7 +202,6 @@ public class JobService {
      public void deleteJob(UUID jobId) {
           try {
                UUID userId = getLoggedInUserId();
-               // Check for existence and ownership before deletion
                if (!repository.existsByIdAndUserId(jobId, userId)) {
                     throw new RuntimeException("Job not found or you don't have permission to delete it.");
                }
@@ -210,11 +209,6 @@ public class JobService {
           } catch (DataAccessException e) {
                logger.error("Failed to delete job with ID {}", jobId, e);
                throw new RuntimeException("Failed to delete job due to a database error", e);
-          } catch (RuntimeException e) {
-               throw e;
-          } catch (Exception e) {
-               logger.error("Unexpected error while deleting job with ID {}", jobId, e);
-               throw new RuntimeException("An unexpected error occurred", e);
           }
      }
 

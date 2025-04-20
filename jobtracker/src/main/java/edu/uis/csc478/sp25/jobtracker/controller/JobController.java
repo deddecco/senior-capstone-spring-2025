@@ -230,11 +230,7 @@ public class JobController {
                return ok(of("message", "Job deleted successfully"));
           } catch (RuntimeException e) {
                logger.error("Failed to delete job with ID {}", id, e);
-               // If the exception message contains "not found", return 404 Not Found; else, 500 Internal Server Error.
-               if (e.getMessage().contains("not found")) {
-                    return status(NOT_FOUND).body(of("message", e.getMessage()));
-               }
-               return status(INTERNAL_SERVER_ERROR).body(of("message", "Failed to delete job"));
+               return status(NOT_FOUND).body(of("message", e.getMessage()));
           }
      }
 

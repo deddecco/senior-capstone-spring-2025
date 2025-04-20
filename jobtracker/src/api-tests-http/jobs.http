@@ -7,7 +7,7 @@ Authorization: Bearer {{auth-token}}
 apikey: {{supabase-api-key}}
 
 ###
-GET http://localhost:8080/jobs/9892282a-4932-47d5-9e6e-2633d9f7a11f
+GET http://localhost:8080/jobs/ac34e641-5ca5-41a0-89f6-5fb05a37819a
 Authorization: Bearer {{auth-token}}
 apikey: {{supabase-api-key}}
 
@@ -80,20 +80,23 @@ apikey: {{supabase-api-key}}
 
 ###
 # @name updating Andre 3.0
-PUT http://localhost:8080/jobs
+PUT http://localhost:8080/jobs/775dc85f-2445-46a4-a65a-878813cf2069
 Authorization: Bearer {{auth-token}}
 apikey: {{supabase-api-key}}
 Content-Type: application/json
 
 {
-  "id": "9cd61496-6913-4a9c-a946-5934ee4ac7b8",
-  "title": "Reliability Engineer I",
-  "level": "Entry Level",
-  "minsalary": 56000,
-  "maxsalary": 875000,
-  "location": "Philadelphia",
-  "status": "Applied",
-  "user_id": "3ed484ad-7bac-4906-b56c-994b325865f2"
+  "id": "775dc85f-2445-46a4-a65a-878813cf2069",
+  "title": "Software Engineer III",
+  "level": "Mid-level",
+  "minSalary": 95000,
+  "maxSalary": 95000,
+  "location": "Richmond",
+  "status": "Hired",
+  "company": "ABC, Inc.",
+  "userId": "3ed484ad-7bac-4906-b56c-994b325865f2",
+  "lastModified": "2025-04-16T20:24:35.71559Z",
+  "favorite": false
 }
 
 ###
@@ -133,7 +136,7 @@ Authorization: Bearer {{auth-token}}
 
 ###
 #@name delete Andre's job
-DELETE http://localhost:8080/jobs/pepperonipizza
+DELETE http://localhost:8080/jobs/775dc85f-2445-46a4-a65a-878813cf2069
 Content-Type: application/json
 Authorization: Bearer {{auth-token}}
 apikey: {{supabase-api-key}}
