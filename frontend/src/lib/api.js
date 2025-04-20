@@ -38,16 +38,36 @@ export const api = {
     // Job endpoints
     getJobs: async () => {
         const headers = await getAuthHeader();
-        const response = await fetch(`${API_URL}/jobs`, {
-            headers: {
-                ...headers,
-                'Content-Type': 'application/json'
+        try {
+            const response = await fetch(`${API_URL}/jobs`, {
+                headers: {
+                    ...headers,
+                    'Content-Type': 'application/json'
+                }
+            });
+
+            // Check if response is ok (status in the range 200-299)
+            if (!response.ok) {
+                throw new Error(`Failed to fetch jobs: ${response.status} ${response.statusText}`);
             }
-        });
-        if (!response.ok) {
-            throw new Error('Failed to fetch jobs');
+
+            // Check for empty response
+            const text = await response.text();
+            if (!text) {
+                return []; // Return empty array for empty responses
+            }
+
+            try {
+                // Try to parse the response as JSON
+                return JSON.parse(text);
+            } catch (parseError) {
+                console.error('Error parsing JSON response:', parseError);
+                throw new Error('Invalid JSON response from server');
+            }
+        } catch (error) {
+            console.error('API call failed:', error);
+            throw error;
         }
-        return response.json();
     },
 
     searchJobs: async (searchParams) => {
@@ -90,28 +110,47 @@ export const api = {
     },
 
     createJob: async (jobData) => {
-        const headers = await getAuthHeader();
-        const response = await fetch(`${API_URL}/jobs`, {
-            method: 'POST',
-            headers: {
-                ...headers,
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(jobData)
-        });
-        if (!response.ok) {
-            throw new Error('Failed to create job');
+        try {
+            const headers = await getAuthHeader();
+            const response = await fetch(`${API_URL}/jobs`, {
+                method: 'POST',
+                headers: {
+                    ...headers,
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(jobData)
+            });
+
+            // Log response for debugging
+            console.log('Create job response status:', response.status);
+
+            if (!response.ok) {
+                let errorMessage = 'Failed to create job';
+                try {
+                    // Try to get detailed error from response
+                    const errorData = await response.json();
+                    if (errorData && errorData.message) {
+                        errorMessage = errorData.message;
+                    }
+                } catch (parseError) {
+                    // If can't parse error response, use status code
+                    errorMessage = `Server error (${response.status}) - Failed to create job`;
+                }
+                throw new Error(errorMessage);
+            }
+
+            return response.json();
+        } catch (error) {
+            console.error('Create job API error:', error);
+            throw error;
         }
-        return response.json();
     },
 
     updateJob: async (jobId, jobData) => {
         const headers = await getAuthHeader();
-
-        // log what we're sending for debugging
-        console.log('Updating job:', jobId, 'with data:', jobData);
-
         try {
+            console.log('Updating job:', jobId, 'with data:', jobData);
+
             const response = await fetch(`${API_URL}/jobs/${jobId}`, {
                 method: 'PUT',
                 headers: {
@@ -122,10 +161,18 @@ export const api = {
             });
 
             if (!response.ok) {
-                // try to get detailed error message
-                const errorText = await response.text();
-                console.error('Update failed:', response.status, errorText);
-                throw new Error(`Failed to update job: ${response.status} ${errorText}`);
+                // Try to get error details from response
+                let errorMessage = 'Failed to update job';
+                try {
+                    const errorData = await response.json();
+                    if (errorData.message) {
+                        errorMessage = errorData.message;
+                    }
+                } catch (parseError) {
+                    // If can't parse response, use status
+                    errorMessage = `Server error (${response.status}) - ${errorMessage}`;
+                }
+                throw new Error(errorMessage);
             }
 
             return response.json();
@@ -210,5 +257,41 @@ export const api = {
             throw new Error('Failed to delete interview');
         }
         return response.json();
-    }
+    },
+
+    getFavoriteJobs: async () => {
+        const headers = await getAuthHeader();
+        const response = await fetch(`${API_URL}/jobs/favorites`, {
+            headers: {
+                ...headers,
+                'Content-Type': 'application/json'
+            }
+        });
+
+        if (!response.ok) {
+            if (response.status === 204) {
+                return []; // No content means empty array
+            }
+            throw new Error('Failed to fetch favorite jobs');
+        }
+
+        return response.json();
+    },
+
+    toggleJobFavorite: async (jobId, action) => {
+        const headers = await getAuthHeader();
+        const response = await fetch(`${API_URL}/jobs/${jobId}/${action}`, {
+            method: 'PUT',
+            headers: {
+                ...headers,
+                'Content-Type': 'application/json'
+            }
+        });
+
+        if (!response.ok) {
+            throw new Error(`Failed to ${action} job`);
+        }
+
+        return response.json();
+    },
 };
