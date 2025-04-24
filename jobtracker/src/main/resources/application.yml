@@ -5,10 +5,10 @@ spring:
     oauth2:
       resourceserver:
         jwt:
-          jwk-set-uri: https://neuurudvqouzefhvugzt.supabase.co/auth/v1/jwks
+          jwk-set-uri: https://gztnnnokimzaodmurzpf.supabase.co/auth/v1/jwks
   datasource:
-    url: jdbc:postgresql://aws-0-us-west-1.pooler.supabase.com:6543/postgres
-    username: postgres.neuurudvqouzefhvugzt
+    url: jdbc:postgresql://aws-0-us-east-1.pooler.supabase.com:6543/postgres
+    username: postgres.gztnnnokimzaodmurzpf
     password: ${DB_PASSWORD}
     driver-class-name: org.postgresql.Driver
     hikari:
