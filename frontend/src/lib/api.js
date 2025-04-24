@@ -175,7 +175,21 @@ export const api = {
                 throw new Error(errorMessage);
             }
 
-            return response.json();
+            // check for empty response
+            const text = await response.text();
+            if (!text) {
+                // return the original data if response is empty
+                return jobData;
+            }
+
+            try {
+                // try to parse the response as JSON
+                return JSON.parse(text);
+            } catch (parseError) {
+                console.error('Error parsing JSON response:', parseError);
+                // return the original data if JSON parsing fails
+                return jobData;
+            }
         } catch (error) {
             console.error('Job update API error:', error);
             throw error;
@@ -261,21 +275,41 @@ export const api = {
 
     getFavoriteJobs: async () => {
         const headers = await getAuthHeader();
-        const response = await fetch(`${API_URL}/jobs/favorites`, {
-            headers: {
-                ...headers,
-                'Content-Type': 'application/json'
-            }
-        });
+        try {
+            const response = await fetch(`${API_URL}/jobs/favorites`, {
+                headers: {
+                    ...headers,
+                    'Content-Type': 'application/json'
+                }
+            });
 
-        if (!response.ok) {
+            // if status is 204 (No Content), return an empty array
             if (response.status === 204) {
-                return []; // No content means empty array
+                return [];
             }
-            throw new Error('Failed to fetch favorite jobs');
-        }
 
-        return response.json();
+            // check if response is ok (status in the range 200-299)
+            if (!response.ok) {
+                throw new Error(`Failed to fetch favorite jobs: ${response.status} ${response.statusText}`);
+            }
+
+            // check for empty response
+            const text = await response.text();
+            if (!text) {
+                return []; // return empty array for empty responses
+            }
+
+            try {
+                // try to parse the response as JSON
+                return JSON.parse(text);
+            } catch (parseError) {
+                console.error('Error parsing JSON response:', parseError);
+                throw new Error('Invalid JSON response from server');
+            }
+        } catch (error) {
+            console.error('API call failed:', error);
+            throw error;
+        }
     },
 
     toggleJobFavorite: async (jobId, action) => {

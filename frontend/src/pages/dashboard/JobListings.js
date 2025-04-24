@@ -284,7 +284,8 @@ const JobListings = () => {
                 location: editingJob.location,
                 status: editingJob.status,
                 company: editingJob.company,
-                userId: editingJob.userId || editingJob.user_id
+                userId: editingJob.userId || editingJob.user_id,
+                favorite: editingJob.favorite
             };
 
             console.log('Submitting job update:', jobData);

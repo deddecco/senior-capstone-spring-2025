@@ -28,7 +28,7 @@ function App() {
           <Route path="/dashboard" element={<DashboardLayout />}>
             <Route index element={<Dashboard />} />
             <Route path="job-listings" element={<JobListings />} />
-            <Route path="saved-jobs" element={<FavoriteJobs />} />
+            <Route path="favorite-jobs" element={<FavoriteJobs />} />
             <Route path="settings" element={<Settings />} />
           </Route>
         </Routes>
