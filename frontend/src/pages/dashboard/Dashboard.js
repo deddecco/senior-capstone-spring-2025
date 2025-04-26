@@ -3,12 +3,14 @@ import { BarChart, Calendar, Star } from 'lucide-react';
 import { api } from '../../lib/api';
 
 const Dashboard = () => {
+ // fixme get rid of this fallback data
   const [stats, setStats] = useState({
     totalApplications: 24,
     pendingInterviews: 3,
     savedJobs: 12
   });
 
+  // fixme get rid of this fallback data
   const [recentActivity, setRecentActivity] = useState([
     {
       company: 'Google',
@@ -84,7 +86,9 @@ const Dashboard = () => {
       if (recentJobs.length > 0) {
         setRecentActivity(recentJobs);
       } else {
-        setRecentActivity([
+
+        // fixme this should not be fallback data
+       /* setRecentActivity([
           {
             company: 'Google',
             position: 'Senior Frontend Developer',
@@ -103,10 +107,11 @@ const Dashboard = () => {
             time: '2 days ago',
             icon: 'star'
           }
-        ]);
+        ]);*/
       }
       
       if (jobs.length === 0 && interviews.length === 0) {
+        // fixme this is wrong-- this should not be an error; it's ok to have no jobs or interviews
         setError('Backend unavailable - showing local data');
       } else {
         setError(null);
@@ -114,14 +119,16 @@ const Dashboard = () => {
     } catch (err) {
       console.error('Error fetching dashboard data:', err);
       setError('Failed to fetch dashboard data');
-      
+
+
+      // fixme get rid of this fallback data
       // Use mock data as fallback
       setStats({
         totalApplications: 24,
         pendingInterviews: 3,
         savedJobs: 12
       });
-      
+      // fixme get rid of this fallback data
       setRecentActivity([
         {
           company: 'Google',
@@ -212,6 +219,9 @@ const Dashboard = () => {
         </div>
       </div>
 
+
+      {/*fixme*/}
+      {/*this should come from the status-counts endpoint, not be hardcoded*/}
       {/* Application Pipeline and Recent Activity */}
       <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
         {/* Application Pipeline */}
