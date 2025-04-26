@@ -7,6 +7,11 @@ Authorization: Bearer {{auth-token}}
 apikey: {{supabase-api-key}}
 
 ###
+GET http://localhost:8080/jobs/favorites
+Authorization: Bearer {{auth-token}}
+apikey: {{supabase-api-key}}
+
+###
 GET http://localhost:8080/jobs/ac34e641-5ca5-41a0-89f6-5fb05a37819a
 Authorization: Bearer {{auth-token}}
 apikey: {{supabase-api-key}}
