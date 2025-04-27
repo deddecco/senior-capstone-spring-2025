@@ -64,20 +64,17 @@ const Dashboard = () => {
             const totalJobs = jobs.length;
             const pendingInterviews = interviews.length;
             const savedJobs = jobs.filter(job => job.status === 'Saved').length;
-            const offers = statusCounts.offers;
-            const applied = statusCounts.appliedJobs;
+            const offers = jobs.filter(job => job.status === 'Offer').length;
+            const applied = jobs.filter(job => job.status === 'Applied').length;
 
             setStats({
-                totalJobs,
-                pendingInterviews,
-                savedJobs
+                totalJobs, pendingInterviews, savedJobs, offers, applied
             });
 
             // Create recent activity from jobs and interviews
             const recentJobs = jobs.slice(0, 3).map(job => ({
                 company: job.company,
-                position: job.title,
-               // time: job.created_at ? new Date(job.created_at).toLocaleDateString() : job.posted || '2 hours ago',
+                position: job.title, // time: job.created_at ? new Date(job.created_at).toLocaleDateString() : job.posted || '2 hours ago',
                 icon: 'email'
             }));
 
@@ -93,7 +90,9 @@ const Dashboard = () => {
             setStats({
                 totalJobs: 0,
                 pendingInterviews: 0,
-                savedJobs: 0
+                savedJobs: 0,
+                offers: 0,
+                applied: 0
             });
             setRecentActivity([]);
         } finally {
@@ -102,20 +101,15 @@ const Dashboard = () => {
     };
 
     if (loading) {
-        return (
-            <div className="text-center py-8">
+        return (<div className="text-center py-8">
                 <p className="text-gray-500">Loading dashboard data...</p>
-            </div>
-        );
+            </div>);
     }
 
-    return (
-        <div className="space-y-6">
-            {error && (
-                <div className="rounded-md bg-red-50 p-4 text-red-700 mb-4">
+    return (<div className="space-y-6">
+            {error && (<div className="rounded-md bg-red-50 p-4 text-red-700 mb-4">
                     {error}
-                </div>
-            )}
+                </div>)}
 
             <div className="flex items-center justify-between">
                 <h1 className="text-3xl font-bold">Dashboard</h1>
@@ -189,7 +183,7 @@ const Dashboard = () => {
                             <span className="text-xs mt-2">Interview</span>
                         </div>
                         <div className="flex flex-col items-center">
-                            <div className="bg-blue-500 w-12 h-0"></div>
+                            <div className="bg-blue-500 w-12" style={{ height: stats.offers }}></div>
                             <span className="text-xs mt-2">Offer</span>
                         </div>
                         <div className="flex flex-col items-center">
@@ -207,13 +201,9 @@ const Dashboard = () => {
                 <div className="rounded-lg border bg-white p-6 shadow-sm">
                     <h3 className="text-lg font-medium mb-4">Recent Activity</h3>
                     <div className="space-y-4">
-                        {recentActivity.map((activity, index) => (
-                            <div key={index} className="flex items-start gap-4">
-                                <div className={`rounded-full p-2 ${
-                                    activity.icon === 'email' ? 'bg-blue-100 text-blue-500' :
-                                        activity.icon === 'calendar' ? 'bg-purple-100 text-purple-500' :
-                                            'bg-yellow-100 text-yellow-500'
-                                }`}>
+                        {recentActivity.map((activity, index) => (<div key={index} className="flex items-start gap-4">
+                                <div
+                                    className={`rounded-full p-2 ${activity.icon === 'email' ? 'bg-blue-100 text-blue-500' : activity.icon === 'calendar' ? 'bg-purple-100 text-purple-500' : 'bg-yellow-100 text-yellow-500'}`}>
                                     {activity.icon === 'email' && (
                                         <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20"
                                              viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"
@@ -221,21 +211,15 @@ const Dashboard = () => {
                                              className="lucide lucide-mail">
                                             <rect width="20" height="16" x="2" y="4" rx="2"/>
                                             <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/>
-                                        </svg>
-                                    )}
-                                    {activity.icon === 'calendar' && (
-                                        <Calendar className="h-5 w-5"/>
-                                    )}
-                                    {activity.icon === 'star' && (
-                                        <Star className="h-5 w-5"/>
-                                    )}
+                                        </svg>)}
+                                    {activity.icon === 'calendar' && (<Calendar className="h-5 w-5"/>)}
+                                    {activity.icon === 'star' && (<Star className="h-5 w-5"/>)}
                                 </div>
                                 <div>
                                     <h4 className="font-medium">{activity.company}</h4>
                                     <p className="text-sm text-gray-500">{activity.position}</p>
                                 </div>
-                            </div>
-                        ))}
+                            </div>))}
                     </div>
                 </div>
             </div>
@@ -247,8 +231,7 @@ const Dashboard = () => {
                     No upcoming interviews scheduled
                 </div>
             </div>
-        </div>
-    );
+        </div>);
 };
 
 export default Dashboard; 
