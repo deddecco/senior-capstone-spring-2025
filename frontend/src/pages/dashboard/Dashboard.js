@@ -4,7 +4,7 @@ import {api} from '../../lib/api';
 
 const Dashboard = () => {
     const [stats, setStats] = useState({
-        totalApplications: 0,
+        totalJobs: 0,
         pendingInterviews: 0,
         savedJobs: 0
     });
@@ -44,12 +44,12 @@ const Dashboard = () => {
             }
 
             // Calculate stats
-            const totalApplications = jobs.length;
+            const totalJobs = jobs.length;
             const pendingInterviews = interviews.length;
             const savedJobs = jobs.filter(job => job.status === 'Saved').length;
 
             setStats({
-                totalApplications,
+                totalJobs,
                 pendingInterviews,
                 savedJobs
             });
@@ -71,9 +71,8 @@ const Dashboard = () => {
             console.error('Error fetching dashboard data:', err);
             setError('Failed to fetch dashboard data');
 
-            // Use mock data as fallback
             setStats({
-                totalApplications: 0,
+                totalJobs: 0,
                 pendingInterviews: 0,
                 savedJobs: 0
             });
@@ -118,8 +117,8 @@ const Dashboard = () => {
                             </div>
                         </div>
                         <div>
-                            <p className="text-sm text-gray-500">Total Applications</p>
-                            <h3 className="text-3xl font-bold">{stats.totalApplications}</h3>
+                            <p className="text-sm text-gray-500">Total Jobs</p>
+                            <h3 className="text-3xl font-bold">{stats.totalJobs}</h3>
                         </div>
                     </div>
                 </div>
@@ -180,7 +179,7 @@ const Dashboard = () => {
                         </div>
                         <div className="flex flex-col items-center">
                             <div className="bg-blue-500 w-12 h-0"></div>
-                            <span className="text-xs mt-2">Accepted2</span>
+                            <span className="text-xs mt-2">Accepted</span>
                         </div>
                     </div>
                 </div>
