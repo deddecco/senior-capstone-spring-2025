@@ -63,25 +63,33 @@ const Dashboard = () => {
             const rejected = jobs.filter(job => job.status === 'Rejected').length;
             const accepted = jobs.filter(job => job.status === 'Accepted').length;
 
-            setStats({
-                totalJobs, pendingInterviews, savedJobs, appliedJobs, offers, rejected, accepted
-            });
+            const newStats = {
+                totalJobs,
+                pendingInterviews,
+                savedJobs,
+                appliedJobs,
+                offers,
+                rejections: rejected,
+                acceptances: accepted
+            };
 
             const containerHeight = 256; // px
             const maxStat = Math.max(
-                stats.appliedJobs,
-                stats.pendingInterviews,
-                stats.offers,
-                stats.rejections,
-                stats.acceptances
+                newStats.appliedJobs,
+                newStats.pendingInterviews,
+                newStats.offers,
+                newStats.rejections,
+                newStats.acceptances
             ) || 1; // prevent division by zero
 
+            setStats(newStats);
+
             setHeights({
-                appliedHeight: (stats.appliedJobs / maxStat) * containerHeight,
-                interviewHeight: (stats.pendingInterviews / maxStat) * containerHeight,
-                offerHeight: (stats.offers / maxStat) * containerHeight,
-                rejectionHeight: (stats.rejections / maxStat) * containerHeight,
-                acceptedHeight: (stats.acceptances / maxStat) * containerHeight
+                appliedHeight: (newStats.appliedJobs / maxStat) * containerHeight,
+                interviewHeight: (newStats.pendingInterviews / maxStat) * containerHeight,
+                offerHeight: (newStats.offers / maxStat) * containerHeight,
+                rejectionHeight: (newStats.rejections / maxStat) * containerHeight,
+                acceptedHeight: (newStats.acceptances / maxStat) * containerHeight
             });
             // Create recent activity from jobs and interviews
             const recentJobs = jobs.slice(0, 3).map(job => ({
