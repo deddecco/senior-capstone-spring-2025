@@ -63,6 +63,8 @@ const Dashboard = () => {
             const rejected = jobs.filter(job => job.status === 'Rejected').length;
             const accepted = jobs.filter(job => job.status === 'Accepted').length;
 
+            // we need newStats before we call setStats because setStats is async and will use old values
+            // instead of current ones
             const newStats = {
                 totalJobs,
                 pendingInterviews,
@@ -83,7 +85,9 @@ const Dashboard = () => {
             ) || 1; // prevent division by zero
 
             setStats(newStats);
+            // now we can find the max, and set new stats
 
+            // and here we set heights
             setHeights({
                 appliedHeight: (newStats.appliedJobs / maxStat) * containerHeight,
                 interviewHeight: (newStats.pendingInterviews / maxStat) * containerHeight,
