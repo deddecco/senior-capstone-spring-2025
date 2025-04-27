@@ -4,11 +4,11 @@ import {api} from '../../lib/api';
 
 const Dashboard = () => {
     const [stats, setStats] = useState({
-        totalJobs: 0, pendingInterviews: 0, savedJobs: 0, offers: 0, recentActivity: [], // Status counts for the pipeline
-        Applied: 0, Interview: 0, Offer: 0, Rejected: 0, Hired: 0
+        totalJobs: 0, pendingInterviews: 0, savedJobs: 0, offers: 0, recentActivity: [], // Pipeline statuses
+        Applied: 0, Interview: 0, Offer: 0, Rejected: 0, Hired: 0,
     });
     const [heights, setHeights] = useState({
-        appliedHeight: 0, interviewHeight: 0, offerHeight: 0, rejectionHeight: 0, hiredHeight: 0
+        appliedHeight: 0, interviewHeight: 0, offerHeight: 0, rejectionHeight: 0, hiredHeight: 0,
     });
 
     const [loading, setLoading] = useState(true);
@@ -27,7 +27,6 @@ const Dashboard = () => {
             try {
                 jobs = await api.getJobs();
             } catch (apiError) {
-                // fallback to localStorage if needed
                 const localJobs = localStorage.getItem('jobListings');
                 if (localJobs) {
                     jobs = JSON.parse(localJobs);
