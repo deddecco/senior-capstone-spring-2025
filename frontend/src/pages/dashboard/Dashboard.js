@@ -11,19 +11,22 @@ const Dashboard = () => {
     });
 
     const [recentActivity, setRecentActivity] = useState([]);
-
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
 
     useEffect(() => {
+        window.dashboardRefresh = fetchDashboardData;
         fetchDashboardData();
+        return () => {
+            delete window.dashboardRefresh;
+        };
     }, []);
 
     const fetchDashboardData = async () => {
         try {
             setLoading(true);
 
-            // Fetch jobs
+            // Fetch jobs (for total, saved, recent activity)
             let jobs = [];
             try {
                 jobs = await api.getJobs();
@@ -36,7 +39,7 @@ const Dashboard = () => {
                 }
             }
 
-            // Fetch interviews
+            // Fetch interviews (for pendingInterviews)
             let interviews = [];
             try {
                 interviews = await api.getInterviews();
@@ -44,19 +47,28 @@ const Dashboard = () => {
                 console.error('Error fetching interviews:', err);
             }
 
+            // Fetch status counts from API for the pipeline
+            let counts = {};
+            try {
+                const response = await api.get('/jobs/status-counts');
+                counts = response.data || {};
+            } catch (err) {
+                console.error('Error fetching status counts:', err);
+            }
+
             // Calculate stats
             const totalJobs = jobs.length;
             const pendingInterviews = interviews.length;
             const savedJobs = jobs.filter(job => job.status === 'Saved').length;
             const offers = jobs.filter(job => job.status === 'Offer').length;
-            const appliedJobs = jobs.filter(job => job.status === 'Applied').length;
-            const rejections = jobs.filter(job => job.status === 'Rejected').length;
-            const hired = jobs.filter(job => job.status === 'Hired').length;
+            const appliedJobs = counts['Applied'] || 0;
+            const rejections = counts['Rejected'] || 0;
+            const hired = counts['Hired'] || 0;
 
             // we need newStats before we call setStats because setStats is async and will use old values
             // instead of current ones
             const newStats = {
-                totalJobs, pendingInterviews, savedJobs, appliedJobs, offers, rejections, hired: hired
+                totalJobs, pendingInterviews, savedJobs, appliedJobs, offers: counts['Offer'] || 0, rejections, hired
             };
 
             const containerHeight = 224; // px
@@ -73,15 +85,13 @@ const Dashboard = () => {
                 rejectionHeight: (newStats.rejections / maxStat) * containerHeight,
                 hiredHeight: (newStats.hired / maxStat) * containerHeight
             });
+
             // Create recent activity from jobs and interviews
             const recentJobs = jobs.slice(0, 3).map(job => ({
-                company: job.company, position: job.title, // time: job.created_at ? new Date(job.created_at).toLocaleDateString() : job.posted || '2 hours ago',
-                icon: 'email'
+                company: job.company, position: job.title, icon: 'email'
             }));
 
-            if (recentJobs.length > 0) {
-                setRecentActivity(recentJobs);
-            }
+            setRecentActivity(recentJobs);
 
             setError(null);
         } catch (err) {
@@ -89,7 +99,7 @@ const Dashboard = () => {
             setError('Failed to fetch dashboard data');
 
             setStats({
-                totalJobs: 0, pendingInterviews: 0, savedJobs: 0, appliedJobs: 0, offers: 0, rejected: 0, hired: 0
+                totalJobs: 0, pendingInterviews: 0, savedJobs: 0, appliedJobs: 0, offers: 0, rejections: 0, hired: 0
             });
 
             setRecentActivity([]);
@@ -234,4 +244,4 @@ const Dashboard = () => {
     </div>);
 };
 
-export default Dashboard; 
+export default Dashboard;
