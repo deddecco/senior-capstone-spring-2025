@@ -2,17 +2,11 @@ import React from 'react';
 import {X} from 'lucide-react';
 
 const JobModal = ({
-                      isOpen,
-                      onClose,
-                      title,
-                      jobData,
-                      handleInputChange,
-                      handleSubmit
+                      isOpen, onClose, title, jobData, handleInputChange, handleSubmit
                   }) => {
     if (!isOpen) return null;
 
-    return (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+    return (<div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
             <div className="bg-white rounded-lg p-6 w-full max-w-md">
                 <div className="flex justify-between items-center mb-4">
                     <h2 className="text-xl font-bold">{title}</h2>
@@ -155,8 +149,7 @@ const JobModal = ({
                     </div>
                 </form>
             </div>
-        </div>
-    );
+        </div>);
 };
 
 export default JobModal;

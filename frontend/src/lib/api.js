@@ -9,8 +9,7 @@ export const api = {
         const headers = await getAuthHeader();
         const response = await fetch(`${API_URL}/profiles/current`, {
             headers: {
-                ...headers,
-                'Content-Type': 'application/json'
+                ...headers, 'Content-Type': 'application/json'
             }
         });
         if (!response.ok) {
@@ -22,12 +21,9 @@ export const api = {
     updateProfile: async (profileData) => {
         const headers = await getAuthHeader();
         const response = await fetch(`${API_URL}/profiles/current`, {
-            method: 'PUT',
-            headers: {
-                ...headers,
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(profileData)
+            method: 'PUT', headers: {
+                ...headers, 'Content-Type': 'application/json'
+            }, body: JSON.stringify(profileData)
         });
         if (!response.ok) {
             throw new Error('Failed to update profile');
@@ -41,8 +37,7 @@ export const api = {
         try {
             const response = await fetch(`${API_URL}/jobs`, {
                 headers: {
-                    ...headers,
-                    'Content-Type': 'application/json'
+                    ...headers, 'Content-Type': 'application/json'
                 }
             });
 
@@ -76,8 +71,7 @@ export const api = {
         try {
             const response = await fetch(`${API_URL}/jobs/status-counts`, {
                 headers: {
-                    ...headers,
-                    'Content-Type': 'application/json'
+                    ...headers, 'Content-Type': 'application/json'
                 }
             });
 
@@ -111,9 +105,7 @@ export const api = {
         const headers = await getAuthHeader();
 
         // format the parameters correctly for the url
-        const queryString = searchParams instanceof URLSearchParams
-            ? searchParams.toString()
-            : new URLSearchParams(searchParams).toString();
+        const queryString = searchParams instanceof URLSearchParams ? searchParams.toString() : new URLSearchParams(searchParams).toString();
 
         // debug log showing what we're sending
         console.log('API call to:', `${API_URL}/jobs/search?${queryString}`);
@@ -121,8 +113,7 @@ export const api = {
         // actually call our backend search endpoint
         const response = await fetch(`${API_URL}/jobs/search?${queryString}`, {
             headers: {
-                ...headers,
-                'Content-Type': 'application/json'
+                ...headers, 'Content-Type': 'application/json'
             }
         });
 
@@ -149,12 +140,9 @@ export const api = {
         try {
             const headers = await getAuthHeader();
             const response = await fetch(`${API_URL}/jobs`, {
-                method: 'POST',
-                headers: {
-                    ...headers,
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify(jobData)
+                method: 'POST', headers: {
+                    ...headers, 'Content-Type': 'application/json'
+                }, body: JSON.stringify(jobData)
             });
 
             // Log response for debugging
@@ -188,12 +176,9 @@ export const api = {
             console.log('Updating job:', jobId, 'with data:', jobData);
 
             const response = await fetch(`${API_URL}/jobs/${jobId}`, {
-                method: 'PUT',
-                headers: {
-                    ...headers,
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify(jobData)
+                method: 'PUT', headers: {
+                    ...headers, 'Content-Type': 'application/json'
+                }, body: JSON.stringify(jobData)
             });
 
             if (!response.ok) {
@@ -235,10 +220,8 @@ export const api = {
     deleteJob: async (jobId) => {
         const headers = await getAuthHeader();
         const response = await fetch(`${API_URL}/jobs/${jobId}`, {
-            method: 'DELETE',
-            headers: {
-                ...headers,
-                'Content-Type': 'application/json'
+            method: 'DELETE', headers: {
+                ...headers, 'Content-Type': 'application/json'
             }
         });
         if (!response.ok) {
@@ -252,8 +235,7 @@ export const api = {
         const headers = await getAuthHeader();
         const response = await fetch(`${API_URL}/interviews`, {
             headers: {
-                ...headers,
-                'Content-Type': 'application/json'
+                ...headers, 'Content-Type': 'application/json'
             }
         });
         if (!response.ok) {
@@ -265,12 +247,9 @@ export const api = {
     createInterview: async (interviewData) => {
         const headers = await getAuthHeader();
         const response = await fetch(`${API_URL}/interviews`, {
-            method: 'POST',
-            headers: {
-                ...headers,
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(interviewData)
+            method: 'POST', headers: {
+                ...headers, 'Content-Type': 'application/json'
+            }, body: JSON.stringify(interviewData)
         });
         if (!response.ok) {
             throw new Error('Failed to create interview');
@@ -281,12 +260,9 @@ export const api = {
     updateInterview: async (interviewId, interviewData) => {
         const headers = await getAuthHeader();
         const response = await fetch(`${API_URL}/interviews/${interviewId}`, {
-            method: 'PUT',
-            headers: {
-                ...headers,
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(interviewData)
+            method: 'PUT', headers: {
+                ...headers, 'Content-Type': 'application/json'
+            }, body: JSON.stringify(interviewData)
         });
         if (!response.ok) {
             throw new Error('Failed to update interview');
@@ -297,10 +273,8 @@ export const api = {
     deleteInterview: async (interviewId) => {
         const headers = await getAuthHeader();
         const response = await fetch(`${API_URL}/interviews/${interviewId}`, {
-            method: 'DELETE',
-            headers: {
-                ...headers,
-                'Content-Type': 'application/json'
+            method: 'DELETE', headers: {
+                ...headers, 'Content-Type': 'application/json'
             }
         });
         if (!response.ok) {
@@ -314,8 +288,7 @@ export const api = {
         try {
             const response = await fetch(`${API_URL}/jobs/favorites`, {
                 headers: {
-                    ...headers,
-                    'Content-Type': 'application/json'
+                    ...headers, 'Content-Type': 'application/json'
                 }
             });
 
@@ -351,10 +324,8 @@ export const api = {
     toggleJobFavorite: async (jobId, action) => {
         const headers = await getAuthHeader();
         const response = await fetch(`${API_URL}/jobs/${jobId}/${action}`, {
-            method: 'PUT',
-            headers: {
-                ...headers,
-                'Content-Type': 'application/json'
+            method: 'PUT', headers: {
+                ...headers, 'Content-Type': 'application/json'
             }
         });
 

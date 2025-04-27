@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from 'react';
-import {Briefcase, Filter, Plus, Search, X, Star} from 'lucide-react';
+import {Filter, Plus, Search} from 'lucide-react';
 import {api} from '../../lib/api';
 import JobCard from '../../components/dashboard/JobCard';
 import JobModal from '../../components/dashboard/JobModal'
@@ -14,25 +14,14 @@ const JobListings = () => {
     // State for search and filters
     const [searchQuery, setSearchQuery] = useState('');
     const [filters, setFilters] = useState({
-        title: '',
-        level: '',
-        minSalary: '',
-        maxSalary: '',
-        location: '',
-        status: ''
+        title: '', level: '', minSalary: '', maxSalary: '', location: '', status: ''
     });
     const [showFilters, setShowFilters] = useState(false);
 
     // State for modal
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [newJob, setNewJob] = useState({
-        title: '',
-        company: '',
-        location: '',
-        minSalary: '',
-        maxSalary: '',
-        type: 'Full-time',
-        status: 'Applied'
+        title: '', company: '', location: '', minSalary: '', maxSalary: '', type: 'Full-time', status: 'Applied'
     });
 
     // state for Edit Job modal
@@ -172,12 +161,7 @@ const JobListings = () => {
 // reset all search filters
     const clearFilters = () => {
         setFilters({
-            title: '',
-            level: '',
-            minSalary: '',
-            maxSalary: '',
-            location: '',
-            status: ''
+            title: '', level: '', minSalary: '', maxSalary: '', location: '', status: ''
         });
         setSearchQuery('');
         fetchJobs(); // get all jobs without filters
@@ -225,11 +209,9 @@ const JobListings = () => {
 
                 // add job locally when backend is unavailable
                 const newJobWithId = {
-                    ...jobData,
-                    company: newJob.company, // Keep company for local display
+                    ...jobData, company: newJob.company, // Keep company for local display
                     id: Date.now(), // Use timestamp as a temporary ID
-                    posted: 'Just now',
-                    description: 'Added locally (backend unavailable)'
+                    posted: 'Just now', description: 'Added locally (backend unavailable)'
                 };
 
                 const updatedJobs = [newJobWithId, ...jobListings];
@@ -339,9 +321,7 @@ const JobListings = () => {
             await api.toggleJobFavorite(job.id, endpoint);
 
             // update the job in the list
-            const updatedJobs = jobListings.map(j =>
-                j.id === job.id ? { ...j, favorite: !j.favorite } : j
-            );
+            const updatedJobs = jobListings.map(j => j.id === job.id ? {...j, favorite: !j.favorite} : j);
             setJobListings(updatedJobs);
 
             // show notification
@@ -358,8 +338,7 @@ const JobListings = () => {
         }
     };
 
-    return (
-        <div className="space-y-6">
+    return (<div className="space-y-6">
             <div className="flex items-center justify-between">
                 <h1 className="text-3xl font-bold">Job Listings</h1>
                 <button
@@ -372,11 +351,9 @@ const JobListings = () => {
             </div>
 
             {/* success Message */}
-            {updateMessage && (
-                <div className="rounded-md bg-green-50 p-4 text-green-700">
+            {updateMessage && (<div className="rounded-md bg-green-50 p-4 text-green-700">
                     {updateMessage}
-                </div>
-            )}
+                </div>)}
 
             {/* Search Form */}
             <form onSubmit={handleSearchSubmit} className="flex flex-col gap-4 md:flex-row">
@@ -407,8 +384,7 @@ const JobListings = () => {
             </form>
 
             {/* NEW: Expanded Filters */}
-            {showFilters && (
-                <div className="rounded-lg border bg-white p-4 shadow-sm">
+            {showFilters && (<div className="rounded-lg border bg-white p-4 shadow-sm">
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                         <div>
                             <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -520,41 +496,28 @@ const JobListings = () => {
                             Apply Filters
                         </button>
                     </div>
-                </div>
-            )}
+                </div>)}
 
             {/* Error Message */}
-            {error && (
-                <div className="rounded-md bg-red-50 p-4 text-red-700">
+            {error && (<div className="rounded-md bg-red-50 p-4 text-red-700">
                     {error}
-                </div>
-            )}
+                </div>)}
 
             {/* Loading State */}
-            {loading ? (
-                <div className="text-center py-8">
+            {loading ? (<div className="text-center py-8">
                     <p className="text-gray-500">Loading job listings...</p>
-                </div>
-            ) : (
-                /* Job Listings */
+                </div>) : (/* Job Listings */
                 <div className="space-y-4">
-                    {jobListings.length === 0 ? (
-                        <div className="text-center py-8">
+                    {jobListings.length === 0 ? (<div className="text-center py-8">
                             <p className="text-gray-500">No job listings found. Try adjusting your search criteria.</p>
-                        </div>
-                    ) : (
-                        jobListings.map((job) => (
-                            <JobCard
+                        </div>) : (jobListings.map((job) => (<JobCard
                                 key={job.id}
                                 job={job}
                                 onEdit={handleEditJob}
                                 onDelete={handleDeleteJob}
                                 onToggleFavorite={handleToggleFavorite}
-                            />
-                        ))
-                    )}
-                </div>
-            )}
+                            />)))}
+                </div>)}
 
             <JobModal
                 isOpen={isModalOpen}
@@ -573,8 +536,7 @@ const JobListings = () => {
                 handleInputChange={handleEditInputChange}
                 handleSubmit={handleEditSubmit}
             />
-        </div>
-    );
+        </div>);
 };
 
 export default JobListings;

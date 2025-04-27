@@ -1,5 +1,5 @@
-import React, {useState, useEffect} from 'react';
-import {Search, Star} from 'lucide-react';
+import React, {useEffect, useState} from 'react';
+import {Search} from 'lucide-react';
 import {api} from '../../lib/api';
 import JobCard from '../../components/dashboard/JobCard';
 

@@ -2,12 +2,25 @@ document.addEventListener("DOMContentLoaded", () => {
     const jobList = document.getElementById("job-list");
     const sortButtons = document.querySelectorAll(".sort-buttons button");
 
-    let jobs = [
-        {id: 1, company: "Company A", position: "Software Engineer", date: "2024-02-01", status: "Resume Sent"},
-        {id: 2, company: "Company B", position: "Data Analyst", date: "2024-01-25", status: "Interview Scheduled"},
-        {id: 3, company: "Company C", position: "Web Developer", date: "2024-01-20", status: "Accepted Offer"},
-        {id: 4, company: "Company D", position: "Cybersecurity Specialist", date: "2024-01-15", status: "Rejected"}
-    ];
+    let jobs = [{
+        id: 1,
+        company: "Company A",
+        position: "Software Engineer",
+        date: "2024-02-01",
+        status: "Resume Sent"
+    }, {
+        id: 2,
+        company: "Company B",
+        position: "Data Analyst",
+        date: "2024-01-25",
+        status: "Interview Scheduled"
+    }, {id: 3, company: "Company C", position: "Web Developer", date: "2024-01-20", status: "Accepted Offer"}, {
+        id: 4,
+        company: "Company D",
+        position: "Cybersecurity Specialist",
+        date: "2024-01-15",
+        status: "Rejected"
+    }];
 
     const statusClasses = {
         "Resume Sent": "resume-sent",

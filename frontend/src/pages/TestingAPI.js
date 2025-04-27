@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { Link } from "react-router-dom";
+import {useState} from "react";
+import {Link} from "react-router-dom";
 
 function TestingAPI() {
     const [currentTime, setCurrentTime] = useState(null);

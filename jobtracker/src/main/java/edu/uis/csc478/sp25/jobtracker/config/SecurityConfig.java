@@ -3,7 +3,6 @@ package edu.uis.csc478.sp25.jobtracker.config;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.oauth2.jwt.JwtDecoder;
@@ -14,12 +13,10 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
-import java.util.Arrays;
-import java.util.List;
 
 import static java.util.Arrays.asList;
-import static java.util.List.*;
-import static org.springframework.http.HttpMethod.*;
+import static java.util.List.of;
+import static org.springframework.http.HttpMethod.OPTIONS;
 import static org.springframework.security.oauth2.jwt.NimbusJwtDecoder.withSecretKey;
 
 @Configuration
@@ -41,19 +38,14 @@ public class SecurityConfig {
       */
      @Bean
      public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-          http
-                  .cors(cors -> cors.configurationSource(corsConfigurationSource()))
-                  .authorizeHttpRequests(authorize -> authorize
-                          // Allow OPTIONS requests without authentication
-                          .requestMatchers(OPTIONS, "/**").permitAll()
+          http.cors(cors -> cors.configurationSource(corsConfigurationSource())).authorizeHttpRequests(authorize -> authorize
+                  // Allow OPTIONS requests without authentication
+                  .requestMatchers(OPTIONS, "/**").permitAll()
 
-                          //  all incoming requests must be authenticated
-                          .anyRequest().authenticated()
-                  )
-                  .oauth2ResourceServer(oauth2 -> oauth2
-                          // configure JWT-based authentication for the OAuth2 resource server
-                          .jwt(jwt -> jwt.decoder(jwtDecoder()))
-                  );
+                  //  all incoming requests must be authenticated
+                  .anyRequest().authenticated()).oauth2ResourceServer(oauth2 -> oauth2
+                  // configure JWT-based authentication for the OAuth2 resource server
+                  .jwt(jwt -> jwt.decoder(jwtDecoder())));
           // builds and returns the configured SecurityFilterChain.
           return http.build();
      }
