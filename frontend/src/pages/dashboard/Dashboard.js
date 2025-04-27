@@ -6,7 +6,11 @@ const Dashboard = () => {
     const [stats, setStats] = useState({
         totalJobs: 0,
         pendingInterviews: 0,
-        savedJobs: 0
+        savedJobs: 0,
+        appliedJobs: 0,
+        offers: 0,
+        rejections: 0,
+        acceptances: 0
     });
 
     const [recentActivity, setRecentActivity] = useState([]);
@@ -35,6 +39,19 @@ const Dashboard = () => {
                 }
             }
 
+            // Fetch status counts
+            let statusCounts = [];
+            try {
+                statusCounts = await api.getStatusCounts();
+            } catch (apiError) {
+                console.error('Backend API error when fetching status counts:', apiError);
+                // Try to get jobs from localStorage
+                const localStatusCounts = localStorage.getItem('statusCounts');
+                if (localStatusCounts) {
+                    statusCounts = JSON.parse(localStatusCounts);
+                }
+            }
+
             // Fetch interviews
             let interviews = [];
             try {
@@ -47,6 +64,8 @@ const Dashboard = () => {
             const totalJobs = jobs.length;
             const pendingInterviews = interviews.length;
             const savedJobs = jobs.filter(job => job.status === 'Saved').length;
+            const offers = statusCounts.offers;
+            const applied = statusCounts.appliedJobs;
 
             setStats({
                 totalJobs,

@@ -70,6 +70,42 @@ export const api = {
         }
     },
 
+    // get status counts
+    getStatusCounts: async () => {
+        const headers = await getAuthHeader();
+        try {
+            const response = await fetch(`${API_URL}/jobs/status-counts`, {
+                headers: {
+                    ...headers,
+                    'Content-Type': 'application/json'
+                }
+            });
+
+            // Check if response is ok (status in the range 200-299)
+            if (!response.ok) {
+                throw new Error(`Failed to fetch status counts: ${response.status} ${response.statusText}`);
+            }
+
+            // Check for empty response
+            const text = await response.text();
+            if (!text) {
+                return []; // Return empty array for empty responses
+            }
+
+            try {
+                // Try to parse the response as JSON
+                return JSON.parse(text);
+            } catch (parseError) {
+                console.error('Error parsing JSON response:', parseError);
+                throw new Error('Invalid JSON response from server');
+            }
+        } catch (error) {
+            console.error('jobs/status-counts API call failed:', error);
+            throw error;
+        }
+    },
+
+
     searchJobs: async (searchParams) => {
         // get auth token from supabase
         const headers = await getAuthHeader();
