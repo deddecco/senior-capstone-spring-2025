@@ -45,9 +45,7 @@ const Dashboard = () => {
             let statusCounts = {};
             try {
                 const response = await api.get('/jobs/status-counts');
-                statusCounts = response.data || {};
-                // Debug: See what the API gives you
-                // console.log('Status counts from API:', statusCounts);
+                statusCounts = response.data;
             } catch (err) {
                 // ignore, just show 0s if error
             }
