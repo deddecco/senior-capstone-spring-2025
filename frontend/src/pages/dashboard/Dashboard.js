@@ -4,10 +4,10 @@ import {api} from '../../lib/api';
 
 const Dashboard = () => {
     const [stats, setStats] = useState({
-        totalJobs: 0, pendingInterviews: 0, savedJobs: 0, appliedJobs: 0, offers: 0, rejections: 0, hired: 0
+        totalJobs: 0, pendingInterviews: 0, savedJobs: 0, appliedJobs: 0, offers: 0, rejections: 0, acceptances: 0
     });
     const [heights, setHeights] = useState({
-        appliedHeight: 0, interviewHeight: 0, offerHeight: 0, rejectionHeight: 0, hiredHeight: 0
+        appliedHeight: 0, interviewHeight: 0, offerHeight: 0, rejectionHeight: 0, acceptedHeight: 0
     });
 
     const [recentActivity, setRecentActivity] = useState([]);
@@ -51,17 +51,17 @@ const Dashboard = () => {
             const offers = jobs.filter(job => job.status === 'Offer').length;
             const appliedJobs = jobs.filter(job => job.status === 'Applied').length;
             const rejections = jobs.filter(job => job.status === 'Rejected').length;
-            const hired = jobs.filter(job => job.status === 'Hired').length;
+            const acceptances = jobs.filter(job => job.status === 'Accepted').length;
 
             // we need newStats before we call setStats because setStats is async and will use old values
             // instead of current ones
             const newStats = {
-                totalJobs, pendingInterviews, savedJobs, appliedJobs, offers, rejections, hired: hired
+                totalJobs, pendingInterviews, savedJobs, appliedJobs, offers, rejections, acceptances
             };
 
             const containerHeight = 224; // px
             // find the max number in the pipeline
-            const maxStat = Math.max(newStats.appliedJobs, newStats.pendingInterviews, newStats.offers, newStats.rejections, newStats.hired) || 1; // prevent division by zero
+            const maxStat = Math.max(newStats.appliedJobs, newStats.pendingInterviews, newStats.offers, newStats.rejections, newStats.acceptances) || 1; // prevent division by zero
 
             setStats(newStats);
 
@@ -71,7 +71,7 @@ const Dashboard = () => {
                 interviewHeight: (newStats.pendingInterviews / maxStat) * containerHeight,
                 offerHeight: (newStats.offers / maxStat) * containerHeight,
                 rejectionHeight: (newStats.rejections / maxStat) * containerHeight,
-                hiredHeight: (newStats.hired / maxStat) * containerHeight
+                acceptedHeight: (newStats.acceptances / maxStat) * containerHeight
             });
             // Create recent activity from jobs and interviews
             const recentJobs = jobs.slice(0, 3).map(job => ({
@@ -89,7 +89,7 @@ const Dashboard = () => {
             setError('Failed to fetch dashboard data');
 
             setStats({
-                totalJobs: 0, pendingInterviews: 0, savedJobs: 0, appliedJobs: 0, offers: 0, rejected: 0, hired: 0
+                totalJobs: 0, pendingInterviews: 0, savedJobs: 0, appliedJobs: 0, offers: 0, rejected: 0, accepted: 0
             });
 
             setRecentActivity([]);
@@ -190,9 +190,9 @@ const Dashboard = () => {
                         <span className="text-xs mt-2">Rejected</span>
                     </div>
                     <div className="flex flex-col items-center">
-                        <span className="mb-1 text-sm font-semibold text-gray-700">{stats.hired}</span>
-                        <div className="bg-blue-500 w-12" style={{height: heights.hiredHeight}}></div>
-                        <span className="text-xs mt-2">Hired</span>
+                        <span className="mb-1 text-sm font-semibold text-gray-700">{stats.acceptances}</span>
+                        <div className="bg-blue-500 w-12" style={{height: heights.acceptedHeight}}></div>
+                        <span className="text-xs mt-2">Accepted</span>
                     </div>
                 </div>
             </div>
@@ -234,4 +234,4 @@ const Dashboard = () => {
     </div>);
 };
 
-export default Dashboard; 
+export default Dashboard;
