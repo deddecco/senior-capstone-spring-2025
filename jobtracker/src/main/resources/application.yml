@@ -14,6 +14,8 @@ spring:
     hikari:
       connection-timeout: 60000
       maximum-pool-size: 5
+      data-source-properties:
+        preparedStatementCacheQueries: 0
 logging:
   level:
     edu.uis.csc478.sp25.jobtracker: DEBUG
