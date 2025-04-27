@@ -12,6 +12,13 @@ const Dashboard = () => {
         rejections: 0,
         acceptances: 0
     });
+    const [heights, setHeights] = useState({
+        appliedHeight: 0,
+        interviewHeight: 0,
+        offerHeight: 0,
+        rejectionHeight: 0,
+        acceptedHeight: 0
+    });
 
     const [recentActivity, setRecentActivity] = useState([]);
 
@@ -39,19 +46,6 @@ const Dashboard = () => {
                 }
             }
 
-            /*         // Fetch status counts
-                     let statusCounts = [];
-                     try {
-                         statusCounts = await api.getStatusCounts();
-                     } catch (apiError) {
-                         console.error('Backend API error when fetching status counts:', apiError);
-                         // Try to get jobs from localStorage
-                         const localStatusCounts = localStorage.getItem('statusCounts');
-                         if (localStatusCounts) {
-                             statusCounts = JSON.parse(localStatusCounts);
-                         }
-                     }*/
-
             // Fetch interviews
             let interviews = [];
             try {
@@ -73,6 +67,22 @@ const Dashboard = () => {
                 totalJobs, pendingInterviews, savedJobs, appliedJobs, offers, rejected, accepted
             });
 
+            const containerHeight = 256; // px
+            const maxStat = Math.max(
+                stats.appliedJobs,
+                stats.pendingInterviews,
+                stats.offers,
+                stats.rejections,
+                stats.acceptances
+            ) || 1; // prevent division by zero
+
+            setHeights({
+                appliedHeight: (stats.appliedJobs / maxStat) * containerHeight,
+                interviewHeight: (stats.pendingInterviews / maxStat) * containerHeight,
+                offerHeight: (stats.offers / maxStat) * containerHeight,
+                rejectionHeight: (stats.rejections / maxStat) * containerHeight,
+                acceptedHeight: (stats.acceptances / maxStat) * containerHeight
+            });
             // Create recent activity from jobs and interviews
             const recentJobs = jobs.slice(0, 3).map(job => ({
                 company: job.company,
@@ -98,6 +108,7 @@ const Dashboard = () => {
                 rejected: 0,
                 accepted: 0
             });
+
             setRecentActivity([]);
         } finally {
             setLoading(false);
@@ -179,23 +190,23 @@ const Dashboard = () => {
                 <h3 className="text-lg font-medium mb-4">Application Pipeline</h3>
                 <div className="h-64 flex items-end justify-between gap-2">
                     <div className="flex flex-col items-center">
-                        <div className="bg-blue-500 w-12" style={{height: stats.appliedJobs}}></div>
+                        <div className="bg-blue-500 w-12" style={{height: heights.appliedHeight}}></div>
                         <span className="text-xs mt-2">Applied</span>
                     </div>
                     <div className="flex flex-col items-center">
-                        <div className="bg-blue-500 w-12" style={{height: stats.pendingInterviews}}></div>
+                        <div className="bg-blue-500 w-12" style={{height: heights.interviewHeight}}></div>
                         <span className="text-xs mt-2">Interview</span>
                     </div>
                     <div className="flex flex-col items-center">
-                        <div className="bg-blue-500 w-12" style={{height: stats.offers}}></div>
+                        <div className="bg-blue-500 w-12" style={{height: heights.offerHeight}}></div>
                         <span className="text-xs mt-2">Offer</span>
                     </div>
                     <div className="flex flex-col items-center">
-                        <div className="bg-blue-500 w-12" style={{height: stats.rejections}}></div>
+                        <div className="bg-blue-500 w-12" style={{height: heights.rejectionHeight}}></div>
                         <span className="text-xs mt-2">Rejected</span>
                     </div>
                     <div className="flex flex-col items-center">
-                        <div className="bg-blue-500 w-12" style={{height: stats.acceptances}}></div>
+                        <div className="bg-blue-500 w-12" style={{height: heights.acceptedHeight}}></div>
                         <span className="text-xs mt-2">Accepted</span>
                     </div>
                 </div>
