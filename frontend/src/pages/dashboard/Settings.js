@@ -63,8 +63,6 @@ const Settings = () => {
 
   const tabs = [
     { id: 'profile', label: 'Profile', icon: User },
-    { id: 'notifications', label: 'Notifications', icon: Bell },
-    { id: 'privacy', label: 'Privacy & Security', icon: Shield },
     { id: 'help', label: 'Help & Support', icon: HelpCircle },
   ];
 

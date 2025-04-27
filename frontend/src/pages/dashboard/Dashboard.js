@@ -76,6 +76,7 @@ const Dashboard = () => {
             };
 
             const containerHeight = 256; // px
+            // find the max number in the pipeline
             const maxStat = Math.max(
                 newStats.appliedJobs,
                 newStats.pendingInterviews,
@@ -85,7 +86,6 @@ const Dashboard = () => {
             ) || 1; // prevent division by zero
 
             setStats(newStats);
-            // now we can find the max, and set new stats
 
             // and here we set heights
             setHeights({
