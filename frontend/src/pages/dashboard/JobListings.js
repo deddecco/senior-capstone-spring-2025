@@ -339,204 +339,204 @@ const JobListings = () => {
     };
 
     return (<div className="space-y-6">
-            <div className="flex items-center justify-between">
-                <h1 className="text-3xl font-bold">Job Listings</h1>
-                <button
-                    onClick={() => setIsModalOpen(true)}
-                    className="inline-flex items-center gap-2 rounded-md bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700"
-                >
-                    <Plus className="h-4 w-4"/>
-                    Add Job
-                </button>
+        <div className="flex items-center justify-between">
+            <h1 className="text-3xl font-bold">Job Listings</h1>
+            <button
+                onClick={() => setIsModalOpen(true)}
+                className="inline-flex items-center gap-2 rounded-md bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700"
+            >
+                <Plus className="h-4 w-4"/>
+                Add Job
+            </button>
+        </div>
+
+        {/* success Message */}
+        {updateMessage && (<div className="rounded-md bg-green-50 p-4 text-green-700">
+            {updateMessage}
+        </div>)}
+
+        {/* Search Form */}
+        <form onSubmit={handleSearchSubmit} className="flex flex-col gap-4 md:flex-row">
+            <div className="relative flex-1">
+                <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-500"/>
+                <input
+                    type="text"
+                    placeholder="Search for jobs..."
+                    className="w-full rounded-md border border-gray-300 pl-10 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    value={searchQuery}
+                    onChange={handleSearchChange}
+                />
             </div>
+            <button
+                type="submit"
+                className="rounded-md bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700"
+            >
+                Search
+            </button>
+            <button
+                type="button"
+                onClick={() => setShowFilters(prev => !prev)}
+                className="inline-flex items-center gap-2 rounded-md border border-gray-300 px-4 py-2 text-sm"
+            >
+                <Filter className="h-4 w-4"/>
+                {showFilters ? 'Hide Filters' : 'Show Filters'}
+            </button>
+        </form>
 
-            {/* success Message */}
-            {updateMessage && (<div className="rounded-md bg-green-50 p-4 text-green-700">
-                    {updateMessage}
-                </div>)}
-
-            {/* Search Form */}
-            <form onSubmit={handleSearchSubmit} className="flex flex-col gap-4 md:flex-row">
-                <div className="relative flex-1">
-                    <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-500"/>
+        {/* NEW: Expanded Filters */}
+        {showFilters && (<div className="rounded-lg border bg-white p-4 shadow-sm">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                        Job Title
+                    </label>
                     <input
                         type="text"
-                        placeholder="Search for jobs..."
-                        className="w-full rounded-md border border-gray-300 pl-10 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-                        value={searchQuery}
-                        onChange={handleSearchChange}
+                        name="title"
+                        value={filters.title}
+                        onChange={handleFilterChange}
+                        className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
                     />
                 </div>
+
+                <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                        Job Level
+                    </label>
+                    <select
+                        name="level"
+                        value={filters.level}
+                        onChange={handleFilterChange}
+                        className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    >
+                        <option value="">All Levels</option>
+                        <option value="Internship">Internship</option>
+                        <option value="Entry Level">Entry Level</option>
+                        <option value="Mid-Level">Mid-Level</option>
+                        <option value="Senior">Senior</option>
+                        <option value="Manager">Manager</option>
+                        <option value="Director">Director</option>
+                        <option value="Executive">Executive</option>
+                    </select>
+                </div>
+
+                <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                        Location
+                    </label>
+                    <input
+                        type="text"
+                        name="location"
+                        value={filters.location}
+                        onChange={handleFilterChange}
+                        className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    />
+                </div>
+
+                <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                        Min Salary
+                    </label>
+                    <input
+                        type="number"
+                        name="minSalary"
+                        value={filters.minSalary}
+                        onChange={handleFilterChange}
+                        className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    />
+                </div>
+
+                <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                        Max Salary
+                    </label>
+                    <input
+                        type="number"
+                        name="maxSalary"
+                        value={filters.maxSalary}
+                        onChange={handleFilterChange}
+                        className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    />
+                </div>
+
+                <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                        Status
+                    </label>
+                    <select
+                        name="status"
+                        value={filters.status}
+                        onChange={handleFilterChange}
+                        className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    >
+                        <option value="">All Statuses</option>
+                        <option value="Saved">Saved</option>
+                        <option value="Applied">Applied</option>
+                        <option value="Interview">Interview</option>
+                        <option value="Offer">Offer</option>
+                        <option value="Rejected">Rejected</option>
+                        <option value="Accepted">Accepted</option>
+                    </select>
+                </div>
+            </div>
+
+            <div className="mt-4 flex justify-end">
                 <button
-                    type="submit"
-                    className="rounded-md bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700"
+                    type="button"
+                    onClick={clearFilters}
+                    className="mr-2 rounded-md border border-gray-300 px-4 py-2 text-sm font-medium hover:bg-gray-50"
                 >
-                    Search
+                    Clear Filters
                 </button>
                 <button
                     type="button"
-                    onClick={() => setShowFilters(prev => !prev)}
-                    className="inline-flex items-center gap-2 rounded-md border border-gray-300 px-4 py-2 text-sm"
+                    onClick={searchJobs}
+                    className="rounded-md bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700"
                 >
-                    <Filter className="h-4 w-4"/>
-                    {showFilters ? 'Hide Filters' : 'Show Filters'}
+                    Apply Filters
                 </button>
-            </form>
+            </div>
+        </div>)}
 
-            {/* NEW: Expanded Filters */}
-            {showFilters && (<div className="rounded-lg border bg-white p-4 shadow-sm">
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                        <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-1">
-                                Job Title
-                            </label>
-                            <input
-                                type="text"
-                                name="title"
-                                value={filters.title}
-                                onChange={handleFilterChange}
-                                className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-                            />
-                        </div>
+        {/* Error Message */}
+        {error && (<div className="rounded-md bg-red-50 p-4 text-red-700">
+            {error}
+        </div>)}
 
-                        <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-1">
-                                Job Level
-                            </label>
-                            <select
-                                name="level"
-                                value={filters.level}
-                                onChange={handleFilterChange}
-                                className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-                            >
-                                <option value="">All Levels</option>
-                                <option value="Internship">Internship</option>
-                                <option value="Entry Level">Entry Level</option>
-                                <option value="Mid-Level">Mid-Level</option>
-                                <option value="Senior">Senior</option>
-                                <option value="Manager">Manager</option>
-                                <option value="Director">Director</option>
-                                <option value="Executive">Executive</option>
-                            </select>
-                        </div>
+        {/* Loading State */}
+        {loading ? (<div className="text-center py-8">
+            <p className="text-gray-500">Loading job listings...</p>
+        </div>) : (/* Job Listings */
+            <div className="space-y-4">
+                {jobListings.length === 0 ? (<div className="text-center py-8">
+                    <p className="text-gray-500">No job listings found. Try adjusting your search criteria.</p>
+                </div>) : (jobListings.map((job) => (<JobCard
+                    key={job.id}
+                    job={job}
+                    onEdit={handleEditJob}
+                    onDelete={handleDeleteJob}
+                    onToggleFavorite={handleToggleFavorite}
+                />)))}
+            </div>)}
 
-                        <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-1">
-                                Location
-                            </label>
-                            <input
-                                type="text"
-                                name="location"
-                                value={filters.location}
-                                onChange={handleFilterChange}
-                                className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-                            />
-                        </div>
+        <JobModal
+            isOpen={isModalOpen}
+            onClose={() => setIsModalOpen(false)}
+            title="Add New Job"
+            jobData={newJob}
+            handleInputChange={handleInputChange}
+            handleSubmit={handleSubmit}
+        />
 
-                        <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-1">
-                                Min Salary
-                            </label>
-                            <input
-                                type="number"
-                                name="minSalary"
-                                value={filters.minSalary}
-                                onChange={handleFilterChange}
-                                className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-                            />
-                        </div>
-
-                        <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-1">
-                                Max Salary
-                            </label>
-                            <input
-                                type="number"
-                                name="maxSalary"
-                                value={filters.maxSalary}
-                                onChange={handleFilterChange}
-                                className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-                            />
-                        </div>
-
-                        <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-1">
-                                Status
-                            </label>
-                            <select
-                                name="status"
-                                value={filters.status}
-                                onChange={handleFilterChange}
-                                className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-                            >
-                                <option value="">All Statuses</option>
-                                <option value="Saved">Saved</option>
-                                <option value="Applied">Applied</option>
-                                <option value="Interview">Interview</option>
-                                <option value="Offer">Offer</option>
-                                <option value="Rejected">Rejected</option>
-                                <option value="Accepted">Accepted</option>
-                            </select>
-                        </div>
-                    </div>
-
-                    <div className="mt-4 flex justify-end">
-                        <button
-                            type="button"
-                            onClick={clearFilters}
-                            className="mr-2 rounded-md border border-gray-300 px-4 py-2 text-sm font-medium hover:bg-gray-50"
-                        >
-                            Clear Filters
-                        </button>
-                        <button
-                            type="button"
-                            onClick={searchJobs}
-                            className="rounded-md bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700"
-                        >
-                            Apply Filters
-                        </button>
-                    </div>
-                </div>)}
-
-            {/* Error Message */}
-            {error && (<div className="rounded-md bg-red-50 p-4 text-red-700">
-                    {error}
-                </div>)}
-
-            {/* Loading State */}
-            {loading ? (<div className="text-center py-8">
-                    <p className="text-gray-500">Loading job listings...</p>
-                </div>) : (/* Job Listings */
-                <div className="space-y-4">
-                    {jobListings.length === 0 ? (<div className="text-center py-8">
-                            <p className="text-gray-500">No job listings found. Try adjusting your search criteria.</p>
-                        </div>) : (jobListings.map((job) => (<JobCard
-                                key={job.id}
-                                job={job}
-                                onEdit={handleEditJob}
-                                onDelete={handleDeleteJob}
-                                onToggleFavorite={handleToggleFavorite}
-                            />)))}
-                </div>)}
-
-            <JobModal
-                isOpen={isModalOpen}
-                onClose={() => setIsModalOpen(false)}
-                title="Add New Job"
-                jobData={newJob}
-                handleInputChange={handleInputChange}
-                handleSubmit={handleSubmit}
-            />
-
-            <JobModal
-                isOpen={isEditModalOpen}
-                onClose={() => setIsEditModalOpen(false)}
-                title="Edit Job"
-                jobData={editingJob || {}}
-                handleInputChange={handleEditInputChange}
-                handleSubmit={handleEditSubmit}
-            />
-        </div>);
+        <JobModal
+            isOpen={isEditModalOpen}
+            onClose={() => setIsEditModalOpen(false)}
+            title="Edit Job"
+            jobData={editingJob || {}}
+            handleInputChange={handleEditInputChange}
+            handleSubmit={handleEditSubmit}
+        />
+    </div>);
 };
 
 export default JobListings;

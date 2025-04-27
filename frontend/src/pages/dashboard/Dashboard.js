@@ -170,22 +170,27 @@ const Dashboard = () => {
                 <h3 className="text-lg font-medium mb-4">Application Pipeline</h3>
                 <div className="h-64 flex items-end justify-between gap-2">
                     <div className="flex flex-col items-center">
+                        <span className="mb-1 text-sm font-semibold text-gray-700">{stats.appliedJobs}</span>
                         <div className="bg-blue-500 w-12" style={{height: heights.appliedHeight}}></div>
                         <span className="text-xs mt-2">Applied</span>
                     </div>
                     <div className="flex flex-col items-center">
+                        <span className="mb-1 text-sm font-semibold text-gray-700">{stats.pendingInterviews}</span>
                         <div className="bg-blue-500 w-12" style={{height: heights.interviewHeight}}></div>
                         <span className="text-xs mt-2">Interview</span>
                     </div>
                     <div className="flex flex-col items-center">
+                        <span className="mb-1 text-sm font-semibold text-gray-700">{stats.offers}</span>
                         <div className="bg-blue-500 w-12" style={{height: heights.offerHeight}}></div>
                         <span className="text-xs mt-2">Offer</span>
                     </div>
                     <div className="flex flex-col items-center">
+                        <span className="mb-1 text-sm font-semibold text-gray-700">{stats.rejections}</span>
                         <div className="bg-blue-500 w-12" style={{height: heights.rejectionHeight}}></div>
                         <span className="text-xs mt-2">Rejected</span>
                     </div>
                     <div className="flex flex-col items-center">
+                        <span className="mb-1 text-sm font-semibold text-gray-700">{stats.acceptances}</span>
                         <div className="bg-blue-500 w-12" style={{height: heights.acceptedHeight}}></div>
                         <span className="text-xs mt-2">Accepted</span>
                     </div>
