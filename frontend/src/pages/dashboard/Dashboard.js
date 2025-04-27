@@ -89,7 +89,7 @@ const Dashboard = () => {
             setError('Failed to fetch dashboard data');
 
             setStats({
-                totalJobs: 0, pendingInterviews: 0, savedJobs: 0, appliedJobs: 0, offers: 0, rejected: 0, accepted: 0
+                totalJobs: 0, pendingInterviews: 0, savedJobs: 0, appliedJobs: 0, offers: 0, rejected: 0, hired: 0
             });
 
             setRecentActivity([]);
