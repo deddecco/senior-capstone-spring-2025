@@ -434,10 +434,13 @@ const JobListings = () => {
                                 className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
                             >
                                 <option value="">All Types</option>
-                                <option value="Full-time">Full-time</option>
-                                <option value="Part-time">Part-time</option>
-                                <option value="Contract">Contract</option>
                                 <option value="Internship">Internship</option>
+                                <option value="Entry Level">Entry Level</option>
+                                <option value="Mid-Level">Mid-Level</option>
+                                <option value="Senior">Senior</option>
+                                <option value="Manager">Manager</option>
+                                <option value="Director">Director</option>
+                                <option value="Executive">Executive</option>
                             </select>
                         </div>
 
