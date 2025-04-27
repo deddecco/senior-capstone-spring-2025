@@ -4,10 +4,9 @@ import {api} from '../../lib/api';
 
 const Dashboard = () => {
     const [stats, setStats] = useState({
-        totalJobs: 0, pendingInterviews: 0, savedJobs: 0, offers: 0, recentActivity: [], // All possible status keys from API
+        totalJobs: 0, pendingInterviews: 0, savedJobs: 0, offers: 0, recentActivity: [], // All pipeline statuses from API
         Screening: 0, Offer: 0, Saved: 0, Hired: 0, Rejected: 0, Applied: 0, Accepted: 0, Interview: 0
     });
-
     const [heights, setHeights] = useState({
         appliedHeight: 0, interviewHeight: 0, offerHeight: 0, rejectionHeight: 0, hiredHeight: 0
     });
@@ -47,6 +46,8 @@ const Dashboard = () => {
             try {
                 const response = await api.get('/jobs/status-counts');
                 statusCounts = response.data || {};
+                // Debug: See what the API gives you
+                // console.log('Status counts from API:', statusCounts);
             } catch (err) {
                 // ignore, just show 0s if error
             }
@@ -54,9 +55,9 @@ const Dashboard = () => {
             // Calculate stats for cards
             const totalJobs = jobs.length;
             const pendingInterviews = interviews.length;
-            // Use the API-provided Saved count for Saved Jobs
+            // Use API-provided Saved count for Saved Jobs
             const savedJobs = statusCounts['Saved'] || 0;
-            // Use the API-provided Offer count for Offers
+            // Use API-provided Offer count for Offers
             const offers = statusCounts['Offer'] || 0;
 
             // Recent activity
