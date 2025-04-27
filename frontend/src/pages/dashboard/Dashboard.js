@@ -181,7 +181,7 @@ const Dashboard = () => {
         </div>
 
 
-        {/*fixme*/}
+        {/*fixme heights are not scaling correctly*/}
         {/*this should come from the status-counts endpoint, not be hardcoded*/}
         {/* Application Pipeline and Recent Activity */}
         <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
