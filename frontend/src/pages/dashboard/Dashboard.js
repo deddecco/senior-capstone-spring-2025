@@ -192,7 +192,7 @@ const Dashboard = () => {
                     <div className="flex flex-col items-center">
                         <span className="mb-1 text-sm font-semibold text-gray-700">{stats.hired}</span>
                         <div className="bg-blue-500 w-12" style={{height: heights.hiredHeight}}></div>
-                        <span className="text-xs mt-2">Accepted</span>
+                        <span className="text-xs mt-2">Hired</span>
                     </div>
                 </div>
             </div>
