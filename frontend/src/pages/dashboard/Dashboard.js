@@ -171,16 +171,16 @@ const Dashboard = () => {
                             <span className="text-xs mt-2">Interview</span>
                         </div>
                         <div className="flex flex-col items-center">
-                            <div className="bg-blue-500 w-12 h-10"></div>
+                            <div className="bg-blue-500 w-12 h-0"></div>
                             <span className="text-xs mt-2">Offer</span>
                         </div>
                         <div className="flex flex-col items-center">
-                            <div className="bg-blue-500 w-12 h-4"></div>
+                            <div className="bg-blue-500 w-12 h-0"></div>
                             <span className="text-xs mt-2">Rejected</span>
                         </div>
                         <div className="flex flex-col items-center">
-                            <div className="bg-blue-500 w-12 h-16"></div>
-                            <span className="text-xs mt-2">Accepted</span>
+                            <div className="bg-blue-500 w-12 h-0"></div>
+                            <span className="text-xs mt-2">Accepted2</span>
                         </div>
                     </div>
                 </div>
