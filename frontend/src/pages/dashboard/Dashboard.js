@@ -85,70 +85,20 @@ const Dashboard = () => {
 
             if (recentJobs.length > 0) {
                 setRecentActivity(recentJobs);
-            } else {
-
-                // fixme this should not be fallback data
-                /* setRecentActivity([
-                   {
-                     company: 'Google',
-                     position: 'Senior Frontend Developer',
-                     time: '2 hours ago',
-                     icon: 'email'
-                   },
-                   {
-                     company: 'Microsoft',
-                     position: 'Full Stack Engineer',
-                     time: 'Yesterday',
-                     icon: 'calendar'
-                   },
-                   {
-                     company: 'Amazon',
-                     position: 'React Developer',
-                     time: '2 days ago',
-                     icon: 'star'
-                   }
-                 ]);*/
             }
 
-            if (jobs.length === 0 && interviews.length === 0) {
-                // fixme this is wrong-- this should not be an error; it's ok to have no jobs or interviews
-                setError('Backend unavailable - showing local data');
-            } else {
-                setError(null);
-            }
+            setError(null);
         } catch (err) {
             console.error('Error fetching dashboard data:', err);
             setError('Failed to fetch dashboard data');
 
-
-            // fixme get rid of this fallback data
             // Use mock data as fallback
             setStats({
-                totalApplications: 24,
-                pendingInterviews: 3,
-                savedJobs: 12
+                totalApplications: 0,
+                pendingInterviews: 0,
+                savedJobs: 0
             });
-            // fixme get rid of this fallback data
-            setRecentActivity([
-                {
-                    company: 'Google',
-                    position: 'Senior Frontend Developer',
-                    time: '2 hours ago',
-                    icon: 'email'
-                },
-                {
-                    company: 'Microsoft',
-                    position: 'Full Stack Engineer',
-                    time: 'Yesterday',
-                    icon: 'calendar'
-                },
-                {
-                    company: 'Amazon',
-                    position: 'React Developer',
-                    time: '2 days ago',
-                    icon: 'star'
-                }
-            ]);
+            setRecentActivity([]);
         } finally {
             setLoading(false);
         }
