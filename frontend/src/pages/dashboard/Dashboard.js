@@ -50,22 +50,28 @@ const Dashboard = () => {
             const savedJobs = jobs.filter(job => job.status === 'Saved').length;
             const offers = jobs.filter(job => job.status === 'Offer').length;
             const appliedJobs = jobs.filter(job => job.status === 'Applied').length;
-            const rejected = jobs.filter(job => job.status === 'Rejected').length;
-            const accepted = jobs.filter(job => job.status === 'Accepted').length;
+            const rejections = jobs.filter(job => job.status === 'Rejected').length;
+            const acceptances = jobs.filter(job => job.status === 'Accepted').length;
 
-            setStats({
-                totalJobs, pendingInterviews, savedJobs, appliedJobs, offers, rejected, accepted
-            });
+            // we need newStats before we call setStats because setStats is async and will use old values
+            // instead of current ones
+            const newStats = {
+                totalJobs, pendingInterviews, savedJobs, appliedJobs, offers, rejections, acceptances
+            };
 
-            const containerHeight = 256; // px
-            const maxStat = Math.max(stats.appliedJobs, stats.pendingInterviews, stats.offers, stats.rejections, stats.acceptances) || 1; // prevent division by zero
+            const containerHeight = 224; // px
+            // find the max number in the pipeline
+            const maxStat = Math.max(newStats.appliedJobs, newStats.pendingInterviews, newStats.offers, newStats.rejections, newStats.acceptances) || 1; // prevent division by zero
 
+            setStats(newStats);
+
+            // and here we set heights
             setHeights({
-                appliedHeight: (stats.appliedJobs / maxStat) * containerHeight,
-                interviewHeight: (stats.pendingInterviews / maxStat) * containerHeight,
-                offerHeight: (stats.offers / maxStat) * containerHeight,
-                rejectionHeight: (stats.rejections / maxStat) * containerHeight,
-                acceptedHeight: (stats.acceptances / maxStat) * containerHeight
+                appliedHeight: (newStats.appliedJobs / maxStat) * containerHeight,
+                interviewHeight: (newStats.pendingInterviews / maxStat) * containerHeight,
+                offerHeight: (newStats.offers / maxStat) * containerHeight,
+                rejectionHeight: (newStats.rejections / maxStat) * containerHeight,
+                acceptedHeight: (newStats.acceptances / maxStat) * containerHeight
             });
             // Create recent activity from jobs and interviews
             const recentJobs = jobs.slice(0, 3).map(job => ({
@@ -157,9 +163,6 @@ const Dashboard = () => {
             </div>
         </div>
 
-
-        {/*fixme heights are not scaling correctly*/}
-        {/*this should come from the status-counts endpoint, not be hardcoded*/}
         {/* Application Pipeline and Recent Activity */}
         <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
             {/* Application Pipeline */}
@@ -167,22 +170,27 @@ const Dashboard = () => {
                 <h3 className="text-lg font-medium mb-4">Application Pipeline</h3>
                 <div className="h-64 flex items-end justify-between gap-2">
                     <div className="flex flex-col items-center">
+                        <span className="mb-1 text-sm font-semibold text-gray-700">{stats.appliedJobs}</span>
                         <div className="bg-blue-500 w-12" style={{height: heights.appliedHeight}}></div>
                         <span className="text-xs mt-2">Applied</span>
                     </div>
                     <div className="flex flex-col items-center">
+                        <span className="mb-1 text-sm font-semibold text-gray-700">{stats.pendingInterviews}</span>
                         <div className="bg-blue-500 w-12" style={{height: heights.interviewHeight}}></div>
                         <span className="text-xs mt-2">Interview</span>
                     </div>
                     <div className="flex flex-col items-center">
+                        <span className="mb-1 text-sm font-semibold text-gray-700">{stats.offers}</span>
                         <div className="bg-blue-500 w-12" style={{height: heights.offerHeight}}></div>
                         <span className="text-xs mt-2">Offer</span>
                     </div>
                     <div className="flex flex-col items-center">
+                        <span className="mb-1 text-sm font-semibold text-gray-700">{stats.rejections}</span>
                         <div className="bg-blue-500 w-12" style={{height: heights.rejectionHeight}}></div>
                         <span className="text-xs mt-2">Rejected</span>
                     </div>
                     <div className="flex flex-col items-center">
+                        <span className="mb-1 text-sm font-semibold text-gray-700">{stats.acceptances}</span>
                         <div className="bg-blue-500 w-12" style={{height: heights.acceptedHeight}}></div>
                         <span className="text-xs mt-2">Accepted</span>
                     </div>
