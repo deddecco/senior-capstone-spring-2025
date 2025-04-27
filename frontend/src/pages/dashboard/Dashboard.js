@@ -4,12 +4,13 @@ import {api} from '../../lib/api';
 
 const Dashboard = () => {
     const [stats, setStats] = useState({
-        totalJobs: 0, pendingInterviews: 0, savedJobs: 0, offers: 0, recentActivity: [], // All pipeline statuses from API
-        Screening: 0, Offer: 0, Saved: 0, Hired: 0, Rejected: 0, Applied: 0, Accepted: 0, Interview: 0
+        totalJobs: 0, pendingInterviews: 0, savedJobs: 0, appliedJobs: 0, offers: 0, rejections: 0, acceptances: 0
     });
     const [heights, setHeights] = useState({
-        appliedHeight: 0, interviewHeight: 0, offerHeight: 0, rejectionHeight: 0, hiredHeight: 0
+        appliedHeight: 0, interviewHeight: 0, offerHeight: 0, rejectionHeight: 0, acceptedHeight: 0
     });
+
+    const [recentActivity, setRecentActivity] = useState([]);
 
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
@@ -22,105 +23,70 @@ const Dashboard = () => {
         try {
             setLoading(true);
 
-            // Fetch jobs for stats cards and recent activity
+            // Fetch jobs
             let jobs = [];
             try {
                 jobs = await api.getJobs();
             } catch (apiError) {
+                console.error('Backend API error when fetching jobs:', apiError);
+                // Try to get jobs from localStorage
                 const localJobs = localStorage.getItem('jobListings');
                 if (localJobs) {
                     jobs = JSON.parse(localJobs);
                 }
             }
 
-            // Fetch interviews for pending interviews stat
+            // Fetch interviews
             let interviews = [];
             try {
                 interviews = await api.getInterviews();
             } catch (err) {
-                // ignore, just show 0 if error
+                console.error('Error fetching interviews:', err);
             }
 
-            // Fetch status counts for the pipeline bars
-            let statusCounts = {};
-            try {
-                const response = await api.get('/jobs/status-counts');
-                statusCounts = response.data;
-            } catch (err) {
-                // ignore, just show 0s if error
-            }
-
-            // Calculate stats for cards
+            // Calculate stats
             const totalJobs = jobs.length;
             const pendingInterviews = interviews.length;
-            // Use API-provided Saved count for Saved Jobs
-            const savedJobs = statusCounts['Saved'] || 0;
-            // Use API-provided Offer count for Offers
-            const offers = statusCounts['Offer'] || 0;
-
-            // Recent activity
-            const recentActivity = jobs.slice(0, 3).map(job => ({
-                company: job.company, position: job.title, icon: 'email'
-            }));
-
-            // For the pipeline, use only API counts (never calculate locally)
-            const pipelineStats = {
-                Applied: statusCounts['Applied'] || 0,
-                Interview: statusCounts['Interview'] || 0,
-                Offer: statusCounts['Offer'] || 0,
-                Rejected: statusCounts['Rejected'] || 0,
-                Hired: statusCounts['Hired'] || 0
-            };
-
-            // Calculate bar heights
-            const containerHeight = 224;
-            const maxStat = Math.max(pipelineStats.Applied, pipelineStats.Interview, pipelineStats.Offer, pipelineStats.Rejected, pipelineStats.Hired) || 1;
+            const savedJobs = jobs.filter(job => job.status === 'Saved').length;
+            const offers = jobs.filter(job => job.status === 'Offer').length;
+            const appliedJobs = jobs.filter(job => job.status === 'Applied').length;
+            const rejected = jobs.filter(job => job.status === 'Rejected').length;
+            const accepted = jobs.filter(job => job.status === 'Accepted').length;
 
             setStats({
-                totalJobs,
-                pendingInterviews,
-                savedJobs,
-                offers,
-                recentActivity,
-                Screening: statusCounts['Screening'] || 0,
-                Offer: statusCounts['Offer'] || 0,
-                Saved: statusCounts['Saved'] || 0,
-                Hired: statusCounts['Hired'] || 0,
-                Rejected: statusCounts['Rejected'] || 0,
-                Applied: statusCounts['Applied'] || 0,
-                Accepted: statusCounts['Accepted'] || 0,
-                Interview: statusCounts['Interview'] || 0
+                totalJobs, pendingInterviews, savedJobs, appliedJobs, offers, rejected, accepted
             });
 
+            const containerHeight = 256; // px
+            const maxStat = Math.max(stats.appliedJobs, stats.pendingInterviews, stats.offers, stats.rejections, stats.acceptances) || 1; // prevent division by zero
+
             setHeights({
-                appliedHeight: (pipelineStats.Applied / maxStat) * containerHeight,
-                interviewHeight: (pipelineStats.Interview / maxStat) * containerHeight,
-                offerHeight: (pipelineStats.Offer / maxStat) * containerHeight,
-                rejectionHeight: (pipelineStats.Rejected / maxStat) * containerHeight,
-                hiredHeight: (pipelineStats.Hired / maxStat) * containerHeight
+                appliedHeight: (stats.appliedJobs / maxStat) * containerHeight,
+                interviewHeight: (stats.pendingInterviews / maxStat) * containerHeight,
+                offerHeight: (stats.offers / maxStat) * containerHeight,
+                rejectionHeight: (stats.rejections / maxStat) * containerHeight,
+                acceptedHeight: (stats.acceptances / maxStat) * containerHeight
             });
+            // Create recent activity from jobs and interviews
+            const recentJobs = jobs.slice(0, 3).map(job => ({
+                company: job.company, position: job.title, // time: job.created_at ? new Date(job.created_at).toLocaleDateString() : job.posted || '2 hours ago',
+                icon: 'email'
+            }));
+
+            if (recentJobs.length > 0) {
+                setRecentActivity(recentJobs);
+            }
 
             setError(null);
         } catch (err) {
+            console.error('Error fetching dashboard data:', err);
             setError('Failed to fetch dashboard data');
+
             setStats({
-                totalJobs: 0,
-                pendingInterviews: 0,
-                savedJobs: 0,
-                offers: 0,
-                recentActivity: [],
-                Screening: 0,
-                Offer: 0,
-                Saved: 0,
-                Hired: 0,
-                Rejected: 0,
-                Applied: 0,
-                Accepted: 0,
-                Interview: 0
+                totalJobs: 0, pendingInterviews: 0, savedJobs: 0, appliedJobs: 0, offers: 0, rejected: 0, accepted: 0
             });
-            setHeights({
-                appliedHeight: 0, interviewHeight: 0, offerHeight: 0, rejectionHeight: 0, hiredHeight: 0
-            });
+
+            setRecentActivity([]);
         } finally {
             setLoading(false);
         }
@@ -191,6 +157,9 @@ const Dashboard = () => {
             </div>
         </div>
 
+
+        {/*fixme heights are not scaling correctly*/}
+        {/*this should come from the status-counts endpoint, not be hardcoded*/}
         {/* Application Pipeline and Recent Activity */}
         <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
             {/* Application Pipeline */}
@@ -198,29 +167,24 @@ const Dashboard = () => {
                 <h3 className="text-lg font-medium mb-4">Application Pipeline</h3>
                 <div className="h-64 flex items-end justify-between gap-2">
                     <div className="flex flex-col items-center">
-                        <span className="mb-1 text-sm font-semibold text-gray-700">{stats.Applied}</span>
                         <div className="bg-blue-500 w-12" style={{height: heights.appliedHeight}}></div>
                         <span className="text-xs mt-2">Applied</span>
                     </div>
                     <div className="flex flex-col items-center">
-                        <span className="mb-1 text-sm font-semibold text-gray-700">{stats.Interview}</span>
                         <div className="bg-blue-500 w-12" style={{height: heights.interviewHeight}}></div>
                         <span className="text-xs mt-2">Interview</span>
                     </div>
                     <div className="flex flex-col items-center">
-                        <span className="mb-1 text-sm font-semibold text-gray-700">{stats.Offer}</span>
                         <div className="bg-blue-500 w-12" style={{height: heights.offerHeight}}></div>
                         <span className="text-xs mt-2">Offer</span>
                     </div>
                     <div className="flex flex-col items-center">
-                        <span className="mb-1 text-sm font-semibold text-gray-700">{stats.Rejected}</span>
                         <div className="bg-blue-500 w-12" style={{height: heights.rejectionHeight}}></div>
                         <span className="text-xs mt-2">Rejected</span>
                     </div>
                     <div className="flex flex-col items-center">
-                        <span className="mb-1 text-sm font-semibold text-gray-700">{stats.Hired}</span>
-                        <div className="bg-blue-500 w-12" style={{height: heights.hiredHeight}}></div>
-                        <span className="text-xs mt-2">Hired</span>
+                        <div className="bg-blue-500 w-12" style={{height: heights.acceptedHeight}}></div>
+                        <span className="text-xs mt-2">Accepted</span>
                     </div>
                 </div>
             </div>
@@ -229,7 +193,7 @@ const Dashboard = () => {
             <div className="rounded-lg border bg-white p-6 shadow-sm">
                 <h3 className="text-lg font-medium mb-4">Recent Activity</h3>
                 <div className="space-y-4">
-                    {stats.recentActivity.map((activity, index) => (<div key={index} className="flex items-start gap-4">
+                    {recentActivity.map((activity, index) => (<div key={index} className="flex items-start gap-4">
                         <div
                             className={`rounded-full p-2 ${activity.icon === 'email' ? 'bg-blue-100 text-blue-500' : activity.icon === 'calendar' ? 'bg-purple-100 text-purple-500' : 'bg-yellow-100 text-yellow-500'}`}>
                             {activity.icon === 'email' && (
