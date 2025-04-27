@@ -4,7 +4,7 @@ import {api} from '../../lib/api';
 
 const Dashboard = () => {
     const [stats, setStats] = useState({
-        totalJobs: 0, pendingInterviews: 0, savedJobs: 0, appliedJobs: 0, offers: 0, rejections: 0, acceptances: 0
+        totalJobs: 0, pendingInterviews: 0, savedJobs: 0, appliedJobs: 0, offers: 0, rejections: 0, hired: 0
     });
     const [heights, setHeights] = useState({
         appliedHeight: 0, interviewHeight: 0, offerHeight: 0, rejectionHeight: 0, hiredHeight: 0
@@ -190,7 +190,7 @@ const Dashboard = () => {
                         <span className="text-xs mt-2">Rejected</span>
                     </div>
                     <div className="flex flex-col items-center">
-                        <span className="mb-1 text-sm font-semibold text-gray-700">{stats.acceptances}</span>
+                        <span className="mb-1 text-sm font-semibold text-gray-700">{stats.hired}</span>
                         <div className="bg-blue-500 w-12" style={{height: heights.hiredHeight}}></div>
                         <span className="text-xs mt-2">Accepted</span>
                     </div>
