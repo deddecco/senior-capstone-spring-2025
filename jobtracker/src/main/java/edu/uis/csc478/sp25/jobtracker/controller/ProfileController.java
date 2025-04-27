@@ -71,7 +71,6 @@ public class ProfileController {
       * @param profileId UUID of the profile to fetch.
       * @return ResponseEntity containing the profile or an error message.
       */
-     // fixme--- check if asking for own profile, else not let in
      @GetMapping("/{profileId}")
      public ResponseEntity<Object> getProfileById(@PathVariable UUID profileId) {
           try {
