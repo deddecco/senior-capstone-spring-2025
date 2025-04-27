@@ -11,6 +11,7 @@ import Dashboard from './pages/dashboard/Dashboard';
 import JobListings from './pages/dashboard/JobListings';
 import FavoriteJobs from './pages/dashboard/FavoriteJobs';
 import Settings from './pages/dashboard/Settings';
+import InterviewListings from './pages/dashboard/InterviewListings';
 import './App.css';
 
 function App() {
@@ -22,12 +23,12 @@ function App() {
           <Route path="/signin" element={<SignIn />} />
           <Route path="/signup" element={<SignUp />} />
           <Route path="/signup-confirmation" element={<SignUpConfirmation />} />
-          <Route path="/testingapi" element={<TestingAPI />} />
-          
+
           {/* Dashboard Routes */}
           <Route path="/dashboard" element={<DashboardLayout />}>
             <Route index element={<Dashboard />} />
             <Route path="job-listings" element={<JobListings />} />
+            <Route path="interview-listings" element={<InterviewListings />} />
             <Route path="favorite-jobs" element={<FavoriteJobs />} />
             <Route path="settings" element={<Settings />} />
           </Route>
@@ -37,4 +38,4 @@ function App() {
   );
 }
 
-export default App; 
+export default App;
