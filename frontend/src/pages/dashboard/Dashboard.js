@@ -4,11 +4,12 @@ import {api} from '../../lib/api';
 
 const Dashboard = () => {
     const [stats, setStats] = useState({
-        totalJobs: 0, pendingInterviews: 0, savedJobs: 0, offers: 0, recentActivity: [], // Pipeline statuses
-        Applied: 0, Interview: 0, Offer: 0, Rejected: 0, Hired: 0,
+        totalJobs: 0, pendingInterviews: 0, savedJobs: 0, offers: 0, recentActivity: [], // All possible status keys from API
+        Screening: 0, Offer: 0, Saved: 0, Hired: 0, Rejected: 0, Applied: 0, Accepted: 0, Interview: 0
     });
+
     const [heights, setHeights] = useState({
-        appliedHeight: 0, interviewHeight: 0, offerHeight: 0, rejectionHeight: 0, hiredHeight: 0,
+        appliedHeight: 0, interviewHeight: 0, offerHeight: 0, rejectionHeight: 0, hiredHeight: 0
     });
 
     const [loading, setLoading] = useState(true);
@@ -53,7 +54,9 @@ const Dashboard = () => {
             // Calculate stats for cards
             const totalJobs = jobs.length;
             const pendingInterviews = interviews.length;
-            const savedJobs = jobs.filter(job => job.status === 'Saved').length;
+            // Use the API-provided Saved count for Saved Jobs
+            const savedJobs = statusCounts['Saved'] || 0;
+            // Use the API-provided Offer count for Offers
             const offers = statusCounts['Offer'] || 0;
 
             // Recent activity
@@ -75,7 +78,19 @@ const Dashboard = () => {
             const maxStat = Math.max(pipelineStats.Applied, pipelineStats.Interview, pipelineStats.Offer, pipelineStats.Rejected, pipelineStats.Hired) || 1;
 
             setStats({
-                totalJobs, pendingInterviews, savedJobs, offers, recentActivity, ...pipelineStats
+                totalJobs,
+                pendingInterviews,
+                savedJobs,
+                offers,
+                recentActivity,
+                Screening: statusCounts['Screening'] || 0,
+                Offer: statusCounts['Offer'] || 0,
+                Saved: statusCounts['Saved'] || 0,
+                Hired: statusCounts['Hired'] || 0,
+                Rejected: statusCounts['Rejected'] || 0,
+                Applied: statusCounts['Applied'] || 0,
+                Accepted: statusCounts['Accepted'] || 0,
+                Interview: statusCounts['Interview'] || 0
             });
 
             setHeights({
@@ -95,11 +110,14 @@ const Dashboard = () => {
                 savedJobs: 0,
                 offers: 0,
                 recentActivity: [],
-                Applied: 0,
-                Interview: 0,
+                Screening: 0,
                 Offer: 0,
+                Saved: 0,
+                Hired: 0,
                 Rejected: 0,
-                Hired: 0
+                Applied: 0,
+                Accepted: 0,
+                Interview: 0
             });
             setHeights({
                 appliedHeight: 0, interviewHeight: 0, offerHeight: 0, rejectionHeight: 0, hiredHeight: 0
