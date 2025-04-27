@@ -3,34 +3,13 @@ import {Calendar, Star} from 'lucide-react';
 import {api} from '../../lib/api';
 
 const Dashboard = () => {
-    // fixme get rid of this fallback data
     const [stats, setStats] = useState({
-        totalApplications: 24,
-        pendingInterviews: 3,
-        savedJobs: 12
+        totalApplications: 0,
+        pendingInterviews: 0,
+        savedJobs: 0
     });
 
-    // fixme get rid of this fallback data
-    const [recentActivity, setRecentActivity] = useState([
-        {
-            company: 'Google',
-            position: 'Senior Frontend Developer',
-            time: '2 hours ago',
-            icon: 'email'
-        },
-        {
-            company: 'Microsoft',
-            position: 'Full Stack Engineer',
-            time: 'Yesterday',
-            icon: 'calendar'
-        },
-        {
-            company: 'Amazon',
-            position: 'React Developer',
-            time: '2 days ago',
-            icon: 'star'
-        }
-    ]);
+    const [recentActivity, setRecentActivity] = useState([]);
 
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
@@ -77,9 +56,9 @@ const Dashboard = () => {
 
             // Create recent activity from jobs and interviews
             const recentJobs = jobs.slice(0, 3).map(job => ({
-                company: job.company || 'Company',
+                company: job.company,
                 position: job.title,
-                time: job.created_at ? new Date(job.created_at).toLocaleDateString() : job.posted || '2 hours ago',
+               // time: job.created_at ? new Date(job.created_at).toLocaleDateString() : job.posted || '2 hours ago',
                 icon: 'email'
             }));
 
@@ -236,7 +215,6 @@ const Dashboard = () => {
                                 <div>
                                     <h4 className="font-medium">{activity.company}</h4>
                                     <p className="text-sm text-gray-500">{activity.position}</p>
-                                    <p className="text-xs text-gray-400 mt-1">{activity.time}</p>
                                 </div>
                             </div>
                         ))}
