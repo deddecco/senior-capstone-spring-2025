@@ -39,7 +39,7 @@ const Dashboard = () => {
                 }
             }
 
-            // Fetch status counts
+   /*         // Fetch status counts
             let statusCounts = [];
             try {
                 statusCounts = await api.getStatusCounts();
@@ -50,7 +50,7 @@ const Dashboard = () => {
                 if (localStatusCounts) {
                     statusCounts = JSON.parse(localStatusCounts);
                 }
-            }
+            }*/
 
             // Fetch interviews
             let interviews = [];
@@ -66,9 +66,11 @@ const Dashboard = () => {
             const savedJobs = jobs.filter(job => job.status === 'Saved').length;
             const offers = jobs.filter(job => job.status === 'Offer').length;
             const applied = jobs.filter(job => job.status === 'Applied').length;
+            const rejected = jobs.filter(job => job.status === 'Rejected').length;
+            const accepted = jobs.filter(job => job.status === 'Accepted').length;
 
             setStats({
-                totalJobs, pendingInterviews, savedJobs, offers, applied
+                totalJobs, pendingInterviews, savedJobs, applied, offers, rejected, accepted
             });
 
             // Create recent activity from jobs and interviews
@@ -92,7 +94,9 @@ const Dashboard = () => {
                 pendingInterviews: 0,
                 savedJobs: 0,
                 offers: 0,
-                applied: 0
+                applied: 0,
+                rejected: 0,
+                accepted: 0
             });
             setRecentActivity([]);
         } finally {
@@ -175,11 +179,11 @@ const Dashboard = () => {
                     <h3 className="text-lg font-medium mb-4">Application Pipeline</h3>
                     <div className="h-64 flex items-end justify-between gap-2">
                         <div className="flex flex-col items-center">
-                            <div className="bg-blue-500 w-12 h-48"></div>
+                            <div className="bg-blue-500 w-12" style={{ height: stats.appliedJobs }}></div>
                             <span className="text-xs mt-2">Applied</span>
                         </div>
                         <div className="flex flex-col items-center">
-                            <div className="bg-blue-500 w-12 h-16"></div>
+                            <div className="bg-blue-500 w-12" style={{ height: stats.pendingInterviews }}></div>
                             <span className="text-xs mt-2">Interview</span>
                         </div>
                         <div className="flex flex-col items-center">
@@ -187,11 +191,11 @@ const Dashboard = () => {
                             <span className="text-xs mt-2">Offer</span>
                         </div>
                         <div className="flex flex-col items-center">
-                            <div className="bg-blue-500 w-12 h-0"></div>
+                            <div className="bg-blue-500 w-12" style={{ height: stats.rejections }}></div>
                             <span className="text-xs mt-2">Rejected</span>
                         </div>
                         <div className="flex flex-col items-center">
-                            <div className="bg-blue-500 w-12 h-0"></div>
+                            <div className="bg-blue-500 w-12" style={{ height: stats.acceptances }}></div>
                             <span className="text-xs mt-2">Accepted</span>
                         </div>
                     </div>
