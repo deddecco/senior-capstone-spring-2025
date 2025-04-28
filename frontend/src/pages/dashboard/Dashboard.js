@@ -175,11 +175,6 @@ const Dashboard = () => {
                         <span className="text-xs mt-2">Applied</span>
                     </div>
                     <div className="flex flex-col items-center">
-                        <span className="mb-1 text-sm font-semibold text-gray-700">{stats.pendingInterviews}</span>
-                        <div className="bg-blue-500 w-12" style={{height: heights.interviewHeight}}></div>
-                        <span className="text-xs mt-2">Interview</span>
-                    </div>
-                    <div className="flex flex-col items-center">
                         <span className="mb-1 text-sm font-semibold text-gray-700">{stats.offers}</span>
                         <div className="bg-blue-500 w-12" style={{height: heights.offerHeight}}></div>
                         <span className="text-xs mt-2">Offer</span>
