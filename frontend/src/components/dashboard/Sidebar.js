@@ -1,6 +1,6 @@
 import React from 'react';
 import {Link, useLocation} from 'react-router-dom';
-import {Bookmark, Briefcase, Home, Settings} from 'lucide-react';
+import {Bookmark, Briefcase, Home, Settings, Calendar} from 'lucide-react';
 
 const Sidebar = () => {
     const location = useLocation();
@@ -17,7 +17,7 @@ const Sidebar = () => {
         icon: Settings,
         label: 'Settings',
         path: '/dashboard/settings'
-    },];
+    }, {icon: Calendar, label: 'Interviews', path: '/dashboard/interview-listings'}];
 
     return (<div className="h-screen w-64 border-r bg-white">
         <div className="p-4 border-b">
@@ -44,4 +44,4 @@ const Sidebar = () => {
     </div>);
 };
 
-export default Sidebar; 
+export default Sidebar;
