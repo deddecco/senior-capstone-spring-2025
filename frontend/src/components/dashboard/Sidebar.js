@@ -13,11 +13,12 @@ const Sidebar = () => {
         icon: Briefcase,
         label: 'Job Listings',
         path: '/dashboard/job-listings'
-    }, {icon: Bookmark, label: 'Favorite Jobs', path: '/dashboard/favorite-jobs'}, {
+    }, {icon: Bookmark, label: 'Favorite Jobs', path: '/dashboard/favorite-jobs'},
+        {icon: Calendar, label: 'Interviews', path: '/dashboard/interview-listings'}, {
         icon: Settings,
         label: 'Settings',
         path: '/dashboard/settings'
-    }, {icon: Calendar, label: 'Interviews', path: '/dashboard/interview-listings'}];
+    }];
 
     return (<div className="h-screen w-64 border-r bg-white">
         <div className="p-4 border-b">

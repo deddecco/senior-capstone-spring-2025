@@ -466,4 +466,36 @@ export const api = {
 
         return response.json();
     },
+
+    getUpcomingInterviews: async () => {
+        const headers = await getAuthHeader();
+        try {
+            const response = await fetch(`${API_URL}/interviews/upcoming`, {
+                headers: {
+                    ...headers, 'Content-Type': 'application/json'
+                }
+            });
+
+            // If status is 204 (No Content), return an empty array
+            if (response.status === 204) {
+                return [];
+            }
+
+            // Check if response is ok
+            if (!response.ok) {
+                throw new Error(`Failed to fetch upcoming interviews: ${response.status}`);
+            }
+
+            // Check for empty response
+            const text = await response.text();
+            if (!text) {
+                return []; // Return empty array for empty responses
+            }
+
+            return JSON.parse(text);
+        } catch (error) {
+            console.error('API call to getUpcomingInterviews failed:', error);
+            throw error;
+        }
+    }
 };

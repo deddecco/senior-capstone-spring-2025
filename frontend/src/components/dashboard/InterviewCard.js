@@ -15,6 +15,22 @@ const InterviewCard = ({interview, onEdit, onDelete}) => {
         return text.charAt(0).toUpperCase() + text.slice(1);
     };
 
+    const formatDateDisplay = (dateString) => {
+        if (!dateString) return '';
+
+        try {
+            if (dateString.includes('/')) return dateString;
+            const parts = dateString.split('-');
+            if (parts.length === 3) {
+                return `${parts[1]}-${parts[2]}-${parts[0]}`;
+            }
+            return dateString;
+        } catch (e) {
+            console.error('Error formatting date:', e);
+            return dateString;
+        }
+    };
+
     return (<div className="rounded-lg border bg-white p-6 shadow-sm hover:shadow-md transition-shadow">
         <div className="flex items-start justify-between">
             <div className="flex gap-4">
@@ -26,7 +42,7 @@ const InterviewCard = ({interview, onEdit, onDelete}) => {
                     <p className="text-gray-600">{capitalize(interview.round)} • {capitalize(interview.format)}</p>
                     <div className="mt-2 flex flex-wrap gap-2">
                       <span className="inline-flex items-center rounded-full bg-blue-100 px-2.5 py-0.5 text-xs font-medium text-blue-800">
-                        {interview.date} at {interview.time}
+                        {formatDateDisplay(interview.date)} at {interview.time}
                       </span>
                     </div>
                 </div>
