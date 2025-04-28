@@ -175,4 +175,12 @@ public class InterviewService {
           }
           return upcoming;
      }
+
+     /**
+      * Returns the count of upcoming interviews (date after today) for the current user.
+      * @return count >= 0
+      */
+     public int getCountOfUpcomingInterviews() {
+          return getUpcomingInterviewsForUser().size();
+     }
 }

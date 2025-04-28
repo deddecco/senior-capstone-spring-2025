@@ -208,4 +208,10 @@ public class InterviewController {
           List<Interview> upcoming = service.getUpcomingInterviewsForUser();
           return upcoming.isEmpty() ? noContent().build() : ok(upcoming);
      }
+
+     @GetMapping("/upcoming/count")
+     public ResponseEntity<Integer> getCountOfUpcomingInterviews() {
+          int count = service.getCountOfUpcomingInterviews();
+          return ResponseEntity.ok(count);
+     }
 }
