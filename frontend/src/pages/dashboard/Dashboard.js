@@ -36,17 +36,9 @@ const Dashboard = () => {
                 }
             }
 
-            // Fetch interviews
-            let interviews = [];
-            try {
-                interviews = await api.getInterviews();
-            } catch (err) {
-                console.error('Error fetching interviews:', err);
-            }
-
             // Calculate stats
             const totalJobs = jobs.length;
-            const pendingInterviews = interviews.length;
+            const pendingInterviews = jobs.filter(job => job.status === 'Interview').length;
             const savedJobs = jobs.filter(job => job.status === 'Saved').length;
             const offers = jobs.filter(job => job.status === 'Offer').length;
             const appliedJobs = jobs.filter(job => job.status === 'Applied').length;
