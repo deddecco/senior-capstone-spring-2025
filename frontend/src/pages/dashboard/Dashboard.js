@@ -291,16 +291,6 @@ const Dashboard = () => {
                 </div>
             )}
 
-            <div className="flex items-center justify-between">
-                <h1 className="text-3xl font-bold">Dashboard</h1>
-                <button
-                    onClick={fetchDashboardData}
-                    className="rounded-md bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700"
-                >
-                    Refresh Data
-                </button>
-            </div>
-
             {/* Stats Cards */}
             <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
                 <div className="rounded-lg border bg-white p-6 shadow-sm">
