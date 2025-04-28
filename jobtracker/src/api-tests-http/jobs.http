@@ -45,7 +45,7 @@ apikey: {{supabase-api-key}}
   "minSalary": 90000,
   "maxSalary": 100000,
   "location": "Richmond",
-  "status": "Hired"
+  "status": "Accepted"
 }
 
 ###
@@ -78,7 +78,7 @@ apikey: {{supabase-api-key}}
   "minSalary": 150000,
   "maxSalary": 150000,
   "location": "Hoboken",
-  "status": "Hired",
+  "status": "Accepted",
   "user_id": "3ed484ad-7bac-4906-b56c-994b325865f2"
 }
 
@@ -97,7 +97,7 @@ Content-Type: application/json
   "minSalary": 95000,
   "maxSalary": 95000,
   "location": "Richmond",
-  "status": "Hired",
+  "status": "Accepted",
   "company": "ABC, Inc.",
   "userId": "3ed484ad-7bac-4906-b56c-994b325865f2",
   "lastModified": "2025-04-16T20:24:35.71559Z",
@@ -135,7 +135,7 @@ Authorization: Bearer {{auth-token}}
   "minsalary": 99800,
   "maxsalary": 123700,
   "location": "New York",
-  "status": "Hired",
+  "status": "Accepted",
   "userId": "3ed484ad-7bac-4906-b56c-994b325865f2"
 }
 

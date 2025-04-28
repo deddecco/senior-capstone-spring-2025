@@ -279,7 +279,7 @@ public class JobService {
 
                // Initialize a map with default statuses and counts set to 0
                Map<String, Integer> statusCounts = new HashMap<>();
-               String[] statuses = {"Saved", "Applied", "Screening", "Interview", "Rejected", "Offer", "Hired"};
+               String[] statuses = {"Saved", "Applied", "Screening", "Interview", "Rejected", "Offer", "Accepted"};
                for (String status : statuses) {
                     statusCounts.put(status, 0);
                }

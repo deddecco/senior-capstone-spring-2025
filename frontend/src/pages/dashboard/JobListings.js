@@ -475,7 +475,7 @@ const JobListings = () => {
                         <option value="Interview">Interview</option>
                         <option value="Offer">Offer</option>
                         <option value="Rejected">Rejected</option>
-                        <option value="Hired">Hired</option>
+                        <option value="Accepted">Accepted</option>
                     </select>
                 </div>
             </div>
