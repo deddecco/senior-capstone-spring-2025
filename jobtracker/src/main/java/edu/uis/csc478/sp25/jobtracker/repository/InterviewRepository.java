@@ -44,4 +44,11 @@ public interface InterviewRepository extends CrudRepository<Interview, UUID> {
      @Modifying
      @Query("DELETE FROM interview WHERE id = :id AND user_id = :userId")
      int deleteByIdAndUserId(@Param("id") UUID id, @Param("userId") UUID userId);
+
+     @Query("""
+             SELECT * FROM interview 
+             WHERE user_id = :userId 
+             AND date > TO_CHAR(CURRENT_DATE, 'yyyy-MM-dd')
+             """)
+     List<Interview> findUpcomingByUserId(@Param("userId") UUID userId);
 }

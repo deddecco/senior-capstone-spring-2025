@@ -5,10 +5,16 @@ import edu.uis.csc478.sp25.jobtracker.repository.InterviewRepository;
 import org.slf4j.Logger;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
+import java.time.format.DateTimeParseException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
 import static edu.uis.csc478.sp25.jobtracker.security.SecurityUtil.getLoggedInUserId;
+import static java.time.LocalDate.now;
+import static java.time.LocalDate.parse;
+import static java.time.format.DateTimeFormatter.ISO_LOCAL_DATE;
 import static org.slf4j.LoggerFactory.getLogger;
 
 /**
@@ -52,8 +58,7 @@ public class InterviewService {
      public Interview getInterviewById(UUID id) {
           UUID userId = getLoggedInUserId();
           // Look up the interview by both ID and user ID to enforce ownership
-          return repository.findByIdAndUserId(id, userId)
-                  .orElseThrow(() -> new RuntimeException("Interview not found or you don't have permission to access it."));
+          return repository.findByIdAndUserId(id, userId).orElseThrow(() -> new RuntimeException("Interview not found or you don't have permission to access it."));
      }
 
      /**
@@ -72,14 +77,7 @@ public class InterviewService {
                UUID userId = getLoggedInUserId();
                // Delegate to repository, which handles nulls as
                // "don't filter on this field"
-               return repository.findByFiltersAndUserId(
-                       userId,
-                       format,
-                       round,
-                       date,
-                       time,
-                       company
-               );
+               return repository.findByFiltersAndUserId(userId, format, round, date, time, company);
           } catch (Exception e) {
                logger.error("Error searching interviews for user", e);
                throw new RuntimeException("Failed to search interviews", e);
@@ -156,5 +154,25 @@ public class InterviewService {
       */
      public boolean existsByUUID(UUID id) {
           return repository.existsById(id);
+     }
+
+     public List<Interview> getUpcomingInterviewsForUser() {
+          LocalDate today = now();
+          List<Interview> all = getAllInterviewsForUser();
+          List<Interview> upcoming = new ArrayList<>();
+
+          for (Interview interview : all) {
+               if (interview.getDate() != null) {
+                    try {
+                         LocalDate interviewDate = parse(interview.getDate(), ISO_LOCAL_DATE);
+                         if (interviewDate.isAfter(today)) {
+                              upcoming.add(interview);
+                         }
+                    } catch (DateTimeParseException e) {
+                         logger.warn("Invalid date format for interview {}", interview.getId());
+                    }
+               }
+          }
+          return upcoming;
      }
 }

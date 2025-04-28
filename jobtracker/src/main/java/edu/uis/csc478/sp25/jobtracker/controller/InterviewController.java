@@ -198,4 +198,14 @@ public class InterviewController {
                        .body(of("message", "Failed to delete interview: " + e.getMessage()));
           }
      }
+
+     /**
+      * Retrieves all upcoming interviews (date after today) for the current user.
+      * @return 200 OK with the list, or 204 No Content if none
+      */
+     @GetMapping("/upcoming")
+     public ResponseEntity<List<Interview>> getUpcomingInterviews() {
+          List<Interview> upcoming = service.getUpcomingInterviewsForUser();
+          return upcoming.isEmpty() ? noContent().build() : ok(upcoming);
+     }
 }
