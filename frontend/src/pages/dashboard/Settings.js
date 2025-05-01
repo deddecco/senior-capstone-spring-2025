@@ -1,6 +1,7 @@
-import React, {useEffect, useState} from 'react';
-import {api} from '../../lib/api'; // Use the centralized API utility
-import {HelpCircle, User} from 'lucide-react';
+import React, { useEffect, useState } from 'react';
+import { api } from '../../lib/api';
+import { HelpCircle, User } from 'lucide-react';
+import HelpAndSupport from '../dashboard/HelpAndSupport';
 
 const Settings = () => {
     const [activeTab, setActiveTab] = useState('profile');
@@ -166,6 +167,7 @@ const Settings = () => {
                                     </button>
                                 </form>)}
                         </div>)}
+                    {activeTab === 'help' && <HelpAndSupport />}
                 </div>
             </div>
         </div>);
